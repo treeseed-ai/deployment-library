@@ -16,4 +16,4 @@ TreeSeed Deployment is the sole implementation authority for system packaging, h
 
 Work must remain portable, exact, reversible, and driven through published contracts. Platform declares composition but does not implement deployment behavior.
 
-This objective is governed through the project library and TreeDX workspace lifecycle.
+TreeDX is the sole authoring and publication authority for this objective.
