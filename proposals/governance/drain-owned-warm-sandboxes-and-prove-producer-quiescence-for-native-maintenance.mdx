@@ -1,0 +1,127 @@
+---
+schemaVersion: treeseed.proposal/v1
+id: 95dfdfe7-7fae-4cb9-9d16-cf33b8e420ff
+projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+title: Drain owned warm sandboxes and prove producer quiescence for native maintenance
+request: "Deployment834/SDK429 and UI70/Admin127: actual source-storage
+  exhaustion blocks canonical review of real UI, Reviewer and Deployment
+  products. Architecture-first discussion send-529e3cd80c3970b66edcf3cff8988362
+  has genuine Deployment Architect and Reviewer responses recommending this
+  distinct lifecycle proposal. Accepted04eabfd9 v3 / Decision602c7dc9 Engineer
+  delivered9eddbc9eec86c2f3164ceb82aa2870bbe370637b (509 measured active
+  seconds,30 focused checks and final build reported), but its canonical
+  Reviewer1iQd failed source_storage_full; that accepted work remains
+  unreviewed, not completed acceptance. Exact9ed bundle was retrieved and
+  hashed. It adds stable-fence recovery but deliberately retains the
+  unfinished-source-job barrier and leaves process-level old-producer quiescence
+  evidence pending. Do not fold that pending review into an invented approval.
+  This separate slice addresses the missing native maintenance lifecycle in
+  protected68b source. Runtime exposes drainWarmPool(), which only drains
+  pool-owned idle entries, while server.ts has no operator drain route or
+  shutdown call. Current collector requires zero guests before stopping the
+  broker. Complete native inventory17:18:29-30 showed one idle owned warm
+  sandbox/VM; no quiescence or deletion permission is inferred from it. Reuse
+  the existing manager/supervisor/broker operator boundaries and warm pool
+  implementation; no alternate executor, generic shell endpoint, background
+  cleanup, extra service/storage or status database. The four-member
+  source-recovery group supplies Deployment Architect/Engineer/Reviewer plus
+  Platform Architect coordination; classes own allocation and work, not
+  named-agent proposal targets. Operator authors this draft from actual agent
+  recommendations. Obtain genuine group contributions and own Engineer/Reviewer
+  estimates before approval. All routine approvals are authorized, but do not
+  manufacture an estimate or bypass normal admission. Native host observations
+  and downstream collection/release remain coordinator responsibilities."
+summary: Expose the smallest safe operator maintenance path so an idle warm VM
+  no longer prevents establishing source-cache quiescence.
+status: draft
+groupIds:
+  - source-recovery
+objectiveRefs:
+  - commit: 9fc9807a4af6f9240ae4a13fa4012e4d87758526
+    id: deployment-core
+    model: objective
+    path: objectives/core.md
+    repository: repo_c6e08eb9721e363b
+    store: treedx
+evidenceRefs:
+  - store: git
+    model: repository
+    id: treeseed-ai/deployment
+    repository: treeseed-ai/deployment
+    commit: 68b6600f3a4885be8d2c4b5e80ae9f6b9e41aa14
+  - store: treedx
+    model: proposal
+    id: 04eabfd9-c662-4d45-b54c-15c5c0d8c26b
+    revision: 3
+    repository: repo_c6e08eb9721e363b
+    commit: 9a7c3d84204f2a12babb6464dfb9b5209e2b6d54
+    path: proposals/governance/recover-stable-git-cache-fences-and-guard-the-producer-transition.mdx
+    digest: sha256:9f7511c322080c004d40efc615bcfa8c30e929a3f40700679c7d03d8fa0166fd
+executionPlan:
+  workItems:
+    - id: drain-owned-warm-capacity-for-maintenance
+      activity: acting
+      agentClass: engineer
+      workspace: git
+      review: required
+      maximumReviewCycles: 1
+      dependsOn: []
+      objective: Make native operator maintenance safely drain only idle owned warm
+        capacity and establish truthful producer quiescence through the existing
+        runtime boundary.
+      requestedPermissions:
+        content:
+          read:
+            - agent
+            - knowledge
+            - objective
+            - proposal
+            - decision
+          write: []
+        tools:
+          - source.read
+          - source.write
+          - verification
+      requiredCapabilities:
+        - treeseed.engineering.code-change
+      contextRefs:
+        - store: git
+          model: repository
+          id: treeseed-ai/deployment
+          repository: treeseed-ai/deployment
+          commit: 68b6600f3a4885be8d2c4b5e80ae9f6b9e41aa14
+      acceptanceCriteria:
+        - Implement one bounded operator-controlled maintenance path through the
+          existing protected manager/supervisor/broker controls, reusing
+          WarmSandboxPool.drain/KataSandboxRuntime.drainWarmPool and existing
+          host inventory. Prevent new producer admission during that operation,
+          refuse actual active assignment execution/builds and unknown task
+          ownership, and drain only pool-owned idle capacity. Never signal an
+          assigned VM or change issued authority, original deadlines,
+          credentials or daily allowances.
+        - Establish complete before/after native task/container/process and
+          relevant mount inventory and truthful original producer-stop evidence
+          while maintenance owns the boundary; fail closed on missing/incomplete
+          observations, races or failed drain. Restore prior broker/admission
+          state on success or failure when authorized. Scope stops to the
+          affected broker/warm capacity; preserve API, TreeDX and unrelated
+          services and persistent selections. Do not add a second
+          journal/receipt authority when existing native operation evidence
+          suffices.
+        - Keep all unfinished-source-journal, stable/legacy lock, loop-device,
+          cache-custody and overlay-ancestry gates intact. Do not rewrite
+          unknown historical journals to stopped, fake settled usage, delete
+          retained work, force-unmount, inflate source budgets, or claim this
+          first slice alone reclaims blocked cold caches. Its meaningful result
+          is a usable maintenance drain/quiescence operation; later collection
+          remains gated by original custody.
+        - Return actual local Git implementation from exact68b with honest
+          ancestry, focused owning checks for idle owned warm drain,
+          active/unknown guest refusal, admission race, partial
+          failure/restoration, and preserved journals/ancestry, plus strict
+          build and explicit unproven native layers. Independent exact-product
+          Reviewer is required. Integrator then exercises the reviewed path on
+          the actual portfolio host with no assigned work; no verification-only
+          assignment, fabricated native observations or general acceptance
+          claim.
+---
