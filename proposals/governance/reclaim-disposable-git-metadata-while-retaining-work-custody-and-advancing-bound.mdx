@@ -1,0 +1,318 @@
+---
+schemaVersion: treeseed.proposal/v1
+id: ab4b7978-6396-4804-8029-7403fc937e4e
+projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+title: Reclaim disposable Git metadata while retaining work custody and
+  advancing bounded batches
+request: |-
+  Deployment834/UI70/Admin127. User requires automatic clean environments as part of real portfolio work. This is a coordinator-authored implementation proposal based on actual Deployment Architect/Reviewer discussions, not invented agent estimates. Existing approved native fence proposal77a71540v3 and Decision7ff7361f delivered actual retained38b3 product; PR892 integrator composition preserves it and prior09e8 histories. Current exact candidate7db58b0d55cc6cd9c906e72b29081ef48d51c944 is locally active under generationdev-1792622575664-dcb15766, manifestsha256:5188e168634260b89d9f088942807285caf1cad754923b9eb66ef5fcbbb80c1d, unchanged guest2f23058d53eadaee09faa2cb515758215fba28859a97b3105a035978f373d503. Required Actions pending; no canonical independent cache review or software release claimed.
+  Actual fixed protected collector refused without deleting anything;14 released analysis histories now correctly classified, leaving2 unfinished historical jobs. They correlate to retained work catalog rows (both upstream-authorized/candidate-only) from2026-09-12, ids5a21d2f1-45be-47a5-abb4-ba6fb657add5 andad891530-c3ee-4e66-a4c3-9e8b22d42d93. Their current-schema job metadata is undecodable. Preserve those records and every retained disk/product; do not add a legacy authority parser, pretend they stopped, or fabricate result/usage. Current48 unreleased source leases and51 overlays remain held. Physical inventory was complete and empty after the lifetime-fenced broker closed; no running assignments. Native status on the actual encrypted source filesystem reports33686405120 totalbytes and12257243136 availablebytes. Cold acquisition under unchanged8GiB bundle quota requires26105348096 bytes. Host filesystem free space is a different authority. Latest meaningful UI acting attemptassignment_KmIFTyjWp8zq462-_CJIQR2ZxRt25WkV failedsource_storage_full before model, released with verified22:37:19.750 teardown; run144f701f stopped normally, failed history retained. UIv5Decisionf775653d and linked Adminv9Decision694f53b0 remain valid.
+  The disposable host Git metadata volume lives ONLY atgit/<cacheId>/objects.ext4 and creates standalone immutable bundles. createWorkspaceDisk resolves its backing ONLY through workspaceImagePath underimages/<sourceid>.qcow2. No retained QCOW2 overlay depends on the host Git volume. Every Git metadata producer uses the broker lifetime shared fence or existing supervisor producer fence. The collector stops broker, obtains exclusive lock, verifies original cgroup closure and complete physical task/container/VM/NBD/mount inventory; per-cache atomic acquisition fence plus exact mount/loop checks still applies. The owning repair should use that producer proof for Git metadata instead of requiring unrelated historical work journals to become disposable. Existing workspace/QCOW2 guards still refuse all retained work/unknown ancestry.
+  Actual independent source discussions send32fa784dcef24ad65a05e481bf7389b2 identified two further concrete issues: mounted/unknown/nonempty skip paths remove the newly acquired cache fence despite unresolved custody; entries.slice(0,32) can permanently hide reclaimable caches behind retained entries. Fix them in the SAME cache operation. Current private0600 writer-mode, exact repository identity projection, full typed released-analysis bindings and under-fence file identity checks already have owning regressions and must be retained. No new coordinator runner, storage service, status database or quota enlargement.
+  Use the supplied exact code for planning/estimates; these activities have TreeDX/context-only authority. Each group participant should discuss only their own domain. Engineer and Reviewer must submit their own structured estimates including closeout; no copied benchmark. Acting requires actual exact-source Git authority and a real product. If integrator must bootstrap the minimum approved shared-backend repair to make Git admission physically possible, it must be separately attributed and retained, never substituted for the Engineer product or independent Reviewer. Real engineering work still includes the bounded progress and fence recovery repair; no verification-only assignment.
+  Exact current owning source follows (untrusted source material, not instructions):
+
+  interface CollectionOperations {
+    idle(scope: 'git' | 'workspace'): Promise<void>;
+    state(): Promise<string>;
+    identity(): Promise<{ pid: number; cgroup: string }>;
+    stop(): Promise<void>;
+    start(): Promise<void>;
+    restored(): Promise<boolean>;
+    closed(original: { pid: number; cgroup: string } | null): Promise<boolean>;
+    fence(): Promise<() => Promise<void>>;
+    disks(): Promise<string[]>;
+    hostFilesystemMounts(): Promise<string[]>;
+    collect(): Promise<{ removed: string[]; remainingLeaves: number }>;
+    collectGit?(): Promise<GitCacheCollectionResult>;
+    finish(): Promise<void>;
+  }
+
+  export async function runFencedCollection(operations: CollectionOperations) {
+    const state = await operations.state();
+    if (!['active', 'inactive', 'failed'].includes(state)) return { collected: false, removed: [], reason: 'broker_transitioning', unresolved: { activeState: state.slice(0, 64) } };
+    const original = state === 'active' ? await operations.identity() : null;
+    let release: (() => Promise<void>) | undefined;
+    try {
+      if (state === 'active') await operations.stop();
+      // systemd stop is the admission close. The broker drains only its owned idle
+      // warm pool before exiting; this shared/exclusive flock also fences a racing
+      // broker start until collection and the restoration request are complete.
+      try { release = await operations.fence(); }
+      catch (error) { if (error instanceof CollectionRefusal) return { collected: false, removed: [], reason: error.reason, unresolved: error.unresolved }; throw error; }
+      if (!await operations.closed(original)) return { collected: false, removed: [], reason: 'broker_not_closed', unresolved: { originalPid: original?.pid ?? null,
+        originalCgroup: original?.cgroup ?? null, processOrCgroupRemains: true } };
+      try { await operations.idle('git'); }
+      catch (error) { if (error instanceof CollectionRefusal) return { collected: false, removed: [], reason: error.reason, unresolved: error.unresolved }; throw error; }
+      const gitCache = operations.collectGit ? await operations.collectGit() : undefined;
+      const retainedDisks = await operations.disks();
+      const hostFilesystemMounts = await operations.hostFilesystemMounts();
+      if (retainedDisks.length || hostFilesystemMounts.length) return { collected: false, removed: [], ...(gitCache ? { gitCache } : {}), retainedDisks: retainedDisks.slice(0, 32),
+        retainedDiskCount: retainedDisks.length, retainedDisksTruncated: retainedDisks.length > 32,
+        hostFilesystemMounts: hostFilesystemMounts.slice(0, 64), hostFilesystemMountCount: hostFilesystemMounts.length,
+        hostFilesystemMountsTruncated: hostFilesystemMounts.length > 64,
+        reason: retainedDisks.length ? 'overlay_custody_retained' : 'host_mount_retained' };
+      await operations.idle('workspace');
+      return { collected: true, ...await operations.collect(), ...(gitCache ? { gitCache } : {}), retainedDisks: [], hostFilesystemMounts: [] };
+    } finally {
+      try {
+        await operations.finish();
+      } finally {
+        try {
+          // start() queues a no-blocking systemd start while the exclusive lock is
+          // still held. The starting broker cannot admit requests until release.
+          if (state === 'active') await operations.start();
+        } finally {
+          await release?.();
+          if (state === 'active' && !await operations.restored()) throw new Error('Sandbox broker prior active state was not restored.');
+        }
+      }
+    }
+  }
+
+
+  export interface GitCacheCollectionResult {
+    examinedBytes: number;
+    reclaimedBytes: number;
+    reclaimedCaches: string[];
+    retained: Array<{ cacheId: string; reason: string }>;
+  }
+
+  /** Reclaims only fixed, private cache volumes after the caller has fenced every source worker. */
+  export async function collectGitCacheBatch(root: string, isMounted: (path: string) => Promise<boolean>, limit = 32): Promise<GitCacheCollectionResult> {
+    if (!Number.isSafeInteger(limit) || limit < 1 || limit > 32) throw new Error('Invalid source collection limit.');
+    const git = join(root, 'git');
+    const result: GitCacheCollectionResult = { examinedBytes: 0, reclaimedBytes: 0, reclaimedCaches: [], retained: [] };
+    const gitInfo = await lstat(git).catch(error => { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined; throw error; });
+    if (!gitInfo) return result;
+    await privateDirectory(git, process.getuid?.());
+    const entries = await readdir(git);
+    for (const cacheId of entries.slice(0, limit)) {
+      if (!/^[a-f0-9]{64}$/u.test(cacheId)) {
+        result.retained.push({ cacheId, reason: 'noncanonical_cache_entry' });
+        continue;
+      }
+      const cache = join(git, cacheId);
+      await privateDirectory(cache, process.getuid?.());
+      const names = await readdir(cache);
+      const lock = join(cache, 'acquisition.lock');
+      if (names.includes('acquisition.lock')) { result.retained.push({ cacheId, reason: 'acquisition_fence_present_or_unknown' }); continue; }
+      if (names.some(name => name !== 'objects.ext4' && name !== 'mounted')) {
+        result.retained.push({ cacheId, reason: 'unexpected_cache_custody' }); continue;
+      }
+      const image = join(cache, 'objects.ext4'), mount = join(cache, 'mounted');
+      const imageInfo = await lstat(image).catch(error => { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined; throw error; });
+      if (!imageInfo) { result.retained.push({ cacheId, reason: 'cache_volume_missing' }); continue; }
+      // This is private mutable host Git metadata, not an immutable QCOW2 base.
+      // Its owning writer creates mode0600; exclusion is established by fences
+      // and absent mount/loop custody, not by pretending the file is read-only.
+      if (!imageInfo.isFile() || imageInfo.uid !== process.getuid?.() || imageInfo.nlink !== 1
+        || (imageInfo.mode & 0o077) || await realpath(image) !== image) throw new Error('Source cache image custody changed.');
+      const allocatedBytes = imageInfo.blocks * 512;
+      if (!Number.isSafeInteger(allocatedBytes)) throw new Error('Source cache image size is uncertain.');
+      result.examinedBytes += allocatedBytes;
+      // mkdir is the same atomic fence used by acquisition. Hold it across every
+      // custody recheck and unlink so acquisition cannot recreate the image.
+      try { await mkdir(lock, { mode: 0o700 }); }
+      catch (error) {
+        if ((error as NodeJS.ErrnoException).code === 'EEXIST') { result.retained.push({ cacheId, reason: 'acquisition_fence_present_or_unknown' }); continue; }
+        throw error;
+      }
+      let keepFence = true;
+      try {
+        await writeFile(join(lock, 'job.json'), JSON.stringify({ jobId: randomUUID(), pid: process.pid }), { mode: 0o600, flag: 'wx' });
+        if (await isMounted(mount)) { result.retained.push({ cacheId, reason: 'cache_mount_present_or_unknown' }); keepFence = false; continue; }
+        const mountInfo = await lstat(mount).catch(error => { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined; throw error; });
+        if (mountInfo && (!mountInfo.isDirectory() || mountInfo.uid !== process.getuid?.() || mountInfo.mode & 0o077 || await realpath(mount) !== mount)) {
+          result.retained.push({ cacheId, reason: 'cache_mount_custody_uncertain' }); keepFence = false; continue;
+        }
+        if (mountInfo && (await readdir(mount)).length) { result.retained.push({ cacheId, reason: 'cache_mount_not_empty' }); keepFence = false; continue; }
+        // Recheck mount custody immediately before unlink while holding the fence.
+        if (await isMounted(mount)) { result.retained.push({ cacheId, reason: 'cache_mount_present_or_unknown' }); keepFence = false; continue; }
+        const current = await lstat(image);
+        if (!current.isFile() || current.dev !== imageInfo.dev || current.ino !== imageInfo.ino
+          || current.uid !== imageInfo.uid || current.nlink !== 1 || current.mode !== imageInfo.mode
+          || current.size !== imageInfo.size || await realpath(image) !== image) throw new Error('Source cache image custody changed under its fence.');
+        await unlink(image);
+        if (mountInfo) { const directory = await open(mount, 'r'); try { await directory.sync(); } finally { await directory.close(); } }
+        const directory = await open(cache, 'r'); try { await directory.sync(); } finally { await directory.close(); }
+        result.reclaimedBytes += allocatedBytes;
+        result.reclaimedCaches.push(cacheId);
+        keepFence = false;
+      } catch {
+        result.retained.push({ cacheId, reason: 'cache_reclamation_uncertain' });
+      } finally {
+        // Keep ownership on any uncertain/partial deletion; recovery validates
+        // this journal and releases it only after proving the owner stopped.
+        if (!keepFence) await rm(lock, { recursive: true });
+      }
+    }
+    return result;
+  }
+
+
+  export async function collectWorkspaceCache(configuration: SandboxBrokerConfiguration) {
+    let catalog: WorkspaceCatalog | undefined;
+    const ensureCatalog = async () => {
+      if (!catalog) {
+        await initializeWorkspaceStorage();
+        catalog = new WorkspaceCatalog(join(workspaceStorageRoot, 'catalog.db'));
+      }
+      return catalog;
+    };
+    const broker = brokerUnit;
+    const idle = async (scope: 'git' | 'workspace') => {
+      const workspaceCatalog = await ensureCatalog(), snapshot = workspaceCatalog.collectionState();
+      const [physical, jobs, leaseEntries, candidates, results] = await Promise.all([
+        inspectSandboxInventory(configuration), unfinishedJobSnapshot(), entries('leases'), entries('candidates'), entries('results'),
+      ]);
+      const tasks = physical.confirmation.tasks ?? '', containers = physical.confirmation.containers ?? '';
+      const physicalBlockers = physicalCollectionBlockers(physical);
+      try {
+        if (scope === 'git') assertGitCollectionIdle(tasks, snapshot.builds, jobs.count);
+        else assertCollectionIdle(tasks, snapshot.activeLeases, snapshot.builds, jobs.count, containers);
+        if (physicalBlockers) throw new Error('Physical sandbox inventory is unresolved.');
+      } catch {
+        throw new CollectionRefusal('resources_not_idle', { ...(physicalBlockers ?? { tasks: [], containers: [] }), activeLeases: snapshot.activeLeases,
+          retainedOverlayEntryCount: leaseEntries.length, retainedOverlayEntries: leaseEntries.slice(0, 32), builds: snapshot.builds,
+          unfinishedSourceJobs: jobs.entries, retainedCandidateCount: candidates.length, retainedCandidates: candidates.slice(0, 32),
+          retainedResultCount: results.length, retainedResults: results.slice(0, 32),
+          remainingWorkspaceLeaves: { entries: snapshot.leaves, boundedBatchLimit: 32, mayBeTruncated: snapshot.leaves.length === 32 } });
+      }
+    };
+    return await runFencedCollection({ idle,
+        state: () => run('/usr/bin/systemctl', ['show', broker, '--property=ActiveState', '--value']),
+        identity: brokerIdentity,
+        stop: async () => { await run('/usr/bin/systemctl', ['stop', broker]); },
+        start: async () => { await run('/usr/bin/systemctl', ['start', '--no-block', broker]); },
+        restored: async () => {
+          for (let attempt = 0; attempt < 120; attempt++) {
+            if (await run('/usr/bin/systemctl', ['show', broker, '--property=ActiveState', '--value']) === 'active') return true;
+            await delay(250);
+          }
+          return false;
+        },
+        closed: brokerCgroupEmpty,
+        fence: () => acquireCollectionFence('exclusive'),
+        // Even a detached unclassified disk may contain work or reference a base: preserve all ancestry.
+        disks: async () => [...(await entries('leases')).map(name => `lease:${name}`), ...(await entries('devices')).map(name => `device:${name}`)],
+        hostFilesystemMounts: workspaceMounts,
+        collectGit: async () => {
+          // Loop devices are global kernel custody. Any matching backing file is retained;
+          // malformed output or command failure denies collection instead of guessing.
+          const output = await run('/usr/sbin/losetup', ['--list', '--json', '--output', 'BACK-FILE']);
+          const parsed: unknown = JSON.parse(output);
+          if (!parsed || typeof parsed !== 'object' || !('loopdevices' in parsed) || !Array.isArray(parsed.loopdevices)) throw new Error('Loop device custody is uncertain.');
+          const loopFiles = parsed.loopdevices.map((entry: unknown) => {
+            if (!entry || typeof entry !== 'object' || !('back-file' in entry) || typeof entry['back-file'] !== 'string') throw new Error('Loop device custody is uncertain.');
+            return entry['back-file'];
+          });
+          return collectGitCacheBatch(workspaceStorageRoot, async path => {
+            if (await hostMountpoint(path)) return true;
+            const image = join(path, '..', 'objects.ext4');
+            return loopFiles.includes(image);
+          });
+        }, collect: async () => {
+      const workspaceCatalog = await ensureCatalog();
+      await privateDirectory(join(workspaceStorageRoot, 'images'));
+      const removed = await collectLeafBatch(workspaceCatalog, async id => {
+        const path = workspaceImagePath(id);
+        try {
+          const info = await lstat(path);
+          assertImageCustody(info);
+          await unlink(path);
+        } catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error; }
+        const directory = await open(join(workspaceStorageRoot, 'images'), 'r');
+        try { await directory.sync(); } finally { await directory.close(); }
+      });
+      return { removed, remainingLeaves: workspaceCatalog.collectionState().leaves.length };
+      }, finish: async () => { catalog?.close(); catalog = undefined; } });
+  }
+summary: Unblock the real UI/Admin implementation chain with safe source-cache
+  reclamation that preserves old work and makes progress past retained cache
+  entries.
+status: draft
+groupIds:
+  - source-recovery
+objectiveRefs:
+  - commit: 9fc9807a4af6f9240ae4a13fa4012e4d87758526
+    id: deployment-core
+    model: objective
+    path: objectives/core.md
+    repository: repo_c6e08eb9721e363b
+    store: treedx
+evidenceRefs:
+  - store: git
+    model: repository
+    id: treeseed-ai/deployment
+    repository: treeseed-ai/deployment
+    commit: 7db58b0d55cc6cd9c906e72b29081ef48d51c944
+executionPlan:
+  workItems:
+    - id: reclaim-disposable-git-metadata-with-bounded-progress
+      activity: acting
+      agentClass: engineer
+      workspace: git
+      review: required
+      maximumReviewCycles: 1
+      dependsOn: []
+      objective: Make actual source-cache cleanup usable and repeatable without
+        deleting retained work, relaxing exact custody, or growing quotas.
+      requestedPermissions:
+        content:
+          read:
+            - agent
+            - knowledge
+            - objective
+            - proposal
+            - decision
+          write: []
+        tools:
+          - source.read
+          - source.write
+          - verification
+      requiredCapabilities:
+        - treeseed.engineering.code-change
+      contextRefs:
+        - store: git
+          model: repository
+          id: treeseed-ai/deployment
+          repository: treeseed-ai/deployment
+          commit: 7db58b0d55cc6cd9c906e72b29081ef48d51c944
+      acceptanceCriteria:
+        - Reclaim only disposable trusted-host Git metadata after the existing
+          exclusive producer lifetime fence, original broker cgroup closure and
+          complete empty native task/container/VM/NBD/mount proof. Historical
+          work leases/journals cannot block this independent metadata cleanup or
+          be rewritten/released/deleted merely to allow it. Preserve existing
+          unfinished-job/build/overlay/ancestry guards for QCOW2 workspace
+          images and all current refusal/restoration behavior.
+        - Keep per-cache ownership/fencing, private file and directory custody,
+          mount/loop checks and under-fence inode/mode/size/owner revalidation.
+          Mounted/unknown/nonempty/partial skip paths retain a truthful
+          acquisition fence for existing validated recovery; do not unlock
+          uncertainty or steal another owner. Use existing
+          recoverSourceCacheFence where appropriate, preserving unknown custody.
+        - Scan one current fixed-root directory inventory so a reclaimable cache
+          after more than32 retained entries can be reached. Limit removals to
+          the existing32 batch and bound returned retained details with truthful
+          total/truncation. Prefer this stateless scan to new persistent
+          cursors, models, endpoints or stores. Repeated successful calls must
+          reach later eligible caches without touching retained products.
+        - "Produce an actual Git implementation from the exact authorized7db
+          source. Preserve recorded integrator bootstrap interventions
+          separately. Exercise owning meaningful cases: old retained work plus
+          disposable metadata, no physical closure, mounted/unknown custody,
+          changed image and directory ownership, >32 retained entries before an
+          eligible cache, bounded diagnostics and repeat/noop. Keep originals
+          and strict build. Independent Reviewer assesses the actual full
+          product and exact guard/ancestry/partial-result behavior; chat
+          guidance is not canonical approval."
+        - Integrator runs the existing protected manager operation on the real
+          encrypted provider volume after review or an explicitly recorded
+          minimum recovery bootstrap, reports exact reclaimed bytes and
+          retained48-work custody, then resumes the already-approved real UI
+          Engineer→Reviewer→linkedAdmin work. No fake assignment, fabricated
+          zero usage, broad storage reset, quota growth, verification-only work,
+          or declaration of complete acceptance.
+---
