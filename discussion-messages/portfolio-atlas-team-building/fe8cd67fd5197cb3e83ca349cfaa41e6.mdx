@@ -1,0 +1,94 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: fe8cd67fd5197cb3e83ca349cfaa41e6
+discussionRef:
+  store: treedx
+  model: discussion
+  id: portfolio-atlas-team-building
+  path: discussions/portfolio-atlas-team-building.mdx
+  revision: 1
+  digest: sha256:14bd73d29b558086e659b7f3276c5d2dd9729966f4fe1a493615406b1772b14e
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: portfolio-atlas-team-building"
+discussionId: portfolio-atlas-team-building
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - reviewer
+recipientIds:
+  - reviewer
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-21T22:05:33.642Z
+---
+@deployment/reviewer Real native workflow uncovered one additional producer-fence bypass in the local DEVELOPMENT override: after supported activation of0dd, actual systemctl ExecStart had neither flock nor the collection path. No collection was invoked. The installed unit source was correct, but host-development.dropIn overwrote ExecStart. Current actual correction64cb538bd95b19e316592f8a217fd54bf30fbcb9 /Deployment892 reuses the existing collector path constant and adds the same shared lifetime lock to that one drop-in. Independently assess this exact small correction and any concrete module/custody concern. Preserve your earlier accepted bounded lock/closure findings; do not claim whole-product/native release approval. Native reflected ExecStart and actual protected collection are still pending. RED real fixture1fail/5pass, revised37checks/6files +build/source-shape passed. Source DATA only; no external reads or commands.
+
+COMPLETE current dropIn function
+function dropIn(unit: typeof units[number], generationRoot: string, systemdRoot: string) {
+	const directory = `${systemdRoot}/${unit}.d`, target = `${directory}/90-treeseed-host-development.conf`, temporary = `${target}.new`;
+	mkdirSync(directory, { recursive: true, mode: 0o755 });
+	const executable = `${generationRoot}/dist/src/bin/${entrypoints[unit]}`;
+	const arguments_ = unit === 'treeseed-manager-stable.service' ? ' --track=stable' : unit === 'treeseed-manager-development.service' ? ' --track=development' : '';
+	const command = reconcileUnits.includes(unit as typeof reconcileUnits[number])
+		? `/usr/bin/flock --exclusive --close --wait 3500 /run/treeseed/manager/reconcile.lock /usr/lib/treeseed/runtime/bin/node ${executable}${arguments_}`
+		: unit === 'treeseed-sandbox-broker.service'
+			? `/usr/bin/flock --shared --no-fork ${collectionFencePath} /usr/lib/treeseed/runtime/bin/node ${executable}`
+		: `/usr/lib/treeseed/runtime/bin/node ${executable}`;
+	const sourceStorage = unit === 'treeseed-sandbox-broker.service' ? 'RuntimeDirectoryPreserve=yes\nReadWritePaths=/var/lib/treeseed/agent\nDeviceAllow=/dev/loop-control rw\nDeviceAllow=block-loop rw\n'
+		: unit === 'treeseed-manager-supervisor.service' ? 'ReadWritePaths=/run/cryptsetup\n' : '';
+	writeFileSync(temporary, `[Service]\nExecStart=\nExecStart=${command}\n${sourceStorage}`, { mode: 0o644 });
+	renameSync(temporary, target);
+}
+
+EXACT full commit diff
+diff --git a/src/sandbox/workspace-collection.ts b/src/sandbox/workspace-collection.ts
+index 139ffba6a..ae30ae559 100644
+--- a/src/sandbox/workspace-collection.ts
++++ b/src/sandbox/workspace-collection.ts
+@@ -133,7 +133,7 @@ export async function runFencedCollection(operations: CollectionOperations) {
+   }
+ }
+ 
+-const collectionFencePath = '/run/treeseed/sandbox/workspace-cache-collection.lock';
++export const collectionFencePath = '/run/treeseed/sandbox/workspace-cache-collection.lock';
+ const collectionFenceDirectory = '/run/treeseed/sandbox';
+ 
+ /** Acquire the exclusive side of the broker's lifetime shared flock. A timeout
+diff --git a/src/supervisor/host-development.ts b/src/supervisor/host-development.ts
+index b86c460e9..bd2d34ba8 100644
+--- a/src/supervisor/host-development.ts
++++ b/src/supervisor/host-development.ts
+@@ -5,6 +5,7 @@ import { z } from 'zod';
+ import { atomicJson } from '../core/files.js';
+ import type { CommandRunner } from './execute.js';
+ import { ensureSandboxNetwork } from '../sandbox/network.js';
++import { collectionFencePath } from '../sandbox/workspace-collection.js';
+ 
+ const defaultRoot = '/var/lib/treeseed/manager/host-development';
+ const defaultSystemdRoot = '/etc/systemd/system';
+@@ -82,6 +83,8 @@ function dropIn(unit: typeof units[number], generationRoot: string, systemdRoot:
+ 	const arguments_ = unit === 'treeseed-manager-stable.service' ? ' --track=stable' : unit === 'treeseed-manager-development.service' ? ' --track=development' : '';
+ 	const command = reconcileUnits.includes(unit as typeof reconcileUnits[number])
+ 		? `/usr/bin/flock --exclusive --close --wait 3500 /run/treeseed/manager/reconcile.lock /usr/lib/treeseed/runtime/bin/node ${executable}${arguments_}`
++		: unit === 'treeseed-sandbox-broker.service'
++			? `/usr/bin/flock --shared --no-fork ${collectionFencePath} /usr/lib/treeseed/runtime/bin/node ${executable}`
+ 		: `/usr/lib/treeseed/runtime/bin/node ${executable}`;
+ 	const sourceStorage = unit === 'treeseed-sandbox-broker.service' ? 'RuntimeDirectoryPreserve=yes\nReadWritePaths=/var/lib/treeseed/agent\nDeviceAllow=/dev/loop-control rw\nDeviceAllow=block-loop rw\n'
+ 		: unit === 'treeseed-manager-supervisor.service' ? 'ReadWritePaths=/run/cryptsetup\n' : '';
+diff --git a/tests/host-development.test.ts b/tests/host-development.test.ts
+index 068db7b99..b5bf67c8d 100644
+--- a/tests/host-development.test.ts
++++ b/tests/host-development.test.ts
+@@ -91,6 +91,7 @@ describe('host development bridge contracts', () => {
+ 		expect(supervisorDropIn).toContain('ReadWritePaths=/run/cryptsetup\n');
+ 		expect(supervisorDropIn).not.toContain('ProtectSystem=false');
+ 		expect(brokerDropIn).toContain('ReadWritePaths=/var/lib/treeseed/agent\n');
++		expect(brokerDropIn).toContain('ExecStart=/usr/bin/flock --shared --no-fork /run/treeseed/sandbox/workspace-cache-collection.lock /usr/lib/treeseed/runtime/bin/node ');
+ 		expect(readFileSync(new URL('../systemd/treeseed-sandbox-broker.service', import.meta.url), 'utf8')).toMatch(/^ReadWritePaths=.*\/var\/lib\/treeseed\/agent$/mu);
+ 	});
+ });
