@@ -1,0 +1,143 @@
+---
+schemaVersion: treeseed.proposal/v1
+id: 77a71540-d25d-4dcb-ac83-0ef54b12c2a5
+projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+title: Keep source-cache collection fenced across warm drain and producer shutdown
+request: >-
+  Deployment834/UI70/Admin127/Agent496: Real UI
+  picker26caecfbc654a098ccc81fe344346035a2e378f9 completed Engineer work but
+  independent Reviewer56MS failed source_storage_full. Its exact6,174,334byte
+  product bundle was retrieved
+  SHA256c00dbf19626bbaddd0bc233263181c4ed9c4eff6629588d5b7f10c25be481bf8. Agent
+  Architect/Engineer claim-recovery discussions also failed source_storage_full
+  before reading source. Deployment Architect answered actual scope discussion
+  send-d7e138f498c4ec0411739726623999eb: extend the existing fixed collection
+  path, not another operation. Earlier approved95dfdfe7v3 produced
+  e7b22694d9651beaf5c662a1ea03af6a2e73b12f but canonical Reviewer failed
+  source_storage_full. Actual Architect/Reviewer feedback send43aa66 identified
+  missing protected manager exposure, admission restored before later
+  collection, and unknown drain ownership. No independent approval or native
+  verification is implied.
+
+
+  This correction supersedes the unusable point-in-time design, through normal
+  proposal admission. Implement from protected68b source; retain e7 and9ed as
+  unapproved historical products, not imports or authorizations. At68b the
+  supervisor already owns sandbox.workspace.cache.collect and
+  workspace-collection.ts; the protected manager route present only in the
+  active integrator bootstrap must be part of the source delivery if absent.
+  Reuse the existing fixed command identity local.host.sandbox.cache.collect
+  rather than inventing a second public endpoint, service, SDK model or
+  executor. Acquire a stable producer fence, drain only provably idle owned warm
+  capacity under closed admission, stop original broker, verify actual
+  process/cgroup closure and full native inventory, run the existing safe
+  collector while the fence stays held, then restore exact prior broker state on
+  success/failure. Keep unknown entries explicitly unresolved and resources
+  retained. Do not silently turn historical jobs into stopped or fabricate
+  usage/teardown.
+
+
+  Known follow-on blockers must remain honest: last complete physical inventory
+  had one idle owned warm VM; workspace metadata was incomplete for historical
+  jobs/candidates/results;215immutable images,6355lease records and50retained
+  overlay directories existed. The old collector globally refuses unfinished
+  jobs and retains all overlay ancestry. This slice must not delete retained
+  work or claim it alone reclaims the source budget. Return precise remaining
+  block reason and inventory through the existing result when collection safely
+  refuses, so coordinator can repair earliest ownership issue. Independent Git
+  review, exact local product retrieval and real host operation remain required.
+  The group is existing source-recovery: Deployment Architect/Engineer/Reviewer
+  and Portfolio Architect. Obtain real group discussion and own estimates before
+  approval; no named-agent proposal targeting.
+summary: Repair the existing fixed collection operation so idle owned warm
+  capacity can be drained without reopening admission before maintenance
+  completes.
+status: draft
+groupIds:
+  - source-recovery
+objectiveRefs:
+  - commit: 9fc9807a4af6f9240ae4a13fa4012e4d87758526
+    id: deployment-core
+    model: objective
+    path: objectives/core.md
+    repository: repo_c6e08eb9721e363b
+    store: treedx
+evidenceRefs:
+  - store: git
+    model: repository
+    id: treeseed-ai/deployment
+    repository: treeseed-ai/deployment
+    commit: 68b6600f3a4885be8d2c4b5e80ae9f6b9e41aa14
+  - store: treedx
+    model: proposal
+    id: 04eabfd9-c662-4d45-b54c-15c5c0d8c26b
+    revision: 3
+    repository: repo_c6e08eb9721e363b
+    commit: 9a7c3d84204f2a12babb6464dfb9b5209e2b6d54
+    path: proposals/governance/recover-stable-git-cache-fences-and-guard-the-producer-transition.mdx
+    digest: sha256:9f7511c322080c004d40efc615bcfa8c30e929a3f40700679c7d03d8fa0166fd
+executionPlan:
+  workItems:
+    - id: fence-existing-source-cache-collection
+      activity: acting
+      agentClass: engineer
+      workspace: git
+      review: required
+      maximumReviewCycles: 1
+      dependsOn: []
+      objective: Make the existing fixed source-cache collection path usable and
+        truthfully fenced across idle-owned warm drain, producer shutdown,
+        collection refusal/success, and restoration.
+      requestedPermissions:
+        content:
+          read:
+            - agent
+            - knowledge
+            - objective
+            - proposal
+            - decision
+          write: []
+        tools:
+          - source.read
+          - source.write
+          - verification
+      requiredCapabilities:
+        - treeseed.engineering.code-change
+      contextRefs:
+        - store: git
+          model: repository
+          id: treeseed-ai/deployment
+          repository: treeseed-ai/deployment
+          commit: 68b6600f3a4885be8d2c4b5e80ae9f6b9e41aa14
+      acceptanceCriteria:
+        - Extend the existing fixed protected manager/supervisor collection path
+          from exact68b. If manager dispatch is absent, add its strictly guarded
+          local.host.sandbox.cache.collect mapping to the existing supervisor
+          operation; do not create another endpoint or executor. Reject
+          caller-selected paths, commands and resource scopes. Keep the change
+          in Deployment and existing operation evidence.
+        - Close admission before snapshot/drain; identify and drain ONLY owned
+          idle warm entries. Preserve active assignments and unknown ownership,
+          failed resources and quarantined entries. Hold the SAME producer fence
+          through broker shutdown, original PID/cgroup closure verification,
+          complete tasks/VM/mount checks, collection, and explicit prior-state
+          restoration. Point-in-time zeroVM snapshots are insufficient; never
+          resume prewarming/admission before collection finishes.
+        - Preserve all existing unfinished-source-job, original custody,
+          stable/legacy lock, loop, lease/build and overlay ancestry
+          protections. Never rewrite historical unknown jobs to stopped, discard
+          candidate work, fake measured usage, increase storage quotas or
+          force-unmount. Return truthful bounded refusal and unresolved
+          inventory through the owning operation when safe collection is still
+          blocked; no claim of reclaimed space unless actual collection
+          occurred.
+        - Produce actual local Git implementation from exact68b with honest
+          ancestry, strict build and focused owning checks for active/unknown
+          refusal, idle-owned drain, producer/admission races, partial drain
+          failure, restoration on every exit and retained journals/ancestry.
+          Preserve actual failures. Independent exact-product review is
+          required; coordinator then exercises the reviewed or explicitly
+          documented integrator blocker repair on the real idle portfolio host.
+          No verification-only assignment, source inspection approval or native
+          acceptance claim.
+---
