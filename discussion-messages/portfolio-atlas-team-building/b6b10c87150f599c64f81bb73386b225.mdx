@@ -1,0 +1,224 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: b6b10c87150f599c64f81bb73386b225
+discussionRef:
+  store: treedx
+  model: discussion
+  id: portfolio-atlas-team-building
+  path: discussions/portfolio-atlas-team-building.mdx
+  revision: 1
+  digest: sha256:14bd73d29b558086e659b7f3276c5d2dd9729966f4fe1a493615406b1772b14e
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: portfolio-atlas-team-building"
+discussionId: portfolio-atlas-team-building
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+  - engineer
+  - reviewer
+recipientIds:
+  - architect
+  - engineer
+  - reviewer
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-21T14:47:05.431Z
+---
+@deployment/architect @deployment/engineer @deployment/reviewer @platform/architect ActualEngineer xoa4723e delivered8ae3b8a73c95c3e65cac1374fd209c88ecb52078 direct3440 at14:43:27,732elapsed/730.970active,67timechecks, build+focusedcollector+diffcheckpassed. ActualcanonicalReviewergdI8failedsource_storage_full beforemodel. Bundle2731374bytes SHA16a0f5a295710efb80ecd001c1b15656c824c9b4a6d65dad6524ff87deb76650 retrievedunchanged. Integratorinspectedactualdiff and WILLNOTactivate8a: collectionDiagnostics scans names.slice(0,256), classifiesallremainingfilesasmalformed+unfinished withoutreading, actualhosthas6295journals. Thisguaranteesdenialevenvalidstoppedhistorybeyond256; boundedOUTPUT mustnotmeansyntheticblockercounts/skipvalidhistory. Italsoreplacesactualfilesystem/catalogunfinishedJobs integrationregressionwithpurepredicatecases; doesnotexercisenewprivateclassification/publiccollectionpath. Thisisidentifiedsourcefinding, notcanonicalreviewfabricated. Pleaseindependentlyreviewprovidedexactdiff8fe->8a below, verify/rejectfinding, returnsmallestfixdraftusingexistingoneclassification/publicfixedop. Iterateallactualjournalswithoutnewrecordlimit (normalboundedperfileread), aggregatefixedsizeallowlistedcounts; retainguardsunknowncustody; do notinfermalformedfromuninspected. Existingpubliccollectionerror/eventonly. Restoreactualcatalog/filesystemregressionand46/oneleasecaseswithoutweakening. No fourthblindnativecleanup. Needactionableactualblockerdiagnosticstounblockcoldcanonicalreview; no source_storage_full approval. Exact FUNCTIONAL source diff only; test changes summarized above:
+diff --git a/src/sandbox/workspace-collection.ts b/src/sandbox/workspace-collection.ts
+index eb6c692f6..97842044d 100644
+--- a/src/sandbox/workspace-collection.ts
++++ b/src/sandbox/workspace-collection.ts
+@@ -4,7 +4,8 @@ import { lstat, mkdir, open, readFile, readdir, realpath, rm, unlink, writeFile
+ import { join } from 'node:path';
+ import { promisify } from 'node:util';
+ import { DatabaseSync } from 'node:sqlite';
+-import { WorkspaceCatalog } from './workspace-catalog.js';
++import { sourceWorkspaceAuthorizationSchema, sourceWorkspaceKeySchema } from '[npm-scope-at]treeseed/sdk/capacity-provider/sandbox';
++import { sourceWorkspaceId, WorkspaceCatalog } from './workspace-catalog.js';
+ import { initializeWorkspaceStorage, workspaceImagePath, workspaceStorageRoot } from './workspace-block-store.js';
+ import type { SandboxBrokerConfiguration } from './protocol.js';
+ 
+@@ -14,15 +15,13 @@ const run = async (command: string, args: string[]) => (await exec(command, args
+ })).stdout.trim();
+ 
+ export function assertCollectionIdle(tasks: string, activeLeases: number, builds: number, unfinishedJobs: number) {
+-  if (tasks.trim() || [activeLeases, builds, unfinishedJobs].some(value => value !== 0)) {
++  if (tasks.trim() || [activeLeases, builds, unfinishedJobs].some(value => !Number.isSafeInteger(value) || value !== 0))
+     throw new Error('Source collection requires no guests, leases, builds, or unfinished source jobs.');
+-  }
+ }
+ 
+ export function assertGitCollectionIdle(tasks: string, builds: number, unfinishedJobs: number) {
+-  if (tasks.trim() || [builds, unfinishedJobs].some(value => !Number.isSafeInteger(value) || value !== 0)) {
++  if (tasks.trim() || [builds, unfinishedJobs].some(value => !Number.isSafeInteger(value) || value !== 0))
+     throw new Error('Git cache collection requires no guests, builds, or unfinished source jobs.');
+-  }
+ }
+ 
+ export function assertImageCustody(info: { isFile(): boolean; uid: number; nlink: number; mode: number }) {
+@@ -43,59 +42,101 @@ async function entries(name: string) {
+   return readdir(path);
+ }
+ 
+-interface CollectionLease {
+-  id: string; authorization_id: string; image_id: string; assignment_id: string; provider_id: string; attempt: number;
+-  mode: string; acquisition: string; publication: string; state: string;
+-}
++interface CollectionLease { id: string; authorization_id: string; image_id: string; assignment_id: string; provider_id: string;
++  attempt: number; mode: string; acquisition: string; publication: string; state: string }
+ 
+-/** A journal is historical only when its full owner matches released catalog authority. */
++/** One fail-closed classifier supplies both eligibility and bounded operator reasons. */
+ export function isReleasedAnalysisHistory(job: unknown, leases: CollectionLease[], root: string) {
+-  if (!job || typeof job !== 'object') return false;
+-  const record = job as Record<string, unknown>;
+-  const owner = record.owner as Record<string, unknown> | undefined;
++  if (!job || typeof job !== 'object' || Array.isArray(job)) return false;
++  const record = job as Record<string, unknown>, owner = record.owner as Record<string, unknown> | undefined;
+   const disk = record.disk as Record<string, unknown> | undefined;
+-  const authority = record.authority as Record<string, unknown> | undefined;
+-  if (record.schemaVersion !== 'treeseed.assignment-source-job/v1'
+-    || !['awaiting-authority', 'building', 'ready', 'attaching', 'attached', 'failed'].includes(String(record.state))
+-    || typeof record.leaseId !== 'string' || !owner || typeof owner !== 'object' || !disk || typeof disk !== 'object'
+-    || !authority || typeof authority !== 'object' || typeof owner.assignmentId !== 'string'
+-    || typeof owner.providerId !== 'string' || typeof owner.teamId !== 'string' || typeof owner.projectId !== 'string'
+-    || !Number.isSafeInteger(owner.attempt) || !/^workspace-lease-[a-f0-9-]{36}$/u.test(String(disk.id))
+-    || disk.directory !== join(root, 'leases', String(disk.id)) || disk.image !== join(String(disk.directory), 'work.qcow2')
+-    || authority.mode !== 'analysis' || authority.publication !== 'denied') return false;
++  if (!owner || typeof owner !== 'object' || !disk || typeof disk !== 'object'
++    || record.schemaVersion !== 'treeseed.assignment-source-job/v1'
++    || !['awaiting-authority', 'building', 'ready', 'attaching', 'attached', 'failed'].includes(String(record.state))) return false;
++  let authority;
++  try { authority = sourceWorkspaceAuthorizationSchema.parse(record.authority); }
++  catch { return false; }
++  let source;
++  try { source = sourceWorkspaceKeySchema.parse(authority.source); }
++  catch { return false; }
++  if (authority.mode !== 'analysis' || authority.publication !== 'denied'
++    || owner.teamId !== source.teamId || owner.projectId !== source.projectId
++    || typeof record.leaseId !== 'string'
++    || !/^workspace-lease-[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/u.test(String(disk.id))
++    || disk.directory !== join(root, 'leases', String(disk.id)) || disk.image !== join(String(disk.directory), 'work.qcow2')) return false;
+   const matches = leases.filter(lease => lease.id === record.leaseId);
+   if (matches.length !== 1) return false;
+   const lease = matches[0]!;
+-  return lease.mode === 'analysis' && lease.publication === 'denied' && lease.state === 'released'
+-    && typeof lease.authorization_id === 'string' && typeof lease.image_id === 'string'
+-    && authority.id === lease.authorization_id && authority.acquisition === lease.acquisition
+-    && typeof lease.assignment_id === 'string' && typeof lease.provider_id === 'string'
+-    && Number.isSafeInteger(lease.attempt) && owner.assignmentId === lease.assignment_id
++  return lease.state === 'released' && lease.mode === 'analysis' && lease.publication === 'denied'
++    && lease.authorization_id === authority.id && lease.acquisition === authority.acquisition
++    && lease.assignment_id === authority.assignmentId && lease.provider_id === authority.providerId
++    && lease.attempt === authority.attempt && owner.assignmentId === lease.assignment_id
+     && owner.providerId === lease.provider_id && owner.attempt === lease.attempt
+-    && authority.assignmentId === lease.assignment_id && authority.providerId === lease.provider_id
+-    && authority.attempt === lease.attempt;
++    && lease.image_id === sourceWorkspaceId(source);
++}
++
++type CollectionReason = 'malformed_or_unknown_header' | 'ownership_mismatch' | 'source_mismatch' | 'authorization_mismatch' | 'active_lease';
++type CollectionDiagnostics = { guests: number; builds: number; activeLeases: number; unfinishedJobs: number;
++  blockerReasons: Record<CollectionReason, number> };
++export function assertCollectionEligible(counts: CollectionDiagnostics, scope: 'git' | 'workspace' = 'workspace') {
++  const values = [counts.guests, counts.builds, counts.activeLeases, counts.unfinishedJobs, ...Object.values(counts.blockerReasons)];
++  const blocked = values.some(value => !Number.isSafeInteger(value) || value < 0 || value > 65_536)
++    || counts.guests > 0 || counts.builds > 0 || (scope === 'workspace' && counts.activeLeases > 0) || counts.unfinishedJobs > 0
++    || Object.values(counts.blockerReasons).some(value => value > 0);
++  if (blocked) {
++    const blockerReasons = Object.fromEntries((['malformed_or_unknown_header', 'ownership_mismatch', 'source_mismatch',
++      'authorization_mismatch', 'active_lease'] as const).map(reason => [reason, counts.blockerReasons[reason]]));
++    throw new Error(`Source collection blocked: ${JSON.stringify({ guests: counts.guests, builds: counts.builds,
++      activeLeases: counts.activeLeases, unfinishedJobs: counts.unfinishedJobs, blockerReasons })}`);
++  }
+ }
+ 
+-export async function unfinishedJobs(root = workspaceStorageRoot, owner = 0) {
+-  let unfinished = 0;
+-  const db = new DatabaseSync(join(root, 'catalog.db'), { readOnly: true });
+-  let leases: CollectionLease[];
+-  try { leases = db.prepare('SELECT id, authorization_id, image_id, assignment_id, provider_id, attempt, mode, acquisition, publication, state FROM workspace_leases').all() as unknown as CollectionLease[]; }
+-  finally { db.close(); }
++async function collectionDiagnostics(tasks: string, root = workspaceStorageRoot): Promise<CollectionDiagnostics> {
++  const catalog = new DatabaseSync(join(root, 'catalog.db'), { readOnly: true });
++  let leases: CollectionLease[], builds: number, activeLeases: number;
++  try {
++    leases = catalog.prepare('SELECT id,authorization_id,image_id,assignment_id,provider_id,attempt,mode,acquisition,publication,state FROM workspace_leases').all() as unknown as CollectionLease[];
++    builds = Number(catalog.prepare("SELECT count(*) AS n FROM workspace_images WHERE state='building'").get()!.n);
++    activeLeases = Number(catalog.prepare("SELECT count(*) AS n FROM workspace_leases WHERE state!='released'").get()!.n);
++  } finally { catalog.close(); }
++  const reasons: CollectionDiagnostics['blockerReasons'] = { malformed_or_unknown_header: 0, ownership_mismatch: 0,
++    source_mismatch: 0, authorization_mismatch: 0, active_lease: 0 };
++  let unfinishedJobs = 0;
++  const jobsPath = join(root, 'jobs');
+   let names: string[];
+-  try { await privateDirectory(join(root, 'jobs'), owner); names = await readdir(join(root, 'jobs')); }
+-  catch (error) { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return 0; throw error; }
+-  for (const name of names) {
+-    if (!/^sandbox-[a-zA-Z0-9-]{1,128}\.json$/u.test(name)) { unfinished++; continue; }
+-    const path = join(root, 'jobs', name), info = await lstat(path);
+-    if (!info.isFile() || info.uid !== owner || info.nlink !== 1 || (info.mode & 0o077) || info.size > 1_048_576) {
+-      throw new Error('Source collection journal custody changed.');
+-    }
+-    const job: unknown = JSON.parse(await readFile(path, 'utf8'));
+-    if (!job || typeof job !== 'object' || !('schemaVersion' in job) || job.schemaVersion !== 'treeseed.assignment-source-job/v1'
+-      || !('state' in job) || (job.state !== 'stopped' && !isReleasedAnalysisHistory(job, leases, root))) unfinished++;
++  try { await privateDirectory(jobsPath); names = await readdir(jobsPath); }
++  catch (error) { if ((error as NodeJS.ErrnoException).code === 'ENOENT') names = []; else throw new Error('Source collection journal custody is uncertain.'); }
++  const boundedNames = names.slice(0, 256);
++  if (names.length > boundedNames.length) { unfinishedJobs += names.length - boundedNames.length; reasons.malformed_or_unknown_header += names.length - boundedNames.length; }
++  for (const name of boundedNames) {
++    if (!/^sandbox-[a-zA-Z0-9-]{1,128}\.json$/u.test(name)) { unfinishedJobs++; reasons.malformed_or_unknown_header++; continue; }
++    try {
++      const path = join(jobsPath, name), info = await lstat(path);
++      if (!info.isFile() || info.uid !== 0 || info.nlink !== 1 || (info.mode & 0o077) || info.size > 1_048_576) throw new Error();
++      const job: unknown = JSON.parse(await readFile(path, 'utf8'));
++      if (job && typeof job === 'object' && !Array.isArray(job) && (job as Record<string, unknown>).state === 'stopped') continue;
++      if (isReleasedAnalysisHistory(job, leases, root)) continue;
++      unfinishedJobs++;
++      if (!job || typeof job !== 'object' || Array.isArray(job) || (job as Record<string, unknown>).schemaVersion !== 'treeseed.assignment-source-job/v1') reasons.malformed_or_unknown_header++;
++      else {
++        const row = job as Record<string, unknown>, owner = row.owner as Record<string, unknown> | undefined, auth = row.authority as Record<string, unknown> | undefined;
++        if (!auth) reasons.authorization_mismatch++;
++        else {
++          try {
++            const parsed = sourceWorkspaceAuthorizationSchema.parse(auth);
++            if (!owner || parsed.assignmentId !== owner.assignmentId || parsed.providerId !== owner.providerId || parsed.attempt !== owner.attempt
++              || parsed.source.teamId !== owner.teamId || parsed.source.projectId !== owner.projectId) reasons.ownership_mismatch++;
++            else if (typeof row.leaseId !== 'string' || !leases.some(item => item.id === row.leaseId && item.image_id === sourceWorkspaceId(parsed.source))) reasons.source_mismatch++;
++            else if (leases.some(item => item.id === row.leaseId && item.state !== 'released')) reasons.active_lease++;
++            else reasons.authorization_mismatch++;
++          } catch { reasons.authorization_mismatch++; }
++        }
++      }
++    } catch { unfinishedJobs++; reasons.malformed_or_unknown_header++; }
+   }
+-  return unfinished;
++  const guestCount = tasks.trim() ? tasks.trim().split(/\s+/u).length : 0;
++  return { guests: Math.min(guestCount, 65_536), builds: Math.min(builds, 65_536), activeLeases: Math.min(activeLeases, 65_536),
++    unfinishedJobs: Math.min(unfinishedJobs, 65_536), blockerReasons: reasons };
+ }
+ 
+ async function hostMountpoint(path: string) {
+@@ -229,12 +270,10 @@ export async function collectWorkspaceCache(configuration: SandboxBrokerConfigur
+   const catalog = new WorkspaceCatalog(join(workspaceStorageRoot, 'catalog.db'));
+   const broker = 'treeseed-sandbox-broker.service';
+   const idle = async (scope: 'git' | 'workspace') => {
+-    const snapshot = catalog.collectionState();
+     const tasks = await run('/usr/bin/ctr', ['--address', configuration.containerdAddress,
+       '--namespace', configuration.namespace, 'tasks', 'list', '--quiet']);
+-    const jobs = await unfinishedJobs();
+-    if (scope === 'git') assertGitCollectionIdle(tasks, snapshot.builds, jobs);
+-    else assertCollectionIdle(tasks, snapshot.activeLeases, snapshot.builds, jobs);
++    const counts = await collectionDiagnostics(tasks);
++    assertCollectionEligible(counts, scope);
+   };
+   try {
+     return await runFencedCollection({ idle,
