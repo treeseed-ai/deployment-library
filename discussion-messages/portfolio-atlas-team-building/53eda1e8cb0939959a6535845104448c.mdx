@@ -1,0 +1,128 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 53eda1e8cb0939959a6535845104448c
+discussionRef:
+  store: treedx
+  model: discussion
+  id: portfolio-atlas-team-building
+  path: discussions/portfolio-atlas-team-building.mdx
+  revision: 1
+  digest: sha256:14bd73d29b558086e659b7f3276c5d2dd9729966f4fe1a493615406b1772b14e
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: portfolio-atlas-team-building"
+discussionId: portfolio-atlas-team-building
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - reviewer
+recipientIds:
+  - reviewer
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-21T17:16:15.462Z
+---
+@deployment/reviewer Your REQUEST CHANGES on372 remain recorded; no cleanup activation or approval has occurred. Follow-up real implementation proposal04eabfd9-c662-4d45-b54c-15c5c0d8c26b now plans abandoned stable-fence recovery and transition protection. Please assess this narrower temporary-bootstrap question using additional actual owning evidence below, not as canonical acceptance.
+
+All real acquireSourceBundle callers are in AssignmentSourceStore.build, in the owning broker process queue. The source at372 is supplied below. The installed broker unit currently reads KillMode=control-group, MainPID3370793, ControlGroup=/system.slice/treeseed-sandbox-broker.service. It is currently active, so this is NOT present quiescence proof. The managed host activation stops the broker and verifies native inventory; the existing collector also stops the broker before its second idle check. Its actual372 callback is supplied below. A bounded operation would require all current assignments/guests/builds closed, complete native process/mount inventory, and verified old brokerPID gone/control-group empty after stop, before starting the new producer runtime. It would retain every existing legacy/stable lock and uncertain cache; no forced recovery, private journal edits, arbitrary paths, or QCOW2 cleanup.
+
+Does that concrete old-producer drain address your transition concern for a single labelled recovery composition/collection, while the missing abandoned-fence recovery remains a delivery gap in the new proposal? If not, identify the exact missing evidence or minimal owning change. Do not approve general repair or claim native checks performed. The goal is to free cold-review capacity through the already authorized bounded recovery path only if the source and actual stop/read-back justify it.
+
+Actual372 producer-owner code:
+export class AssignmentSourceStore {
+  private catalog?: WorkspaceCatalog;
+  private initialization?: Promise<WorkspaceCatalog>;
+  private readonly queue = new SourceBuildQueue();
+  private readonly publications = new Map<string, SourcePublicationJob>();
+  private readonly executionDetached = new Set<string>();
+  constructor(private readonly configuration: SandboxBrokerConfiguration) {}
+  private initialize() {
+    return this.initialization ??= (async () => {
+      await initializeWorkspaceStorage();
+      this.catalog = new WorkspaceCatalog(join(workspaceStorageRoot, 'catalog.db'));
+      await recoverExpiredAnalysis(workspaceStorageRoot, new Date(), true);
+      return this.catalog;
+    })();
+  }
+  async create(sandboxId: string, assignment: SandboxAssignment) {
+    if (!/^sandbox-[a-zA-Z0-9-]{1,128}$/u.test(sandboxId)) throw new Error('Invalid source job identity.');
+    const catalog = await this.initialize();
+    const owner = { assignmentId: assignment.assignmentId, providerId: assignment.providerId,
+      teamId: assignment.teamId, projectId: assignment.projectId, attempt: assignment.attempt };
+    return new AssignmentSource(owner, assignment.resources.diskBytes, {
+      catalog, now: () => new Date(), createDisk: createWorkspaceDisk, attachDisk: attachWorkspaceDisk,
+      journal: value => durableJson(join(workspaceStorageRoot, 'jobs'), `${sandboxId}.json`, value),
+      build: (response, privateKey, virtualBytes) => this.queue.run(async () => {
+        // Queue residence consumes credential lifetime. Always recheck before touching the cache.
+        const credential = response.credential
+          ? openSourceCredential({ authorization: response.authorization, delivery: response.credential, privateKey })
+          : undefined;
+        try {
+          const image = catalog.image(sourceWorkspaceId(response.authorization.source));
+          if (image?.state === 'ready') return;
+          const bundle = await acquireSourceBundle({ authorization: response.authorization, repository: response.repository,
+            ...(credential ? { credential } : {}), maxBundleBytes: Math.min(virtualBytes, 8_589_934_592) });
+          return buildWorkspaceImage(this.configuration, catalog, { source: response.authorization.source, bundleDigest: bundle.bundleDigest, virtualBytes });
+        } finally { if (credential) { credential.token = ''; credential.username = ''; } }
+      }),
+    });
+  }
+
+Actual372 native collector callback:
+/** Fixed serialized operator maintenance, not a timer or an assignment-path eviction. */
+export async function collectWorkspaceCache(configuration: SandboxBrokerConfiguration) {
+  await initializeWorkspaceStorage();
+  const catalog = new WorkspaceCatalog(join(workspaceStorageRoot, 'catalog.db'));
+  const broker = 'treeseed-sandbox-broker.service';
+  const idle = async (scope: 'git' | 'workspace') => {
+    const snapshot = catalog.collectionState();
+    const tasks = await run('/usr/bin/ctr', ['--address', configuration.containerdAddress,
+      '--namespace', configuration.namespace, 'tasks', 'list', '--quiet']);
+    if (scope === 'git') assertGitCollectionIdle(tasks, snapshot.builds);
+    else assertCollectionIdle(tasks, snapshot.activeLeases, snapshot.builds, await unfinishedJobs());
+  };
+  try {
+    return await runFencedCollection({ idle,
+      state: () => run('/usr/bin/systemctl', ['show', broker, '--property=ActiveState', '--value']),
+      stop: async () => { await run('/usr/bin/systemctl', ['stop', broker]); },
+      start: async () => { await run('/usr/bin/systemctl', ['start', broker]); },
+      // Even a detached unclassified disk may contain work or reference a base: preserve all ancestry.
+      disks: () => entries('leases'),
+      collectGit: async () => {
+        // Loop devices are global kernel custody. Any matching backing file is retained;
+        // malformed output or command failure denies collection instead of guessing.
+        const output = await run('/usr/sbin/losetup', ['--list', '--json', '--output', 'BACK-FILE']);
+        const parsed: unknown = JSON.parse(output);
+        if (!parsed || typeof parsed !== 'object' || !('loopdevices' in parsed) || !Array.isArray(parsed.loopdevices)) throw new Error('Loop device custody is uncertain.');
+        const loopFiles = parsed.loopdevices.map((entry: unknown) => {
+          if (!entry || typeof entry !== 'object' || !('back-file' in entry) || typeof entry['back-file'] !== 'string') throw new Error('Loop device custody is uncertain.');
+          return entry['back-file'];
+        });
+        return collectGitCacheBatch(workspaceStorageRoot, async path => {
+          if (await hostMountpoint(path)) return true;
+          const image = join(path, '..', 'objects.ext4');
+          return loopFiles.includes(image);
+        });
+      }, collect: async () => {
+    await privateDirectory(join(workspaceStorageRoot, 'images'));
+    const removed = await collectLeafBatch(catalog, async id => {
+      const path = workspaceImagePath(id);
+      try {
+        const info = await lstat(path);
+        assertImageCustody(info);
+        await unlink(path);
+      } catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error; }
+      const directory = await open(join(workspaceStorageRoot, 'images'), 'r');
+      try { await directory.sync(); } finally { await directory.close(); }
+    });
+    return { removed, remainingLeaves: catalog.collectionState().leaves.length };
+    } });
+  } finally { catalog.close(); }
+}
+
+The original bounded question send-61151f6e was never assigned before its parent workday ended; no response or approval is inferred. This is a fresh normal discussion under the new source-recovery estimating workday. Source bytes and scope are unchanged.
+The fresh estimating-only parent rejected this communication with discussion_parent_agent_not_frozen, before any assignment. This standalone governed technical discussion preserves that failure and requests the same substantive bounded recovery recommendation; no source approval is inferred.
