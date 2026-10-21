@@ -1,0 +1,232 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: a11aff3a713f1af61d7e0a7cb16f0232
+discussionRef:
+  store: treedx
+  model: discussion
+  id: portfolio-atlas-team-building
+  path: discussions/portfolio-atlas-team-building.mdx
+  revision: 1
+  digest: sha256:14bd73d29b558086e659b7f3276c5d2dd9729966f4fe1a493615406b1772b14e
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: portfolio-atlas-team-building"
+discussionId: portfolio-atlas-team-building
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+  - reviewer
+recipientIds:
+  - architect
+  - reviewer
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-21T18:13:05.725Z
+---
+@deployment/architect @deployment/reviewer Substantive source review and next-slice planning for the ACTUAL maintenance product, not canonical acceptance. Approved proposal95dfdfe7 v3 / Decision8213cbf4 EngineerTxl completed Git e7b22694d9651beaf5c662a1ea03af6a2e73b12f descended from protected68b, measured632active seconds, teardown18:09:58.726. Exact2,724,130byte bundle retrieved SHA256ae45638dce3bccd73d71d9559845f92f45d3fb9671e99cfebe9b8d31dd48dc7f. Canonical ReviewerSWZE failedsource_storage_full before review. Native host behavior remains unproven; no activation has occurred. The entire source delta is supplied below, omitting 1 unchanged package-import context line(s) solely to avoid accidental mention routing; changed code is verbatim. Tests are separate, not supplied here; do not claim replay. Changed files are runtime.ts, server.ts, warm-sandbox-pool.ts, supervisor/execute.ts, supervisor/protocol.ts, plus2tests; manager/operations.ts and shared SDK/CLI descriptors were NOT changed. Please identify concrete blockers before any bounded recovery bootstrap. In particular: can the operator actually reach the new supervisor operation through the existing protected manager/SDK/CLI boundary? Does restoring admission before returning establish only a point-in-time drain rather than original producer-stop evidence held through a collection? Assess recovery of failed/unknown warm entries and truthful inventory; do not equate zeroVM snapshot with stopped original broker. Recommend the smallest necessary correction/continuation proposal and participating roles, preserving existing custody gates and original failed outputs. If scoped source feedback is favorable, distinguish it clearly from canonical Git review and native approval. This is real implementation correction needed to unblock portfolio deliveries, not a verification-only assignment.
+
+Actual source delta:
+diff --git a/src/sandbox/runtime.ts b/src/sandbox/runtime.ts
+index 37aed05f2..eaf03a3c5 100644
+--- a/src/sandbox/runtime.ts
++++ b/src/sandbox/runtime.ts
+@@ -10,6 +10,7 @@ import type { SandboxBrokerConfiguration } from './protocol.js';
+ import { containerdImageReference } from './image-reference.js';
+ import { WarmSandboxPool, kataWarmOperations } from './warm-sandbox-pool.js';
++import { inspectSandboxInventory } from './doctor.js';
+ import { AssignmentSourceStore } from './assignment-source-store.js';
+ import type { AssignmentSource } from './assignment-source.js';
+ import { z } from 'zod';
+@@ -129,7 +130,10 @@ async function materializeGuestResolver(directory: string) {
+ export class KataSandboxRuntime {
+ 	private readonly sandboxes = new Map<string, Prepared>();
+ 	private readonly subscriptionCustody: SubscriptionCredentialCustody | null;
+-	private readonly warmPool: WarmSandboxPool;
++	private warmPool: WarmSandboxPool;
++	private maintenance = false;
++	private maintenanceFailed = false;
++	private admissionOperations = 0;
+ 	private readonly sourceStore: AssignmentSourceStore;
+ 	constructor(private readonly configuration: SandboxBrokerConfiguration) {
+ 		this.subscriptionCustody = configuration.modelGateway?.authenticationMode === 'codex-subscription'
+@@ -140,6 +144,39 @@ export class KataSandboxRuntime {
+ 		}));
+ 	}
+ 	async drainWarmPool() { await this.warmPool.drain(); }
++	/** Drain only pool-owned idle guests while producer admission is fenced. */
++	async drainWarmCapacityForMaintenance() {
++		if (this.maintenance || this.maintenanceFailed) throw new Error('Sandbox maintenance is already active or requires recovery.');
++		this.maintenance = true;
++		let admissionRestoreFailed = false;
++		try {
++			if (this.sandboxes.size || this.admissionOperations) throw new Error('Sandbox assignments or task ownership are not quiescent.');
++			const owned = await this.warmPool.idleIdentities();
++			if (new Set(owned).size !== owned.length || owned.some(id => !/^sandbox-warm-[a-f0-9-]{36}$/u.test(id))) throw new Error('Warm pool ownership is incomplete.');
++			const before = await inspectSandboxInventory(this.configuration);
++			if (!before.complete) throw new Error('Complete before-maintenance host inventory is unavailable.');
++			const tasks = (before.tasks as string).split(/\s+/u).filter(Boolean), containers = (before.containers as string).split(/\s+/u).filter(Boolean);
++			if ([...tasks, ...containers].some(id => !owned.includes(id)) || owned.some(id => !tasks.includes(id) || !containers.includes(id))) throw new Error('Unknown or active sandbox task ownership prevents maintenance drain.');
++			const vmNames = before.vmProcesses?.map(process => process.name);
++			if (!Array.isArray(vmNames) || vmNames.some(name => !name || !owned.includes(name)) || owned.some(id => !vmNames.includes(id))) throw new Error('VM process ownership is incomplete or active.');
++			try { await this.warmPool.drain(); }
++			catch (error) {
++				try { this.warmPool.resumeAfterPartialDrain(); }
++				catch { admissionRestoreFailed = true; }
++				throw error;
++			}
++			const after = await inspectSandboxInventory(this.configuration);
++			if (!after.complete || (after.tasks as string).trim() || (after.containers as string).trim() || after.vmProcesses?.length) {
++				admissionRestoreFailed = true;
++				throw new Error('Complete after-maintenance inventory did not prove producer quiescence.');
++			}
++			this.warmPool.resumeAfterDrain();
++			return { status: 'drained', admission: { boundary: 'sandbox-broker-runtime', fenced: true, restored: true }, before, after };
++		} catch (error) {
++			if (admissionRestoreFailed) this.maintenanceFailed = true;
++			throw error;
++		} finally { this.maintenance = false; }
++	}
+ 	private ctr(arguments_: string[], timeout = 10_000) {
+ 		return spawnSync('/usr/bin/ctr', ['--address', this.configuration.containerdAddress, '--namespace', this.configuration.namespace, ...arguments_], { encoding: 'utf8', timeout });
+ 	}
+@@ -169,6 +206,11 @@ export class KataSandboxRuntime {
+ 	}
+ 
+ 	async prepare(assignmentValue: unknown) {
++		if (this.maintenance || this.maintenanceFailed) throw new Error('Sandbox producer admission is stopped for maintenance.');
++		this.admissionOperations++;
++		try { return await this.prepareAdmitted(assignmentValue); } finally { this.admissionOperations--; }
++	}
++	private async prepareAdmitted(assignmentValue: unknown) {
+ 		const assignment = sandboxAssignmentSchema.parse(assignmentValue);
+ 		const modelGateway = this.configuration.modelGateway;
+ 		if (Date.parse(assignment.leaseExpiresAt) <= Date.now()) throw new Error('Expired assignment authority cannot create a sandbox.');
+@@ -285,6 +327,7 @@ export class KataSandboxRuntime {
+ 	}
+ 
+ 	async execute(sandboxId: string, token: string, execution: Record<string, unknown>): Promise<SandboxResult> {
++		if (this.maintenance || this.maintenanceFailed) throw new Error('Sandbox execution admission is stopped for maintenance.');
+ 		const sandbox = this.authorized(sandboxId, token);
+ 		if (Date.parse(sandbox.assignment.leaseExpiresAt) <= Date.now()) throw new Error('Assignment lease expired before sandbox execution.');
+ 		if (sandbox.assignment.inputs.some((entry) => !sandbox.uploaded.has(entry.id))) throw new Error('Sandbox execution cannot start before every signed input is verified.');
+diff --git a/src/sandbox/server.ts b/src/sandbox/server.ts
+index 00bf00703..5a1dfff7d 100644
+--- a/src/sandbox/server.ts
++++ b/src/sandbox/server.ts
+@@ -52,6 +52,8 @@ export async function startSandboxBroker() {
+ 	const server = createServer(async (request, response) => {
+ 		try {
+ 			if (request.method === 'GET' && request.url === '/v1/status') return respond(response, 200, inspectSandboxHost(configuration));
++			if (request.method === 'POST' && request.url === '/v1/maintenance/drain-warm-capacity')
++				return respond(response, 200, await runtime.drainWarmCapacityForMaintenance());
+ 			if (request.method === 'POST' && request.url === '/v1/sandboxes') {
+ 				const value = await body(request) as Record<string, unknown>, assignment = sandboxAssignmentSchema.parse(value.assignment); verifySandboxAssignment(assignment, configuration.trustedProvidersPath);
+ 				return respond(response, 201, await runtime.prepare(assignment));
+diff --git a/src/sandbox/warm-sandbox-pool.ts b/src/sandbox/warm-sandbox-pool.ts
+index 4dc47a64d..a55b9f1ad 100644
+--- a/src/sandbox/warm-sandbox-pool.ts
++++ b/src/sandbox/warm-sandbox-pool.ts
+@@ -4,7 +4,7 @@ import { promisify } from 'node:util';
+ import type { SandboxBrokerConfiguration } from './protocol.js';
+ 
+ export interface WarmShape { image: string; cpuCores: number; memoryBytes: number; network?: 'none' | 'relay' }
+-interface Idle { key: string; resource: Promise<string> }
++interface Idle { key: string; resource: Promise<string>; quarantined?: boolean }
+ export interface WarmOperations {
+ 	create(shape: WarmShape): Promise<string>;
+ 	destroy(id: string): Promise<void>;
+@@ -22,7 +22,7 @@ export class WarmSandboxPool {
+ 	private key(shape: WarmShape) { return JSON.stringify([shape.image, shape.cpuCores, shape.memoryBytes, shape.network ?? 'relay']); }
+ 	async acquire(shape: WarmShape) {
+ 		if (this.stopped) throw new Error('Warm sandbox admission is stopped.');
+-		const index = this.idle.findIndex(entry => entry.key === this.key(shape));
++		const index = this.idle.findIndex(entry => !entry.quarantined && entry.key === this.key(shape));
+ 		// Remove before awaiting: concurrent assignments can never share a warmed VM.
+ 		const entry = index < 0 ? undefined : this.idle.splice(index, 1)[0];
+ 		const id = await (entry?.resource ?? this.operations.create(shape));
+@@ -47,7 +47,8 @@ export class WarmSandboxPool {
+ 			const outcomes = await Promise.allSettled(entries.map(async entry => {
+ 				let id: string;
+ 				try { id = await entry.resource; } catch { return; }
+-				await this.operations.destroy(id);
++				try { await this.operations.destroy(id); }
++				catch (error) { entry.quarantined = true; throw error; }
+ 				const index = this.idle.indexOf(entry);
+ 				if (index >= 0) this.idle.splice(index, 1);
+ 			}));
+@@ -55,6 +56,21 @@ export class WarmSandboxPool {
+ 		})();
+ 		try { await this.draining; } finally { delete this.draining; }
+ 	}
++	/** Identities still held by this pool; callers must treat a rejected resource as unknown. */
++	async idleIdentities() {
++		const entries = [...this.idle];
++		return Promise.all(entries.map(entry => entry.resource));
++	}
++	/** Reopen only after a verified successful drain removed every pool entry. */
++	resumeAfterDrain() {
++		if (this.draining || this.idle.length) throw new Error('Warm sandbox pool cannot resume before verified drain.');
++		this.stopped = false;
++	}
++	/** Restore producer admission after a partial drain while keeping failed VMs owned and unassignable. */
++	resumeAfterPartialDrain() {
++		if (this.draining || this.idle.some(entry => !entry.quarantined)) throw new Error('Warm sandbox pool cannot restore after uncertain teardown.');
++		this.stopped = false;
++	}
+ }
+ 
+ const exec = promisify(execFile);
+diff --git a/src/supervisor/execute.ts b/src/supervisor/execute.ts
+index 2c5c4f2a8..9c03c2fa9 100644
+--- a/src/supervisor/execute.ts
++++ b/src/supervisor/execute.ts
+@@ -1,4 +1,5 @@
+ import { execFileSync, spawnSync } from 'node:child_process';
++import { request as httpRequest } from 'node:http';
+ import { composeFailureDiagnostics } from './compose-diagnostics.js';
+ import { installedComponentRelease } from './component-release.js';
+ import { migratePersistentComponentInput } from './component-input-migration.js';
+@@ -53,6 +54,18 @@ import { boundedDiagnosticFailureCode } from './development-diagnostics.js';
+ 
+ export type { CommandRunner } from './compose-runtime.js';
+ 
++function drainWarmCapacity(configuration: ReturnType<typeof loadSandboxBrokerConfiguration>) {
++	return new Promise<unknown>((resolveResult, reject) => {
++		const request = httpRequest({ socketPath: configuration.socketPath, path: '/v1/maintenance/drain-warm-capacity', method: 'POST', headers: { 'content-length': '0' }, timeout: 1_200_000 }, response => {
++			let body = ''; response.setEncoding('utf8');
++			response.on('data', chunk => { body += chunk; if (body.length > 4_194_304) request.destroy(new Error('Sandbox maintenance response exceeded its limit.')); });
++			response.on('end', () => { try { const value = JSON.parse(body) as unknown; if (response.statusCode !== 200) reject(new Error('Sandbox maintenance drain was refused.')); else resolveResult(value); } catch { reject(new Error('Sandbox maintenance returned an invalid response.')); } });
++		});
++		request.on('timeout', () => request.destroy(new Error('Sandbox maintenance drain timed out.')));
++		request.on('error', reject); request.end();
++	});
++}
++
+ const run: CommandRunner = (executable, arguments_, input) => {
+ 	const output = execFileSync(executable, [...arguments_], { stdio: input === undefined ? 'inherit' : ['pipe', 'pipe', 'inherit'], ...(input === undefined ? {} : { input, encoding: 'utf8' }), env: { PATH: '/usr/sbin:/usr/bin:/sbin:/bin', DEBIAN_FRONTEND: 'noninteractive' } });
+ 	return typeof output === 'string' ? output : undefined;
+@@ -291,6 +304,7 @@ export function executeSupervisorOperation(input: unknown, command: CommandRunne
+ 			const status = inspectSandboxHost(configuration, { requireBrokerSocket: true });
+ 			return inventory.then(observation => ({ ...status, inventory: observation, workspace: workspaceStatus() }));
+ 		}
++		case 'sandbox.maintenance.drain-warm-capacity': return drainWarmCapacity(loadSandboxBrokerConfiguration());
+ 		case 'sandbox.doctor': return inspectSandboxHost(loadSandboxBrokerConfiguration(), { requireBrokerSocket: true });
+ 		case 'sandbox.workspace.qualify': return qualifyWorkspaceStorage(loadSandboxBrokerConfiguration(), operation.mode);
+ 		case 'sandbox.workspace.source.qualify': return qualifySourceWorkspace(loadSandboxBrokerConfiguration());
+diff --git a/src/supervisor/protocol.ts b/src/supervisor/protocol.ts
+index b64c7b1ba..e1decfda9 100644
+--- a/src/supervisor/protocol.ts
++++ b/src/supervisor/protocol.ts
+@@ -45,6 +45,7 @@ const supervisorOperationUnion = z.discriminatedUnion('operation', [
+ 	z.object({ operation: z.literal('security.rotate'), target: z.enum(['volume', 'credentials', 'diagnostics']), recoveryBundle: z.string().startsWith('/').max(4_096), recoveryPassphrase: z.string().min(12).max(1_024), newRecoveryBundle: z.string().startsWith('/').max(4_096), newRecoveryPassphrase: z.string().min(12).max(1_024), confirm: z.literal(true) }).strict(),
+ 	z.object({ operation: z.literal('security.recovery.verify'), recoveryBundle: z.string().startsWith('/').max(4_096), recoveryPassphrase: z.string().min(12).max(1_024) }).strict(),
+ 	z.object({ operation: z.literal('sandbox.status') }).strict(),
++	z.object({ operation: z.literal('sandbox.maintenance.drain-warm-capacity') }).strict(),
+ 	z.object({ operation: z.literal('sandbox.doctor') }).strict(),
+ 	z.object({ operation: z.literal('sandbox.workspace.qualify'), mode: z.enum(['cold', 'warm', 'hold']).default('cold') }).strict(),
+ 	z.object({ operation: z.literal('sandbox.workspace.source.qualify') }).strict(),
