@@ -1,0 +1,161 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: c81de2497416165218832500593b4239
+discussionRef:
+  store: treedx
+  model: discussion
+  id: portfolio-atlas-team-building
+  path: discussions/portfolio-atlas-team-building.mdx
+  revision: 1
+  digest: sha256:14bd73d29b558086e659b7f3276c5d2dd9729966f4fe1a493615406b1772b14e
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: portfolio-atlas-team-building"
+discussionId: portfolio-atlas-team-building
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - reviewer
+  - architect
+recipientIds:
+  - architect
+  - reviewer
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-21T22:34:18.649Z
+---
+@deployment/reviewer @deployment/architect Actual product improvements from your discussion findings are now in the next PR892 head. Exact source and owning evidence: (1) Real repository responses contain ref; authentic two-commit Git fixture RED allocated different cacheIDs for one repository. Fix projects canonical owner/name/cloneUrl, so per-commit response extras do not multiply metadata volumes. (2) Real metadata writer produces private0600 objects.ext4; collector RED rejected it. Git metadata is mutable, while QCOW2 base immutability remains unchanged. Collector now permits private root-owned mutable metadata under the exclusive closed-broker and atomic per-cache fences, with no mounts/loops; it revalidates file identity/dev/inode/owner/mode/nlink/size/realpath immediately before unlink. QCOW2 writable negatives preserved; exposed0640 Git metadata still denied. Replacement/permissions race regression preserves changed bytes and acquisition fence. No newly invented writer-state, compatibility/migration or broader expiry disposal. (3) Prior released-analysis history classifier now parses full existing typed authority and binds owner team/project and canonical sourceWorkspaceId to catalog image_id; missing/malformed/source-swapped ownership remains unfinished. RED observedwrong-domainclassifiedidle; GREEN all83tests/12files,strictbuild,528-fileshape. No native cleanup yet and no canonical release claim. Batch-front starvation finding remains unproven/unrepaired; do not call whole cleanup complete. Please assess supplied final owning code for concrete remaining blockers.
+
+diff --git a/src/sandbox/source-git-cache.ts b/src/sandbox/source-git-cache.ts
+index 0e7094d89..923445cd0 100644
+--- a/src/sandbox/source-git-cache.ts
++++ b/src/sandbox/source-git-cache.ts
+@@ -38,7 +38,8 @@ export async function acquireSourceBundle(input: {
+   authorization: SourceWorkspaceAuthorization; repository: Repository; credential?: SourceGitCredential;
+   maxBundleBytes: number;
+ }, dependencies: SourceGitCacheDependencies = production) {
+-  const authorization = sourceWorkspaceAuthorizationSchema.parse(input.authorization), repository = input.repository;
++  const authorization = sourceWorkspaceAuthorizationSchema.parse(input.authorization);
++  const { owner, name, cloneUrl } = input.repository, repository = { owner, name, cloneUrl };
+   current(authorization, dependencies.now());
+ 	if (authorization.acquisition === 'upstream-authorized' && !input.credential) throw new Error('Authorized source acquisition requires its sealed credential.');
+ 	if (authorization.acquisition !== 'upstream-authorized' && input.credential) throw new Error('Credential supplied to a credential-free source acquisition.');
+
+interface CollectionLease {
+  id: string; authorization_id: string; image_id: string; assignment_id: string; provider_id: string; attempt: number;
+  mode: string; acquisition: string; publication: string; state: string;
+}
+
+/** A journal is historical only when its full owner matches released catalog authority. */
+export function isReleasedAnalysisHistory(job: unknown, leases: CollectionLease[], root: string) {
+  if (!job || typeof job !== 'object') return false;
+  const record = job as Record<string, unknown>;
+  const owner = record.owner as Record<string, unknown> | undefined;
+  const disk = record.disk as Record<string, unknown> | undefined;
+  const parsed = sourceWorkspaceAuthorizationSchema.safeParse(record.authority);
+  if (!parsed.success) return false;
+  const authority = parsed.data;
+  if (record.schemaVersion !== 'treeseed.assignment-source-job/v1'
+    || !['awaiting-authority', 'building', 'ready', 'attaching', 'attached', 'failed'].includes(String(record.state))
+    || typeof record.leaseId !== 'string' || !owner || typeof owner !== 'object' || !disk || typeof disk !== 'object'
+    || !authority || typeof authority !== 'object' || typeof owner.assignmentId !== 'string'
+    || typeof owner.providerId !== 'string' || typeof owner.teamId !== 'string' || typeof owner.projectId !== 'string'
+    || !Number.isSafeInteger(owner.attempt) || !/^workspace-lease-[a-f0-9-]{36}$/u.test(String(disk.id))
+    || disk.directory !== join(root, 'leases', String(disk.id)) || disk.image !== join(String(disk.directory), 'work.qcow2')
+    || authority.mode !== 'analysis' || authority.publication !== 'denied') return false;
+  const matches = leases.filter(lease => lease.id === record.leaseId);
+  if (matches.length !== 1) return false;
+  const lease = matches[0]!;
+  return lease.mode === 'analysis' && lease.publication === 'denied' && lease.state === 'released'
+    && typeof lease.authorization_id === 'string' && lease.image_id === sourceWorkspaceId(authority.source)
+    && owner.teamId === authority.source.teamId && owner.projectId === authority.source.projectId
+    && authority.id === lease.authorization_id && authority.acquisition === lease.acquisition
+    && typeof lease.assignment_id === 'string' && typeof lease.provider_id === 'string'
+    && Number.isSafeInteger(lease.attempt) && owner.assignmentId === lease.assignment_id
+    && owner.providerId === lease.provider_id && owner.attempt === lease.attempt
+    && authority.assignmentId === lease.assignment_id && authority.providerId === lease.provider_id
+    && authority.attempt === lease.attempt;
+}
+
+export interface GitCacheCollectionResult {
+  examinedBytes: number;
+  reclaimedBytes: number;
+  reclaimedCaches: string[];
+  retained: Array<{ cacheId: string; reason: string }>;
+}
+
+/** Reclaims only fixed, private cache volumes after the caller has fenced every source worker. */
+export async function collectGitCacheBatch(root: string, isMounted: (path: string) => Promise<boolean>, limit = 32): Promise<GitCacheCollectionResult> {
+  if (!Number.isSafeInteger(limit) || limit < 1 || limit > 32) throw new Error('Invalid source collection limit.');
+  const git = join(root, 'git');
+  const result: GitCacheCollectionResult = { examinedBytes: 0, reclaimedBytes: 0, reclaimedCaches: [], retained: [] };
+  const gitInfo = await lstat(git).catch(error => { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined; throw error; });
+  if (!gitInfo) return result;
+  await privateDirectory(git, process.getuid?.());
+  const entries = await readdir(git);
+  for (const cacheId of entries.slice(0, limit)) {
+    if (!/^[a-f0-9]{64}$/u.test(cacheId)) {
+      result.retained.push({ cacheId, reason: 'noncanonical_cache_entry' });
+      continue;
+    }
+    const cache = join(git, cacheId);
+    await privateDirectory(cache, process.getuid?.());
+    const names = await readdir(cache);
+    const lock = join(cache, 'acquisition.lock');
+    if (names.includes('acquisition.lock')) { result.retained.push({ cacheId, reason: 'acquisition_fence_present_or_unknown' }); continue; }
+    if (names.some(name => name !== 'objects.ext4' && name !== 'mounted')) {
+      result.retained.push({ cacheId, reason: 'unexpected_cache_custody' }); continue;
+    }
+    const image = join(cache, 'objects.ext4'), mount = join(cache, 'mounted');
+    const imageInfo = await lstat(image).catch(error => { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined; throw error; });
+    if (!imageInfo) { result.retained.push({ cacheId, reason: 'cache_volume_missing' }); continue; }
+    // This is private mutable host Git metadata, not an immutable QCOW2 base.
+    // Its owning writer creates mode0600; exclusion is established by fences
+    // and absent mount/loop custody, not by pretending the file is read-only.
+    if (!imageInfo.isFile() || imageInfo.uid !== process.getuid?.() || imageInfo.nlink !== 1
+      || (imageInfo.mode & 0o077) || await realpath(image) !== image) throw new Error('Source cache image custody changed.');
+    const allocatedBytes = imageInfo.blocks * 512;
+    if (!Number.isSafeInteger(allocatedBytes)) throw new Error('Source cache image size is uncertain.');
+    result.examinedBytes += allocatedBytes;
+    // mkdir is the same atomic fence used by acquisition. Hold it across every
+    // custody recheck and unlink so acquisition cannot recreate the image.
+    try { await mkdir(lock, { mode: 0o700 }); }
+    catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'EEXIST') { result.retained.push({ cacheId, reason: 'acquisition_fence_present_or_unknown' }); continue; }
+      throw error;
+    }
+    let keepFence = true;
+    try {
+      await writeFile(join(lock, 'job.json'), JSON.stringify({ jobId: randomUUID(), pid: process.pid }), { mode: 0o600, flag: 'wx' });
+      if (await isMounted(mount)) { result.retained.push({ cacheId, reason: 'cache_mount_present_or_unknown' }); keepFence = false; continue; }
+      const mountInfo = await lstat(mount).catch(error => { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined; throw error; });
+      if (mountInfo && (!mountInfo.isDirectory() || mountInfo.uid !== process.getuid?.() || mountInfo.mode & 0o077 || await realpath(mount) !== mount)) {
+        result.retained.push({ cacheId, reason: 'cache_mount_custody_uncertain' }); keepFence = false; continue;
+      }
+      if (mountInfo && (await readdir(mount)).length) { result.retained.push({ cacheId, reason: 'cache_mount_not_empty' }); keepFence = false; continue; }
+      // Recheck mount custody immediately before unlink while holding the fence.
+      if (await isMounted(mount)) { result.retained.push({ cacheId, reason: 'cache_mount_present_or_unknown' }); keepFence = false; continue; }
+      const current = await lstat(image);
+      if (!current.isFile() || current.dev !== imageInfo.dev || current.ino !== imageInfo.ino
+        || current.uid !== imageInfo.uid || current.nlink !== 1 || current.mode !== imageInfo.mode
+        || current.size !== imageInfo.size || await realpath(image) !== image) throw new Error('Source cache image custody changed under its fence.');
+      await unlink(image);
+      if (mountInfo) { const directory = await open(mount, 'r'); try { await directory.sync(); } finally { await directory.close(); } }
+      const directory = await open(cache, 'r'); try { await directory.sync(); } finally { await directory.close(); }
+      result.reclaimedBytes += allocatedBytes;
+      result.reclaimedCaches.push(cacheId);
+      keepFence = false;
+    } catch {
+      result.retained.push({ cacheId, reason: 'cache_reclamation_uncertain' });
+    } finally {
+      // Keep ownership on any uncertain/partial deletion; recovery validates
+      // this journal and releases it only after proving the owner stopped.
+      if (!keepFence) await rm(lock, { recursive: true });
+    }
+  }
+  return result;
+}
