@@ -83,35 +83,12 @@ request: >-
 summary: Add bounded ordinary maintenance for inactive source caches so the
   genuine UI Reviewer can prepare its retained product without increasing
   storage allowances.
-status: draft
+status: discussing
 groupIds:
   - portfolio-atlas
-objectiveRefs:
-  - store: treedx
-    model: objective
-    id: deployment-core
-    repository: repo_c6e08eb9721e363b
-    commit: 9fc9807a4af6f9240ae4a13fa4012e4d87758526
-    path: objectives/core.md
-evidenceRefs:
-  - store: git
-    model: repository
-    id: treeseed-ai/deployment
-    repository: treeseed-ai/deployment
-    commit: 68b6600f3a4885be8d2c4b5e80ae9f6b9e41aa14
 executionPlan:
   workItems:
-    - id: reclaim-inactive-source-git-cache
-      activity: acting
-      agentClass: engineer
-      workspace: git
-      review: required
-      maximumReviewCycles: 1
-      dependsOn: []
-      objective: Unblock real UI independent review by reclaiming only inactive
-        regenerable Git cache volumes through the existing supported host
-        maintenance boundary.
-      acceptanceCriteria:
+    - acceptanceCriteria:
         - "Implement the DeploymentArchitect draft: extend the existing fixed
           sandbox.workspace.cache.collect maintenance path to reclaim inactive
           trusted-host Git cache volumes through the existing manager/supervisor
@@ -145,8 +122,20 @@ executionPlan:
           real blocked UIreview scenario, verifies the exact UI8ca product
           remains retained and resumes its existing normal review chain. No
           verification-only assignment or fake success.
-      requiredCapabilities:
-        - treeseed.engineering.code-change
+      activity: acting
+      agentClass: engineer
+      contextRefs:
+        - commit: 68b6600f3a4885be8d2c4b5e80ae9f6b9e41aa14
+          id: treeseed-ai/deployment
+          model: repository
+          repository: treeseed-ai/deployment
+          store: git
+      dependsOn: []
+      id: reclaim-inactive-source-git-cache
+      maximumReviewCycles: 1
+      objective: Unblock real UI independent review by reclaiming only inactive
+        regenerable Git cache volumes through the existing supported host
+        maintenance boundary.
       requestedPermissions:
         content:
           read:
@@ -160,10 +149,22 @@ executionPlan:
           - source.read
           - source.write
           - verification
-      contextRefs:
-        - store: git
-          model: repository
-          id: treeseed-ai/deployment
-          repository: treeseed-ai/deployment
-          commit: 68b6600f3a4885be8d2c4b5e80ae9f6b9e41aa14
+      requiredCapabilities:
+        - treeseed.engineering.code-change
+      review: required
+      reviewEstimate:
+        expectedSeconds: 420
+        maximumSeconds: 660
+        rationale: Reviewer-only estimate for bounded inspection of the exact candidate
+          and parent; checking manager/supervisor binding, cache identity,
+          acquisition-lock and recovery custody, idleness and mount/teardown
+          semantics; assessing actual executable evidence; focused independent
+          replay where feasible; findings, disposition, and closeout. The
+          660-second maximum allows investigation of uncertain mount/lock
+          custody or failed/incomplete evidence. This exceeds the prior
+          133.201-second UI review because the backend change spans destructive
+          collection, broker fencing, source-cache identity, and recovery
+          custody. Downstream UI integration is not part of the review
+          disposition and should be separately owned if bundled.
+      workspace: git
 ---
