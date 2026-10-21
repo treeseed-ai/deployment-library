@@ -1,0 +1,167 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 8e07994c39a6cb773abd3a15bf58957b
+discussionRef:
+  store: treedx
+  model: discussion
+  id: portfolio-atlas-team-building
+  path: discussions/portfolio-atlas-team-building.mdx
+  revision: 1
+  digest: sha256:14bd73d29b558086e659b7f3276c5d2dd9729966f4fe1a493615406b1772b14e
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: portfolio-atlas-team-building"
+discussionId: portfolio-atlas-team-building
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - reviewer
+  - architect
+recipientIds:
+  - architect
+  - reviewer
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-21T22:25:11.261Z
+---
+@deployment/reviewer @deployment/architect Exact composition repair for real UI/Admin source preparation. My previous local host activation dropped prior retained Git-cache cleanup and source-export functionality when adding the new broker lifecycle fence. Those original products remain in09e8e211a and are being merged literally, preserving ancestry into PR892. The below candidate composes their Git-only cleanup BEFORE the retained-overlay guard with current admission stop, cgroup closure, shared/exclusive lifetime fence and physical inventory. No expired work disk/lease is released or deleted; unknown work stays held. Do not classify simulation expiry as disposal authority. Existing collectGitCacheBatch from09e8e211a is restored byte-for-byte: validates private fixed image, rejects existing lock/mount/loop/writable/foreign ownership, claims same atomic acquisition.lock, rechecks custody and mount, unlinks only objects.ext4, fsyncs, releases proven fence only. Existing unfinishedJobs now recognizes exact released analysis history and keeps bounded unknown entries.69focusedtests/build pass including retained46leases case and exact export; formal Actions pending. Please assess this exact integration order and identify any concrete introduced bypass. Discussion guidance only, no canonical review/release claim. Full exact lifecycle and producer composition below; current physicalCollectionBlockers still refuses any task/container/VM/NBD/mount/unknown inventory.
+
+interface CollectionOperations {
+  idle(scope: 'git' | 'workspace'): Promise<void>;
+  state(): Promise<string>;
+  identity(): Promise<{ pid: number; cgroup: string }>;
+  stop(): Promise<void>;
+  start(): Promise<void>;
+  restored(): Promise<boolean>;
+  closed(original: { pid: number; cgroup: string } | null): Promise<boolean>;
+  fence(): Promise<() => Promise<void>>;
+  disks(): Promise<string[]>;
+  hostFilesystemMounts(): Promise<string[]>;
+  collect(): Promise<{ removed: string[]; remainingLeaves: number }>;
+  collectGit?(): Promise<GitCacheCollectionResult>;
+  finish(): Promise<void>;
+}
+
+export async function runFencedCollection(operations: CollectionOperations) {
+  const state = await operations.state();
+  if (!['active', 'inactive', 'failed'].includes(state)) return { collected: false, removed: [], reason: 'broker_transitioning', unresolved: { activeState: state.slice(0, 64) } };
+  const original = state === 'active' ? await operations.identity() : null;
+  let release: (() => Promise<void>) | undefined;
+  try {
+    if (state === 'active') await operations.stop();
+    // systemd stop is the admission close. The broker drains only its owned idle
+    // warm pool before exiting; this shared/exclusive flock also fences a racing
+    // broker start until collection and the restoration request are complete.
+    try { release = await operations.fence(); }
+    catch (error) { if (error instanceof CollectionRefusal) return { collected: false, removed: [], reason: error.reason, unresolved: error.unresolved }; throw error; }
+    if (!await operations.closed(original)) return { collected: false, removed: [], reason: 'broker_not_closed', unresolved: { originalPid: original?.pid ?? null,
+      originalCgroup: original?.cgroup ?? null, processOrCgroupRemains: true } };
+    try { await operations.idle('git'); }
+    catch (error) { if (error instanceof CollectionRefusal) return { collected: false, removed: [], reason: error.reason, unresolved: error.unresolved }; throw error; }
+    const gitCache = operations.collectGit ? await operations.collectGit() : undefined;
+    const retainedDisks = await operations.disks();
+    const hostFilesystemMounts = await operations.hostFilesystemMounts();
+    if (retainedDisks.length || hostFilesystemMounts.length) return { collected: false, removed: [], ...(gitCache ? { gitCache } : {}), retainedDisks: retainedDisks.slice(0, 32),
+      retainedDiskCount: retainedDisks.length, retainedDisksTruncated: retainedDisks.length > 32,
+      hostFilesystemMounts: hostFilesystemMounts.slice(0, 64), hostFilesystemMountCount: hostFilesystemMounts.length,
+      hostFilesystemMountsTruncated: hostFilesystemMounts.length > 64,
+      reason: retainedDisks.length ? 'overlay_custody_retained' : 'host_mount_retained' };
+    await operations.idle('workspace');
+    return { collected: true, ...await operations.collect(), ...(gitCache ? { gitCache } : {}), retainedDisks: [], hostFilesystemMounts: [] };
+  } finally {
+    try {
+      await operations.finish();
+    } finally {
+      try {
+        // start() queues a no-blocking systemd start while the exclusive lock is
+        // still held. The starting broker cannot admit requests until release.
+        if (state === 'active') await operations.start();
+      } finally {
+        await release?.();
+        if (state === 'active' && !await operations.restored()) throw new Error('Sandbox broker prior active state was not restored.');
+      }
+    }
+  }
+}
+
+export async function collectWorkspaceCache(configuration: SandboxBrokerConfiguration) {
+  let catalog: WorkspaceCatalog | undefined;
+  const ensureCatalog = async () => {
+    if (!catalog) {
+      await initializeWorkspaceStorage();
+      catalog = new WorkspaceCatalog(join(workspaceStorageRoot, 'catalog.db'));
+    }
+    return catalog;
+  };
+  const broker = brokerUnit;
+  const idle = async (scope: 'git' | 'workspace') => {
+    const workspaceCatalog = await ensureCatalog(), snapshot = workspaceCatalog.collectionState();
+    const [physical, jobs, leaseEntries, candidates, results] = await Promise.all([
+      inspectSandboxInventory(configuration), unfinishedJobSnapshot(), entries('leases'), entries('candidates'), entries('results'),
+    ]);
+    const tasks = physical.confirmation.tasks ?? '', containers = physical.confirmation.containers ?? '';
+    const physicalBlockers = physicalCollectionBlockers(physical);
+    try {
+      if (scope === 'git') assertGitCollectionIdle(tasks, snapshot.builds, jobs.count);
+      else assertCollectionIdle(tasks, snapshot.activeLeases, snapshot.builds, jobs.count, containers);
+      if (physicalBlockers) throw new Error('Physical sandbox inventory is unresolved.');
+    } catch {
+      throw new CollectionRefusal('resources_not_idle', { ...(physicalBlockers ?? { tasks: [], containers: [] }), activeLeases: snapshot.activeLeases,
+        retainedOverlayEntryCount: leaseEntries.length, retainedOverlayEntries: leaseEntries.slice(0, 32), builds: snapshot.builds,
+        unfinishedSourceJobs: jobs.entries, retainedCandidateCount: candidates.length, retainedCandidates: candidates.slice(0, 32),
+        retainedResultCount: results.length, retainedResults: results.slice(0, 32),
+        remainingWorkspaceLeaves: { entries: snapshot.leaves, boundedBatchLimit: 32, mayBeTruncated: snapshot.leaves.length === 32 } });
+    }
+  };
+  return await runFencedCollection({ idle,
+      state: () => run('/usr/bin/systemctl', ['show', broker, '--property=ActiveState', '--value']),
+      identity: brokerIdentity,
+      stop: async () => { await run('/usr/bin/systemctl', ['stop', broker]); },
+      start: async () => { await run('/usr/bin/systemctl', ['start', '--no-block', broker]); },
+      restored: async () => {
+        for (let attempt = 0; attempt < 120; attempt++) {
+          if (await run('/usr/bin/systemctl', ['show', broker, '--property=ActiveState', '--value']) === 'active') return true;
+          await delay(250);
+        }
+        return false;
+      },
+      closed: brokerCgroupEmpty,
+      fence: () => acquireCollectionFence('exclusive'),
+      // Even a detached unclassified disk may contain work or reference a base: preserve all ancestry.
+      disks: async () => [...(await entries('leases')).map(name => `lease:${name}`), ...(await entries('devices')).map(name => `device:${name}`)],
+      hostFilesystemMounts: workspaceMounts,
+      collectGit: async () => {
+        // Loop devices are global kernel custody. Any matching backing file is retained;
+        // malformed output or command failure denies collection instead of guessing.
+        const output = await run('/usr/sbin/losetup', ['--list', '--json', '--output', 'BACK-FILE']);
+        const parsed: unknown = JSON.parse(output);
+        if (!parsed || typeof parsed !== 'object' || !('loopdevices' in parsed) || !Array.isArray(parsed.loopdevices)) throw new Error('Loop device custody is uncertain.');
+        const loopFiles = parsed.loopdevices.map((entry: unknown) => {
+          if (!entry || typeof entry !== 'object' || !('back-file' in entry) || typeof entry['back-file'] !== 'string') throw new Error('Loop device custody is uncertain.');
+          return entry['back-file'];
+        });
+        return collectGitCacheBatch(workspaceStorageRoot, async path => {
+          if (await hostMountpoint(path)) return true;
+          const image = join(path, '..', 'objects.ext4');
+          return loopFiles.includes(image);
+        });
+      }, collect: async () => {
+    const workspaceCatalog = await ensureCatalog();
+    await privateDirectory(join(workspaceStorageRoot, 'images'));
+    const removed = await collectLeafBatch(workspaceCatalog, async id => {
+      const path = workspaceImagePath(id);
+      try {
+        const info = await lstat(path);
+        assertImageCustody(info);
+        await unlink(path);
+      } catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error; }
+      const directory = await open(join(workspaceStorageRoot, 'images'), 'r');
+      try { await directory.sync(); } finally { await directory.close(); }
+    });
+    return { removed, remainingLeaves: workspaceCatalog.collectionState().leaves.length };
+    }, finish: async () => { catalog?.close(); catalog = undefined; } });
+}
