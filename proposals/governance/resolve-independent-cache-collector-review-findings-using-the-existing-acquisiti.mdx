@@ -1,0 +1,97 @@
+---
+schemaVersion: treeseed.proposal/v1
+id: 891ea893-b892-4ea0-81ac-71b8255b518d
+projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+title: Resolve independent cache-collector review findings using the existing
+  acquisition fence
+request: "Existing Deployment834 and SDK429 remain authority. Original
+  proposal21bc6ba5 v7 / Decision4ee5fda3 produced exact Engineer
+  ae642361e81f08b0aef13a57ff26dcf5baba6d7c (parent68b6600f), now unchanged in
+  draft PR890 branchcodex/cache-maintenance834. Independent Reviewer
+  assignment_B5LSuT6T9spiODL6WMBakRoOKzFA-yMU / result3ef4f6f32744cbac771dd162
+  REQUESTS CHANGES: collectGitCacheBatch checks acquisition.lock then unlinks
+  cache image without exclusive ownership, racing acquireSourceBundle mkdir;
+  root enumeration silently filters non64hex entries. Discussion
+  send-9865fca11c3592b23ff6fd919e76c2f8 confirms existing exclusive mkdir
+  acquisition fence and uncertain-failure retention/recovery semantics in
+  baseline68b; discussion agents could not inspect ae attached source, so acting
+  and review must use exact ae context and inspect its full diff. Do not
+  reimplement the feature from68b or silently replace original product. Preserve
+  original requested-changes review/history and all UI8ca published
+  source/journals. Use genuine role-scoped estimates and ordinary
+  Engineer→independent Reviewer, shared portfolio-atlas group; no agent
+  selectors. Normal local fixed maintenance and UI review recovery remain
+  downstream integrator work only when host idle; no broad suite or browser
+  scenario claimed by code review."
+summary: Finish the real cache repair by preventing acquisition/reclamation
+  races and retaining uncertain root entries before activation.
+status: draft
+groupIds:
+  - portfolio-atlas
+objectiveRefs:
+  - commit: 9fc9807a4af6f9240ae4a13fa4012e4d87758526
+    id: deployment-core
+    model: objective
+    path: objectives/core.md
+    repository: repo_c6e08eb9721e363b
+    store: treedx
+evidenceRefs:
+  - store: git
+    model: repository
+    id: treeseed-ai/deployment
+    repository: treeseed-ai/deployment
+    commit: ae642361e81f08b0aef13a57ff26dcf5baba6d7c
+executionPlan:
+  workItems:
+    - id: fence-cache-reclamation-and-report-uncertain-entries
+      activity: acting
+      agentClass: engineer
+      workspace: git
+      review: required
+      maximumReviewCycles: 1
+      dependsOn: []
+      objective: Repair both actual independent Reviewer findings in exact ae642361
+        while retaining its original implementation and existing host
+        boundaries.
+      requestedPermissions:
+        content:
+          read:
+            - agent
+            - knowledge
+            - objective
+            - proposal
+            - decision
+          write: []
+        tools:
+          - source.read
+          - source.write
+          - verification
+      requiredCapabilities:
+        - treeseed.engineering.code-change
+      contextRefs:
+        - store: git
+          model: repository
+          id: treeseed-ai/deployment
+          repository: treeseed-ai/deployment
+          commit: ae642361e81f08b0aef13a57ff26dcf5baba6d7c
+      acceptanceCriteria:
+        - Use the existing atomic acquisition fence to exclude concurrent
+          acquisition throughout reclamation; retain final mount/loop/custody
+          rechecks. Preserve existing ownership/recovery authority rather than
+          invent another cache model, runner or arbitrary path operation.
+        - Keep fence ownership safe through success, denial, partial deletion
+          and uncertain error. Add a meaningful collector/acquisition race
+          regression and partial-failure retention checks using existing owning
+          tests. Do not release uncertain/live ownership or force/lazy unmount.
+        - Report and retain noncanonical or uncertain root entries rather than
+          silently filtering them or counting them reclaimed. Add focused
+          regression proving bytes and retained reasons are truthful. Preserve
+          original bundles, published Git products, source journals, results,
+          candidates, workspace overlays and unrelated data.
+        - Return a descendant exact Git commit with original ae and68b ancestry
+          retained and meaningful owning command evidence. Independent Reviewer
+          must assess exact revised candidate against original baseline and both
+          findings; downstream integrator activates only reviewed code and runs
+          supported real maintenance/UI8ca recovery when host idle. No
+          verification-only assignment or fabricated approval.
+---
