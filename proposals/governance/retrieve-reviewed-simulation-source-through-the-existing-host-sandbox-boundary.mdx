@@ -45,7 +45,7 @@ request: >-
   implementation remain downstream.
 summary: Unblock release of the actual approved UI chart product using a bounded
   exact-commit Git bundle export from existing private simulation custody.
-status: draft
+status: discussing
 groupIds:
   - portfolio-atlas
 objectiveRefs:
@@ -68,12 +68,29 @@ executionPlan:
       agentClass: engineer
       workspace: git
       review: required
-      maximumReviewCycles: 1
-      dependsOn: []
       objective: Implement a fixed local host sandbox export operation through the
         existing manager/supervisor and source journal custody, returning a
         bounded exact published-commit Git bundle with verifiable identity and
         digest. Leave API result/review authority at its canonical boundary.
+      estimate:
+        expectedSeconds: 1050
+        maximumSeconds: 1500
+        rationale: Based on the existing publication and source repository seams in the
+          attached deployment source commit, estimate 1,050 active seconds
+          expected and 1,500 maximum for the complete local export slice,
+          including implementation, focused tests, and closeout. Publication
+          already verifies and journals exact source/commit/digest after
+          teardown; a manager-owned export route and supervisor transport do not
+          appear in the targeted search. Work must add fixed journal-derived
+          ownership resolution, strict binding/path/identity checks, bounded Git
+          bundle generation and digest verification, transport semantics, and
+          hostile-case/native tests. Prior UI implementation (562.170 s) and
+          independent review (133.201 s) provide calibration; the added backend
+          custody and validation scope makes this slice larger. Actual UI
+          retrieval and independent review remain unverified acceptance
+          criteria, and SDK/CLI/API/MCP reuse is subsequent work.
+      maximumReviewCycles: 1
+      dependsOn: []
       requestedPermissions:
         content:
           read:
