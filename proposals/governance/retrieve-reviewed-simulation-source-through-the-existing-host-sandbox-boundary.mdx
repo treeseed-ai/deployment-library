@@ -1,0 +1,115 @@
+---
+schemaVersion: treeseed.proposal/v1
+id: 4d06411c-d5c0-41ee-8061-ed3762106927
+projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+title: Retrieve reviewed simulation source through the existing host sandbox boundary
+request: >-
+  Existing Issues treeseed-ai/deployment#834 and treeseed-ai/sdk#429 remain the
+  planning and delivery authority. Repair the real delivery blocker: UI Engineer
+  assignment_1WOXUn7Kz1j845WHUKBGA2XK9Z-nsCHC produced reviewed exact Git
+  c6b4649f6fa2e3ce06ab92f0a04db0fc6d8bab8f (base
+  f0ab91091fcb52e8f8e83746fe3438fa9345d410); independent Reviewer
+  assignment__wLBxQtOWs_do-1XCWCLTZDKgd9F0WCu approved
+  result-dfe51add25119e0762801097. The product is verified and published in
+  manager-private simulation storage, but no supported retrieval operation
+  exists. Normal user Git access is denied and assignments artifacts is a
+  disabled CLI catalog leaf. Do not reconstruct its patch, bypass private
+  custody, use sudo, or grant guests upstream credentials.
+
+
+  Coordinator and Deployment Architect discussion
+  send-86150ea550532ff262213bc33b460c7f recommend reusing the existing
+  Deployment Engineer, independent Reviewer, and Architect, subscribed to the
+  shared portfolio-atlas proposal group. Classes select work ownership; the
+  proposal has no individual targets. Inspect the current Deployment
+  manager/supervisor and source publication boundaries; estimate the complete
+  smallest local export slice below. Host journals bind sandbox, assignment,
+  provider, team, project, attempt, source and commit; they do NOT own API
+  result/review IDs. The operator obtains actual result/review from canonical
+  public API authority and submits exact host bindings. Do not invent missing
+  host review fields.
+
+
+  First slice: a fixed supported local host sandbox source-export operation
+  through the existing manager/supervisor, deriving the private Git location
+  from owned journal records and exporting a bounded verified Git bundle of the
+  exact published source commit. Reuse existing publication/custody utilities
+  and transport. No arbitrary private path input, new artifact store, new root
+  CLI hierarchy, or unrelated services. SDK/CLI exposure and remote API/MCP
+  reuse are subsequent small slices using this same owning operation. Preserve
+  the real failed observations and independent review. The current UI product is
+  the realistic retrieval case, not a fake assignment. Integrator may need the
+  minimum bootstrap boundary repair if simulation output retrieval prevents
+  retrieval of the repair itself; record that intervention explicitly and
+  continue governed implementation/review. UI release and Admin chart
+  implementation remain downstream.
+summary: Unblock release of the actual approved UI chart product using a bounded
+  exact-commit Git bundle export from existing private simulation custody.
+status: draft
+groupIds:
+  - portfolio-atlas
+objectiveRefs:
+  - store: treedx
+    model: objective
+    id: deployment-core
+    repository: repo_c6e08eb9721e363b
+    commit: 9fc9807a4af6f9240ae4a13fa4012e4d87758526
+    path: objectives/core.md
+evidenceRefs:
+  - store: git
+    model: repository
+    id: treeseed-ai/deployment
+    repository: treeseed-ai/deployment
+    commit: 68b6600f3a4885be8d2c4b5e80ae9f6b9e41aa14
+executionPlan:
+  workItems:
+    - id: local-sandbox-source-export
+      activity: acting
+      agentClass: engineer
+      workspace: git
+      review: required
+      maximumReviewCycles: 1
+      dependsOn: []
+      objective: Implement a fixed local host sandbox export operation through the
+        existing manager/supervisor and source journal custody, returning a
+        bounded exact published-commit Git bundle with verifiable identity and
+        digest. Leave API result/review authority at its canonical boundary.
+      requestedPermissions:
+        content:
+          read:
+            - agent
+            - knowledge
+            - objective
+            - proposal
+            - decision
+          write: []
+        tools:
+          - source.read
+          - source.write
+          - verification
+      requiredCapabilities:
+        - treeseed.engineering.code-change
+      contextRefs:
+        - store: git
+          model: repository
+          id: treeseed-ai/deployment
+          repository: treeseed-ai/deployment
+          commit: 68b6600f3a4885be8d2c4b5e80ae9f6b9e41aa14
+      acceptanceCriteria:
+        - The exact real published UI commit can be retrieved through the fixed
+          owning local host sandbox boundary as a Git bundle, with original
+          commit identity preserved; use existing source-publication and Git
+          utilities.
+        - Validate owned sandbox/assignment/provider/team/project/attempt and
+          exact published source/commit bindings from durable journals, with
+          completed teardown. Reject mismatches, unavailable or incomplete
+          publication, unsafe paths, malformed identities and oversized output.
+          No arbitrary path input or guest upstream permissions.
+        - Preserve canonical API result/review authority separately; never
+          invent host result/review IDs. Reuse existing manager/supervisor
+          transport and bounded response semantics, and keep SDK/CLI/API/MCP
+          follow-ups on this same backend primitive.
+        - Return exact Git commit and focused owning command evidence and obtain
+          independent Reviewer disposition. This is real product work; no
+          verification-only assignment. Retain unresolved checks honestly.
+---
