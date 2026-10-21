@@ -1,0 +1,276 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 175fff79457f00c4de9a3c0653c557cb
+discussionRef:
+  store: treedx
+  model: discussion
+  id: portfolio-atlas-team-building
+  path: discussions/portfolio-atlas-team-building.mdx
+  revision: 1
+  digest: sha256:14bd73d29b558086e659b7f3276c5d2dd9729966f4fe1a493615406b1772b14e
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: portfolio-atlas-team-building"
+discussionId: portfolio-atlas-team-building
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+  - reviewer
+recipientIds:
+  - architect
+  - reviewer
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-21T17:37:37.904Z
+---
+@deployment/architect @deployment/reviewer Real portfolio code-repair planning, Deployment834/SDK429. Actual accepted04eabfd9 v3 / Decision602c7dc9 Engineer pjc completed product9eddbc9eec86c2f3164ceb82aa2870bbe370637b, direct3440, measured509active seconds, build+30focused checks reported. Exact bundle retrieved SHA256d02b293ac331cbc6c1ee55e51bc57e3b65e7dd0dd45e05763573bae82753d9a7. Canonical independent Reviewer1iQd failed source_storage_full before inspection; do not count this discussion as canonical review. Engineer explicitly leaves process-level old-producer quiescence evidence pending and retains global unfinishedJobs barrier. Current native complete inventory17:18 had one idle owned warm sandbox/VM, no assignment VM; no quiescence is claimed. Original native collection failures were retained after three attempts; no fourth blind activation. Current host broker source exposes drainWarmPool() but server has no call or signal shutdown handler; collection first requires no guests before stopping broker. We need a minimal working operator maintenance path, retaining unknown usage, original jobs and overlay ancestry. Assess supplied actual9ed source below, distinguish supplied bytes from attached older checkout. Does this product actually let the operator safely reclaim cold Git caches given historical unfinished journals and the idle warm VM? If not, recommend the smallest concrete lifecycle/code slice for draining only owned warm capacity and proving original producer stop, without fabricating stopped journal states or weakening active-assignment/unknown-custody gates. Should we request changes/continuation on04 or create a distinct owning maintenance proposal? Recommend scope and team roles; do not invent estimates, approvals, native observations or a verification-only task. This is substantive planning of the real cache maintenance implementation needed to unblock UI/Admin/Reviewer delivery.
+
+Exact9ed stable fence source:
+import { lstat, mkdir, realpath, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+
+export interface SourceCacheFenceOwner {
+  jobId: string;
+  cacheId: string;
+  pid: number;
+  operation: 'acquisition' | 'collection';
+  assignmentId?: string;
+  authorizationId?: string;
+}
+
+export async function assertPrivateSourceFence(path: string) {
+  const info = await lstat(path);
+  if (!info.isDirectory() || info.uid !== process.getuid?.() || (info.mode & 0o077) !== 0 || await realpath(path) !== path) {
+    throw new Error('Source cache fence custody is invalid.');
+  }
+  return info;
+}
+
+export async function claimSourceCacheFence(root: string, cacheId: string, owner: SourceCacheFenceOwner) {
+  if (!/^[a-f0-9]{64}$/u.test(cacheId) || owner.cacheId !== cacheId
+    || !/^[a-f0-9-]{36}$/u.test(owner.jobId) || !Number.isSafeInteger(owner.pid) || owner.pid < 2
+    || !['acquisition', 'collection'].includes(owner.operation)) throw new Error('Invalid source cache fence identity.');
+  const directory = join(root, 'git-fences');
+  await mkdir(directory, { recursive: true, mode: 0o700 });
+  await assertPrivateSourceFence(directory);
+  const fence = join(directory, `${cacheId}.lock`);
+  await mkdir(fence, { mode: 0o700 });
+  try {
+    await writeFile(join(fence, 'job.json'), JSON.stringify(owner), { mode: 0o600, flag: 'wx' });
+    return fence;
+  } catch (error) {
+    // A fence with incomplete custody is deliberately retained for inspection.
+    throw error;
+  }
+}
+
+Exact9ed recovery source:
+import { execFile } from 'node:child_process';
+import { lstat, mkdir, readFile, readdir, realpath, rm } from 'node:fs/promises';
+import { join } from 'node:path';
+import { promisify } from 'node:util';
+import { assertPrivateSourceFence } from './source-cache-fence.js';
+const exec = promisify(execFile);
+export interface CacheRecoveryOperations {
+  alive(pid: number): boolean;
+  run(command: string, args: string[]): Promise<string>;
+}
+const production: CacheRecoveryOperations = {
+  alive(pid) {
+    try { process.kill(pid, 0); return true; }
+    catch (error) { if ((error as NodeJS.ErrnoException).code === 'ESRCH') return false; throw error; }
+  },
+  async run(command, args) {
+    return (await exec(command, args, { encoding: 'utf8', timeout: 30_000, maxBuffer: 65_536 })).stdout.trim();
+  },
+};
+async function owned(path: string, directory: boolean) {
+  const info = await lstat(path);
+  if ((directory ? !info.isDirectory() : !info.isFile() || info.nlink !== 1)
+    || info.uid !== process.getuid?.() || info.mode & 0o077 || await realpath(path) !== path) {
+    throw new Error('Source cache recovery custody is invalid.');
+  }
+  return info;
+}
+/** Recover only a trusted-host fetch fence after its owning process is gone.
+ * Never kills a process, mounts guest content, or removes source/work/candidate images. */
+export async function recoverSourceCacheFence(cache: string, operations = production, stableFence?: string) {
+  if (stableFence) await assertPrivateSourceFence(stableFence);
+  const lock = join(cache, 'acquisition.lock');
+  const exists = await lstat(lock).catch(error => {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+    return null;
+  });
+  if (!exists) {
+    const cacheInfo = await lstat(cache).catch(error => {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+      return null;
+    });
+    if (!cacheInfo) return true;
+  }
+  if (exists) {
+    await owned(cache, true); await owned(lock, true);
+    const journal = join(lock, 'job.json'), info = await owned(journal, false);
+    if (info.size > 4096) throw new Error('Source cache recovery journal exceeds its bound.');
+    const job = JSON.parse(await readFile(journal, 'utf8')) as { pid?: unknown; jobId?: unknown };
+    if (!Number.isSafeInteger(job.pid) || Number(job.pid) < 2 || !/^[a-f0-9-]{36}$/u.test(String(job.jobId))) {
+      throw new Error('Source cache recovery owner is invalid.');
+    }
+    if (operations.alive(Number(job.pid))) return false;
+  }
+  await owned(cache, true);
+  const mount = join(cache, 'mounted'), image = join(cache, 'objects.ext4');
+  const imageInfo = await lstat(image).catch(error => {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+    return null;
+  });
+  if (imageInfo) await owned(image, false);
+  const mountInfo = await lstat(mount).catch(error => {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+    return null;
+  });
+  if (mountInfo) await owned(mount, true);
+  let device = '';
+  try { device = await operations.run('/usr/bin/findmnt', ['--noheadings','--output','SOURCE','--mountpoint',mount]); }
+  catch (error) { if ((error as { code?: unknown }).code !== 1) throw error; }
+  if (device) {
+    if (!/^\/dev\/loop[0-9]+$/u.test(device)
+      || await operations.run('/usr/sbin/losetup', ['--noheadings','--output','BACK-FILE',device]) !== image) {
+      throw new Error('Source cache recovery mount ownership is uncertain.');
+    }
+    const currentMount = await owned(mount, true);
+    const currentImage = await owned(image, false);
+    if (!mountInfo || currentMount.dev !== mountInfo.dev || currentMount.ino !== mountInfo.ino
+      || !imageInfo || currentImage.dev !== imageInfo.dev || currentImage.ino !== imageInfo.ino) {
+      throw new Error('Source cache recovery ownership changed.');
+    }
+    await operations.run('/usr/bin/umount', [mount]); // busy filesystem remains fenced
+    let remainsMounted = '';
+    try { remainsMounted = await operations.run('/usr/bin/findmnt', ['--noheadings','--output','SOURCE','--mountpoint',mount]); }
+    catch (error) { if ((error as { code?: unknown }).code !== 1) throw error; }
+    if (remainsMounted) throw new Error('Source cache recovery mount is still present.');
+  }
+  if (await operations.run('/usr/sbin/losetup', ['--associated', image])) {
+    throw new Error('Source cache recovery still has an attached loop device.');
+  }
+  const creating = `${image}.creating`;
+  const unfinished = await lstat(creating).catch(error => {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+    return null;
+  });
+  if (unfinished) { await owned(creating, false); await rm(creating); }
+  if (exists) await rm(lock, { recursive: true }); // exact root-owned fetch journal, never execution work
+  if (imageInfo) {
+    const current = await owned(image, false);
+    if (current.dev !== imageInfo.dev || current.ino !== imageInfo.ino) throw new Error('Source cache image ownership changed.');
+  }
+  return true;
+}
+
+/** Recover a stable owner only while it is exclusively marked as being recovered.
+ * Acquirers and collectors see the stable directory until every ownership check passes. */
+export async function recoverStableSourceCacheFence(root: string, cacheId: string, operations = production) {
+  if (!/^[a-f0-9]{64}$/u.test(cacheId)) throw new Error('Invalid source cache fence identity.');
+  const fence = join(root, 'git-fences', `${cacheId}.lock`);
+  let initial;
+  try { initial = await assertPrivateSourceFence(fence); }
+  catch (error) { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return true; throw error; }
+  const recovery = join(fence, 'recovery.lock');
+  try { await mkdir(recovery, { mode: 0o700 }); }
+  catch (error) { if ((error as NodeJS.ErrnoException).code === 'EEXIST') return false; throw error; }
+  try {
+    const names = await readdir(fence);
+    if (names.some(name => name !== 'job.json' && name !== 'recovery.lock')) throw new Error('Source cache recovery fence custody is invalid.');
+    const journal = join(fence, 'job.json'), info = await owned(journal, false);
+    if (info.size > 4096) throw new Error('Source cache recovery journal exceeds its bound.');
+    const contents = await readFile(journal, 'utf8');
+    const owner = JSON.parse(contents) as { cacheId?: unknown; pid?: unknown; jobId?: unknown; operation?: unknown };
+    const record = owner as Record<string, unknown>;
+    if (Object.keys(record).some(key => !['jobId', 'cacheId', 'pid', 'operation', 'assignmentId', 'authorizationId'].includes(key))
+      || (record.assignmentId !== undefined && typeof record.assignmentId !== 'string')
+      || (record.authorizationId !== undefined && typeof record.authorizationId !== 'string')
+      || owner.cacheId !== cacheId || !Number.isSafeInteger(owner.pid) || Number(owner.pid) < 2
+      || !/^[a-f0-9-]{36}$/u.test(String(owner.jobId)) || !['acquisition', 'collection'].includes(String(owner.operation))) {
+      throw new Error('Source cache recovery owner is invalid.');
+    }
+    if (operations.alive(Number(owner.pid))) return false;
+    const cache = join(root, 'git', cacheId);
+    const cacheInfo = await lstat(cache).catch(error => { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined; throw error; });
+    if (cacheInfo) {
+      await recoverSourceCacheFence(cache, operations, fence);
+    }
+    // Bind deletion to the exact fence directory and journal observed above.
+    const current = await assertPrivateSourceFence(fence);
+    const currentJournal = await readFile(journal, 'utf8');
+    if (current.dev !== initial.dev || current.ino !== initial.ino || currentJournal !== contents) {
+      throw new Error('Source cache recovery owner changed.');
+    }
+    await rm(fence, { recursive: true });
+    return true;
+  } finally {
+    // If the fence still exists, release only our private recovery marker.
+    await rm(recovery, { recursive: true }).catch(error => {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+    });
+  }
+}
+
+Exact9ed native collector source:
+export async function collectWorkspaceCache(configuration: SandboxBrokerConfiguration) {
+  await initializeWorkspaceStorage();
+  const catalog = new WorkspaceCatalog(join(workspaceStorageRoot, 'catalog.db'));
+  const broker = 'treeseed-sandbox-broker.service';
+  const idle = async (scope: 'git' | 'workspace') => {
+    const snapshot = catalog.collectionState();
+    const tasks = await run('/usr/bin/ctr', ['--address', configuration.containerdAddress,
+      '--namespace', configuration.namespace, 'tasks', 'list', '--quiet']);
+    if (scope === 'git') {
+      // Keep the pre-stable-fence producer transition barrier until every
+      // historical source job is demonstrably stopped.
+      assertGitCollectionIdle(tasks, snapshot.builds);
+      assertCollectionIdle('', 0, 0, await unfinishedJobs());
+    } else assertCollectionIdle(tasks, snapshot.activeLeases, snapshot.builds, await unfinishedJobs());
+  };
+  try {
+    return await runFencedCollection({ idle,
+      state: () => run('/usr/bin/systemctl', ['show', broker, '--property=ActiveState', '--value']),
+      stop: async () => { await run('/usr/bin/systemctl', ['stop', broker]); },
+      start: async () => { await run('/usr/bin/systemctl', ['start', broker]); },
+      // Even a detached unclassified disk may contain work or reference a base: preserve all ancestry.
+      disks: () => entries('leases'),
+      collectGit: async () => {
+        // Loop devices are global kernel custody. Any matching backing file is retained;
+        // malformed output or command failure denies collection instead of guessing.
+        const output = await run('/usr/sbin/losetup', ['--list', '--json', '--output', 'BACK-FILE']);
+        const parsed: unknown = JSON.parse(output);
+        if (!parsed || typeof parsed !== 'object' || !('loopdevices' in parsed) || !Array.isArray(parsed.loopdevices)) throw new Error('Loop device custody is uncertain.');
+        const loopFiles = parsed.loopdevices.map((entry: unknown) => {
+          if (!entry || typeof entry !== 'object' || !('back-file' in entry) || typeof entry['back-file'] !== 'string') throw new Error('Loop device custody is uncertain.');
+          return entry['back-file'];
+        });
+        return collectGitCacheBatch(workspaceStorageRoot, async path => {
+          if (await hostMountpoint(path)) return true;
+          const image = join(path, '..', 'objects.ext4');
+          return loopFiles.includes(image);
+        });
+      }, collect: async () => {
+    await privateDirectory(join(workspaceStorageRoot, 'images'));
+    const removed = await collectLeafBatch(catalog, async id => {
+      const path = workspaceImagePath(id);
+      try {
+        const info = await lstat(path);
+        assertImageCustody(info);
+        await unlink(path);
+      } catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error; }
+      const directory = await open(join(workspaceStorageRoot, 'images'), 'r');
+      try { await directory.sync(); } finally { await directory.close(); }
+    });
+    return { removed, remainingLeaves: catalog.collectionState().leaves.length };
+    } });
+  } finally { catalog.close(); }
+}
