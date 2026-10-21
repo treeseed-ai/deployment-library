@@ -1,0 +1,199 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: c18f22bba49b8e9b8a843378939392c6
+discussionRef:
+  store: treedx
+  model: discussion
+  id: portfolio-atlas-team-building
+  path: discussions/portfolio-atlas-team-building.mdx
+  revision: 1
+  digest: sha256:14bd73d29b558086e659b7f3276c5d2dd9729966f4fe1a493615406b1772b14e
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: portfolio-atlas-team-building"
+discussionId: portfolio-atlas-team-building
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - reviewer
+  - architect
+recipientIds:
+  - architect
+  - reviewer
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-21T22:27:12.667Z
+---
+@deployment/reviewer @deployment/architect Self-contained answer to the concrete ancestry concern on53a233612. The two storage types have separate owning paths: Git metadata is git/<cacheId>/objects.ext4, used ONLY by trusted-host Git to make standalone immutable bundles; guest overlays are QCOW2 backed ONLY by images/<sourceWorkspaceId>.qcow2. The declared virtual filesystem never exposes the Git metadata volume to guests. Actual cold-source failure happens allocating the Git metadata file, so recovering these disposable files need not delete retained work. Current lifecycle stops broker, acquires exclusive lifetime producer fence, proves old cgroup empty and complete no task/container/VM/NBD/mount inventory, checks unfinished source jobs/builds, and only then invokes below collectGitCacheBatch; overlays still block QCOW2 collection afterwards. No claim of whole-review approval or native reclamation; this is exact source guidance for the actual blocker. Please determine whether the supplied owning construction proves absence of a Git-volume backing reference, and identify remaining concrete code gaps rather than infer unavailable native results. Full Git collector, exact guest-disk constructor and exact metadata-volume writer follow.
+
+export interface GitCacheCollectionResult {
+  examinedBytes: number;
+  reclaimedBytes: number;
+  reclaimedCaches: string[];
+  retained: Array<{ cacheId: string; reason: string }>;
+}
+
+/** Reclaims only fixed, private cache volumes after the caller has fenced every source worker. */
+export async function collectGitCacheBatch(root: string, isMounted: (path: string) => Promise<boolean>, limit = 32): Promise<GitCacheCollectionResult> {
+  if (!Number.isSafeInteger(limit) || limit < 1 || limit > 32) throw new Error('Invalid source collection limit.');
+  const git = join(root, 'git');
+  const result: GitCacheCollectionResult = { examinedBytes: 0, reclaimedBytes: 0, reclaimedCaches: [], retained: [] };
+  const gitInfo = await lstat(git).catch(error => { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined; throw error; });
+  if (!gitInfo) return result;
+  await privateDirectory(git, process.getuid?.());
+  const entries = await readdir(git);
+  for (const cacheId of entries.slice(0, limit)) {
+    if (!/^[a-f0-9]{64}$/u.test(cacheId)) {
+      result.retained.push({ cacheId, reason: 'noncanonical_cache_entry' });
+      continue;
+    }
+    const cache = join(git, cacheId);
+    await privateDirectory(cache, process.getuid?.());
+    const names = await readdir(cache);
+    const lock = join(cache, 'acquisition.lock');
+    if (names.includes('acquisition.lock')) { result.retained.push({ cacheId, reason: 'acquisition_fence_present_or_unknown' }); continue; }
+    if (names.some(name => name !== 'objects.ext4' && name !== 'mounted')) {
+      result.retained.push({ cacheId, reason: 'unexpected_cache_custody' }); continue;
+    }
+    const image = join(cache, 'objects.ext4'), mount = join(cache, 'mounted');
+    const imageInfo = await lstat(image).catch(error => { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined; throw error; });
+    if (!imageInfo) { result.retained.push({ cacheId, reason: 'cache_volume_missing' }); continue; }
+    if (!imageInfo.isFile() || imageInfo.uid !== process.getuid?.() || imageInfo.nlink !== 1 || (imageInfo.mode & 0o222)
+      || (imageInfo.mode & 0o077) || await realpath(image) !== image) throw new Error('Source cache image custody changed.');
+    const allocatedBytes = imageInfo.blocks * 512;
+    if (!Number.isSafeInteger(allocatedBytes)) throw new Error('Source cache image size is uncertain.');
+    result.examinedBytes += allocatedBytes;
+    // mkdir is the same atomic fence used by acquisition. Hold it across every
+    // custody recheck and unlink so acquisition cannot recreate the image.
+    try { await mkdir(lock, { mode: 0o700 }); }
+    catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'EEXIST') { result.retained.push({ cacheId, reason: 'acquisition_fence_present_or_unknown' }); continue; }
+      throw error;
+    }
+    let keepFence = true;
+    try {
+      await writeFile(join(lock, 'job.json'), JSON.stringify({ jobId: randomUUID(), pid: process.pid }), { mode: 0o600, flag: 'wx' });
+      if (await isMounted(mount)) { result.retained.push({ cacheId, reason: 'cache_mount_present_or_unknown' }); keepFence = false; continue; }
+      const mountInfo = await lstat(mount).catch(error => { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined; throw error; });
+      if (mountInfo && (!mountInfo.isDirectory() || mountInfo.uid !== process.getuid?.() || mountInfo.mode & 0o077 || await realpath(mount) !== mount)) {
+        result.retained.push({ cacheId, reason: 'cache_mount_custody_uncertain' }); keepFence = false; continue;
+      }
+      if (mountInfo && (await readdir(mount)).length) { result.retained.push({ cacheId, reason: 'cache_mount_not_empty' }); keepFence = false; continue; }
+      // Recheck mount custody immediately before unlink while holding the fence.
+      if (await isMounted(mount)) { result.retained.push({ cacheId, reason: 'cache_mount_present_or_unknown' }); keepFence = false; continue; }
+      await unlink(image);
+      if (mountInfo) { const directory = await open(mount, 'r'); try { await directory.sync(); } finally { await directory.close(); } }
+      const directory = await open(cache, 'r'); try { await directory.sync(); } finally { await directory.close(); }
+      result.reclaimedBytes += allocatedBytes;
+      result.reclaimedCaches.push(cacheId);
+      keepFence = false;
+    } catch {
+      result.retained.push({ cacheId, reason: 'cache_reclamation_uncertain' });
+    } finally {
+      // Keep ownership on any uncertain/partial deletion; recovery validates
+      // this journal and releases it only after proving the owner stopped.
+      if (!keepFence) await rm(lock, { recursive: true });
+    }
+  }
+  return result;
+}
+
+
+export function workspaceImagePath(id: string) {
+	if (!/^[a-f0-9]{64}$/u.test(id)) throw new Error('Invalid workspace image identity.');
+	return join(workspaceStorageRoot, 'images', `${id}.qcow2`);
+}
+
+/** Create a new writable disposable disk. Neither analysis nor work writes to the backing image. */
+export async function createWorkspaceDisk(baseImageId: string | null, virtualBytes: number) {
+	if (!Number.isSafeInteger(virtualBytes) || virtualBytes < 67_108_864 || virtualBytes > 137_438_953_472) throw new Error('Invalid workspace disk quota.');
+	await initializeWorkspaceStorage();
+	for (const name of ['images', 'devices', 'leases']) await privateDirectory(join(workspaceStorageRoot, name));
+	const id = `workspace-lease-${randomUUID()}`, directory = join(workspaceStorageRoot, 'leases', id);
+	await mkdir(directory, { mode: 0o700 });
+	const image = join(directory, 'work.qcow2');
+	if (baseImageId) {
+		const base = workspaceImagePath(baseImageId), details = await lstat(base);
+		if (!details.isFile() || details.uid !== 0 || (details.mode & 0o222) !== 0) throw new Error('Workspace base is not immutable manager custody.');
+		const info = JSON.parse(await run('/usr/bin/qemu-img', ['info', '--output=json', '-f', 'qcow2', base])) as Record<string, unknown>;
+		if (!Number.isSafeInteger(info['virtual-size']) || Number(info['virtual-size']) > virtualBytes) throw new Error('Workspace base exceeds its disk quota.');
+		await run('/usr/bin/qemu-img', ['create', '-f', 'qcow2', '-F', 'qcow2', '-b', base, image]);
+	} else {
+		const raw = join(directory, 'empty.raw');
+		await run('/usr/bin/truncate', ['--size', String(virtualBytes), raw]);
+		// This filesystem is newly created empty, never a guest-modified filesystem mounted on the host.
+		await run('/usr/sbin/mkfs.ext4', ['-q', '-F', '-E', 'root_owner=65532:65532', raw]);
+		await run('/usr/bin/qemu-img', ['convert', '-f', 'raw', '-O', 'qcow2', raw, image]);
+		await rm(raw);
+	}
+	await chmod(image, 0o600);
+	return { id, directory, image };
+}
+
+async function absent(path: string) {
+	try { await stat(path); return false; }
+	catch (error) { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return true; throw error; }
+}
+
+
+import { execFile } from 'node:child_process';
+import { lstat, mkdir, open, realpath, rename, statfs } from 'node:fs/promises';
+import { join } from 'node:path';
+import { promisify } from 'node:util';
+
+const exec = promisify(execFile);
+export interface SourceCacheVolumeOperations {
+  run(command: string, args: string[]): Promise<string>;
+}
+const operations: SourceCacheVolumeOperations = {
+  run: async (command, args) => (await exec(command, args, { timeout: 120_000, maxBuffer: 65_536,
+    encoding: 'utf8', env: { PATH: '/usr/sbin:/usr/bin:/sbin:/bin' } })).stdout.trim(),
+};
+export function sourceCacheVolumeBytes(bundleLimit: number) {
+  if (!Number.isSafeInteger(bundleLimit) || bundleLimit < 1 || bundleLimit > 8_589_934_592) throw new Error('Invalid source cache quota.');
+  return Math.ceil((bundleLimit * 2 + 67_108_864) / 4096) * 4096;
+}
+
+/** Trusted-host Git metadata only. This filesystem is NEVER exposed to a guest.
+ * A fixed, preallocated filesystem bounds all fetch descendants and aggregate files,
+ * unlike RLIMIT_FSIZE or a post-fetch size check. Caller holds the acquisition fence. */
+export async function withSourceCacheVolume<T>(cache: string, bundleLimit: number,
+  action: (directory: string) => Promise<T>, commands = operations): Promise<T> {
+  const bytes = sourceCacheVolumeBytes(bundleLimit), info = await lstat(cache);
+  if (!info.isDirectory() || info.uid !== process.getuid?.() || (info.mode & 0o077) || await realpath(cache) !== cache) throw new Error('Unsafe source cache custody.');
+  const image = join(cache, 'objects.ext4'), mount = join(cache, 'mounted');
+  await mkdir(mount, { mode: 0o700 }).catch(error => { if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error; });
+  const mounted = await lstat(mount);
+  if (!mounted.isDirectory() || mounted.uid !== process.getuid?.() || (mounted.mode & 0o077) || await realpath(mount) !== mount) throw new Error('Unsafe source cache mount.');
+  const prior = await lstat(image).catch(error => { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error; return undefined; });
+  if (prior) {
+    if (!prior.isFile() || prior.nlink !== 1 || prior.uid !== process.getuid?.() || (prior.mode & 0o077)
+      || prior.size !== bytes || await realpath(image) !== image) throw new Error('Source cache quota/custody changed; explicit recovery required.');
+  } else {
+    const available = await statfs(cache);
+    if (available.bavail * available.bsize < bytes + bundleLimit + 268_435_456) {
+      // Only this rejection proves no allocation command or fetch descendant has started.
+      throw Object.assign(new Error('Source cache storage admission is full; reclaim inactive caches before retrying.'), { code: 'SOURCE_CACHE_STORAGE_FULL' });
+    }
+    const temporary = `${image}.creating`, handle = await open(temporary, 'wx', 0o600); await handle.close();
+    // Incomplete creation is fenced, never reinterpreted as an initialized filesystem.
+    await commands.run('/usr/bin/fallocate', ['--length', String(bytes), temporary]);
+    await commands.run('/usr/sbin/mkfs.ext4', ['-q', '-F', '-m', '0', temporary]);
+    const file = await open(temporary, 'r'); try { await file.sync(); } finally { await file.close(); }
+    await rename(temporary, image);
+    const parent = await open(cache, 'r'); try { await parent.sync(); } finally { await parent.close(); }
+  }
+  await commands.run('/usr/bin/mount', ['--types', 'ext4', '--options', 'loop,nodev,nosuid,noexec', image, mount]);
+  try { return await action(mount); }
+  finally {
+    // Never lazy/force unmount: descendants still writing must retain the fence.
+    const device = await commands.run('/usr/bin/findmnt', ['--noheadings', '--output', 'SOURCE', '--mountpoint', mount]);
+    if (!/^\/dev\/loop[0-9]+$/u.test(device)
+      || await commands.run('/usr/sbin/losetup', ['--noheadings', '--output', 'BACK-FILE', device]) !== image) throw new Error('Source cache mount ownership is uncertain.');
+    await commands.run('/usr/bin/umount', [mount]);
+  }
+}
