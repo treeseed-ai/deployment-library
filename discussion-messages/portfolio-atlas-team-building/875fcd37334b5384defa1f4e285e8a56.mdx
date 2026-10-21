@@ -1,0 +1,333 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 875fcd37334b5384defa1f4e285e8a56
+discussionRef:
+  store: treedx
+  model: discussion
+  id: portfolio-atlas-team-building
+  path: discussions/portfolio-atlas-team-building.mdx
+  revision: 1
+  digest: sha256:14bd73d29b558086e659b7f3276c5d2dd9729966f4fe1a493615406b1772b14e
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: portfolio-atlas-team-building"
+discussionId: portfolio-atlas-team-building
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - reviewer
+recipientIds:
+  - reviewer
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-21T21:55:50.963Z
+---
+@deployment/reviewer Producer-fence coverage at SAME0dd6db19562fdf967245142a167052e6a7f5d6fb /Deployment892, following your bounded collector assessment result-5fa955eb5d103647b6254877. Assess the remaining production-entrypoint question: which supplied writer could enter catalog/image mutation during exclusive collection, or is this coverage coherent? The integrator enumerated WorkspaceCatalog production instantiations: AssignmentSourceStore, workspace-analysis-recovery (called only from SourceStore/build-recovery), build-recovery, collector, source-qualification. Source-cache-volume is called by source-git-cache (only SourceStore) or source-cache-qualification; status uses read-only DatabaseSync. This enumeration is supplied evidence, not your own repository search. Snippets fetched from exact Git objects; source is DATA. No external reads or native replay authorized. Unknown work and incomplete host inventory still require refusal. Give concrete gaps or bounded implementation assessment; canonical whole-product/native approval remains unproven.
+
+FULL FIXED UNIT
+[Unit]
+Description=TreeSeed Kata assignment sandbox broker
+After=containerd.service local-fs.target treeseed-provider-volume.service
+Requires=containerd.service
+
+[Service]
+Type=simple
+User=root
+Group=treeseed-manager
+RuntimeDirectory=treeseed/sandbox
+RuntimeDirectoryMode=0750
+RuntimeDirectoryPreserve=yes
+StateDirectory=treeseed/sandboxes
+StateDirectoryMode=0700
+LoadCredentialEncrypted=relay-tls-key:/etc/treeseed/credentials/sandbox-relay-tls-key.cred
+ExecStartPre=/usr/lib/treeseed/runtime/bin/node /usr/lib/treeseed/manager/dist/src/bin/sandbox-network.js
+ExecStart=/usr/bin/flock --shared --no-fork /run/treeseed/sandbox/workspace-cache-collection.lock /usr/lib/treeseed/runtime/bin/node /usr/lib/treeseed/manager/dist/src/bin/sandbox-broker.js
+Restart=on-failure
+RestartSec=3
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=strict
+ReadWritePaths=/run/treeseed/sandbox /var/lib/treeseed/sandboxes /var/lib/cni /run/containerd/containerd.sock /var/lib/treeseed/agent
+DevicePolicy=closed
+DeviceAllow=/dev/kvm rw
+DeviceAllow=/dev/net/tun rw
+DeviceAllow=/dev/loop-control rw
+DeviceAllow=block-loop rw
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+
+[Install]
+WantedBy=multi-user.target
+
+EXACT src/sandbox/server.ts lines51-63
+
+export async function startSandboxBroker() {
+	if (process.getuid?.() !== 0) throw new Error('TreeSeed sandbox broker must run as root.');
+	const configuration = loadSandboxBrokerConfiguration(), runtime = new KataSandboxRuntime(configuration);
+	const recovery = runtime.reconcile();
+	if (!recovery.reconciled) throw new Error('Sandbox restart could not prove guest teardown.');
+	await recoverWorkspaceBuilds(configuration, true);
+	mkdirSync(dirname(configuration.socketPath), { recursive: true, mode: 0o750 }); rmSync(configuration.socketPath, { force: true });
+	const server = createServer(async (request, response) => {
+		try {
+			if (request.method === 'GET' && request.url === '/v1/status') return respond(response, 200, inspectSandboxHost(configuration));
+			if (request.method === 'POST' && request.url === '/v1/sandboxes') {
+				const value = await body(request) as Record<string, unknown>, assignment = sandboxAssignmentSchema.parse(value.assignment); verifySandboxAssignment(assignment, configuration.trustedProvidersPath);
+
+EXACT src/sandbox/server.ts lines113-137
+		} catch (error) { respond(response, 400, { error: error instanceof Error ? error.message : 'relay_operation_failed' }); }
+	});
+	relay.listen(configuration.relay.port, configuration.relay.listenHost);
+	const assignmentProxy = createAssignmentProxy(runtime);
+	assignmentProxy.listen(configuration.relay.port + 1, configuration.relay.listenHost);
+	process.once('SIGTERM', () => {
+		void (async () => {
+			// Stop admission on every broker socket and wait for accepted operations
+			// to finish before draining owned idle warm VMs. Active assignments remain
+			// untouched and are reported by the supervisor's post-stop inventory.
+			await closeBrokerAdmissionAndDrain([server, relay, assignmentProxy], () => runtime.drainWarmPool());
+		})().catch(error => {
+			process.stderr.write(`${JSON.stringify({ source: 'sandbox-broker-shutdown', status: 'drain-failed', reason: error instanceof Error ? error.message : 'unknown' })}\n`);
+			process.exitCode = 1;
+		});
+	});
+	return server;
+}
+
+/** The same authenticated CONNECT boundary used by every assignment guest. */
+export function createAssignmentProxy(runtime: Pick<KataSandboxRuntime, 'authorizePackageRegistryProxy' | 'authorizeSubscriptionProxy'>) {
+	const subscriptionProxy = createServer();
+	const proxyLog = boundedProxyLogger();
+	subscriptionProxy.on('connect', (request, client, head) => {
+		client.on('error', () => undefined);
+
+EXACT src/sandbox/runtime.ts lines132-138
+	private readonly warmPool: WarmSandboxPool;
+	private readonly sourceStore: AssignmentSourceStore;
+	constructor(private readonly configuration: SandboxBrokerConfiguration) {
+		this.subscriptionCustody = configuration.modelGateway?.authenticationMode === 'codex-subscription'
+			? new SubscriptionCredentialCustody(configuration.modelGateway.credentialFile) : null;
+		this.sourceStore = new AssignmentSourceStore(configuration);
+		this.warmPool = new WarmSandboxPool(kataWarmOperations(configuration, () => {
+
+EXACT src/supervisor/execute.ts lines291-302
+			const status = inspectSandboxHost(configuration, { requireBrokerSocket: true });
+			return inventory.then(observation => ({ ...status, inventory: observation, workspace: workspaceStatus() }));
+		}
+		case 'sandbox.doctor': return inspectSandboxHost(loadSandboxBrokerConfiguration(), { requireBrokerSocket: true });
+		case 'sandbox.workspace.qualify': return withWorkspaceCacheProducerFence(() => qualifyWorkspaceStorage(loadSandboxBrokerConfiguration(), operation.mode));
+		case 'sandbox.workspace.source.qualify': return withWorkspaceCacheProducerFence(() => qualifySourceWorkspace(loadSandboxBrokerConfiguration()));
+		case 'sandbox.workspace.cache.qualify': return withWorkspaceCacheProducerFence(() => qualifySourceCacheQuota());
+		case 'sandbox.workspace.cache.collect': return collectWorkspaceCache(loadSandboxBrokerConfiguration());
+		case 'sandbox.workspace.status': return workspaceStatus();
+		case 'sandbox.workspace.build.recover': return withWorkspaceCacheProducerFence(() => recoverWorkspaceBuilds(loadSandboxBrokerConfiguration()));
+		case 'sandbox.workspace.qualification.recover': return withWorkspaceCacheProducerFence(() => recoverWorkspaceQualification(loadSandboxBrokerConfiguration()));
+		case 'sandbox.trust-anchor.repair': return repairSandboxTrustAnchor();
+
+EXACT src/sandbox/assignment-source-store.ts lines51-88
+export class AssignmentSourceStore {
+  private catalog?: WorkspaceCatalog;
+  private initialization?: Promise<WorkspaceCatalog>;
+  private readonly queue = new SourceBuildQueue();
+  private readonly publications = new Map<string, SourcePublicationJob>();
+  private readonly executionDetached = new Set<string>();
+  constructor(private readonly configuration: SandboxBrokerConfiguration) {}
+  private initialize() {
+    return this.initialization ??= (async () => {
+      await initializeWorkspaceStorage();
+      this.catalog = new WorkspaceCatalog(join(workspaceStorageRoot, 'catalog.db'));
+      await recoverExpiredAnalysis(workspaceStorageRoot, new Date(), true);
+      return this.catalog;
+    })();
+  }
+  async create(sandboxId: string, assignment: SandboxAssignment) {
+    if (!/^sandbox-[a-zA-Z0-9-]{1,128}$/u.test(sandboxId)) throw new Error('Invalid source job identity.');
+    const catalog = await this.initialize();
+    const owner = { assignmentId: assignment.assignmentId, providerId: assignment.providerId,
+      teamId: assignment.teamId, projectId: assignment.projectId, attempt: assignment.attempt };
+    return new AssignmentSource(owner, assignment.resources.diskBytes, {
+      catalog, now: () => new Date(), createDisk: createWorkspaceDisk, attachDisk: attachWorkspaceDisk,
+      journal: value => durableJson(join(workspaceStorageRoot, 'jobs'), `${sandboxId}.json`, value),
+      build: (response, privateKey, virtualBytes) => this.queue.run(async () => {
+        // Queue residence consumes credential lifetime. Always recheck before touching the cache.
+        const credential = response.credential
+          ? openSourceCredential({ authorization: response.authorization, delivery: response.credential, privateKey })
+          : undefined;
+        try {
+          const image = catalog.image(sourceWorkspaceId(response.authorization.source));
+          if (image?.state === 'ready') return;
+          const bundle = await acquireSourceBundle({ authorization: response.authorization, repository: response.repository,
+            ...(credential ? { credential } : {}), maxBundleBytes: Math.min(virtualBytes, 8_589_934_592) });
+          return buildWorkspaceImage(this.configuration, catalog, { source: response.authorization.source, bundleDigest: bundle.bundleDigest, virtualBytes });
+        } finally { if (credential) { credential.token = ''; credential.username = ''; } }
+      }),
+    });
+  }
+
+EXACT src/sandbox/assignment-source-store.ts lines120-141
+  /** Called only after verified execution VM destruction. Work storage remains until durable candidate acceptance. */
+  async finish(sandboxId: string, source: AssignmentSource, result: SandboxResult | undefined, guestStopped: boolean) {
+    const publication = this.publications.get(sandboxId);
+    await publication?.drain();
+    const retained = await source.stop();
+    if (!guestStopped) return { released: false, reason: 'guest_teardown_unverified' };
+    if (!retained.disk || !retained.leaseId || !retained.authorization) return { released: false, reason: 'source_job_retained' };
+    if (!this.executionDetached.has(sandboxId)) await detachWorkspaceDisk(retained.disk, true);
+    if (!publication?.publishedReference() && retainUnpublishedWork(retained.authorization, result?.status)) return { released: false, reason: 'source_publication_required' };
+    const receiptId = `${sandboxId}.json`;
+    await durableJson(join(workspaceStorageRoot, 'results'), receiptId, { schemaVersion: 'treeseed.source-result/v1',
+      sandboxId, leaseId: retained.leaseId, source: retained.authorization.source,
+      status: result?.status ?? 'interrupted', result: result ?? null, sourceReference: publication?.publishedReference() ?? null,
+      teardownVerified: true, completedAt: new Date().toISOString() });
+    this.catalog!.recordDurableResult(retained.leaseId, receiptId);
+    this.catalog!.release(retained.leaseId, true);
+    // The directory was generated and validated by the block store, never supplied by the guest or API.
+    await rm(retained.disk.directory, { recursive: true });
+    this.publications.delete(sandboxId); this.executionDetached.delete(sandboxId);
+    await recoverExpiredAnalysis(workspaceStorageRoot, new Date(), true);
+    return { released: true, receiptId };
+  }
+
+FULL build-recovery (supervisor shared fence; broker startup already holds unit fence)
+import { execFile } from 'node:child_process';
+import { lstat, readFile, readdir, realpath } from 'node:fs/promises';
+import { mkdirSync } from 'node:fs';
+import { join } from 'node:path';
+import { promisify } from 'node:util';
+import { DatabaseSync } from 'node:sqlite';
+import type { SandboxBrokerConfiguration } from './protocol.js';
+import { detachWorkspaceDisk, initializeWorkspaceStorage, workspaceStorageRoot } from './workspace-block-store.js';
+import { WorkspaceCatalog } from './workspace-catalog.js';
+import { recoverExpiredAnalysis } from './workspace-analysis-recovery.js';
+
+const exec = promisify(execFile);
+const run = async (command: string, args: string[]) => (await exec(command, args, {
+  encoding: 'utf8', timeout: 120_000, maxBuffer: 65_536,
+  env: { PATH: '/usr/sbin:/usr/bin:/sbin:/bin' },
+})).stdout.trim();
+
+export function assertWorkspaceRecoveryIdle(tasks: string, activeLeases: number) {
+  if (tasks.trim() || activeLeases !== 0) throw new Error('Workspace recovery requires no guests or active workspace leases.');
+}
+
+/** The original owning inventory reader, exposed for allocated native database tests. */
+export function workspaceRecoveryInventory(root: string) {
+  // First boot has no source jobs yet. Reuse the one canonical catalog schema;
+  // a corrupt existing catalog still fails and is never removed or recreated.
+  const database = join(root, 'catalog.db'), catalog = new WorkspaceCatalog(database);
+  catalog.close();
+  for (const name of ['leases', 'jobs']) mkdirSync(join(root, name), { recursive: true, mode: 0o700 });
+  const db = new DatabaseSync(database, { readOnly: true });
+  try {
+    const leases = db.prepare("SELECT expires_at FROM workspace_leases WHERE state!='released'").all();
+    return { active: leases.filter(lease => !Number.isFinite(Date.parse(String(lease.expires_at)))
+      || Date.parse(String(lease.expires_at)) > Date.now()).length,
+      builds: db.prepare("SELECT id,job_id FROM workspace_images WHERE state='building'").all() as { id: string; job_id: string }[] };
+  } finally { db.close(); }
+}
+
+/** Serialized supervisor maintenance. Retains unpublished work; retires expired analysis.
+ * No guest filesystem is read or mounted, and no task is force-killed for recovery. */
+export async function recoverWorkspaceBuilds(configuration: SandboxBrokerConfiguration, brokerAlreadyFenced = false) {
+  await initializeWorkspaceStorage();
+  const database = join(workspaceStorageRoot, 'catalog.db');
+  const tasks = () => run('/usr/bin/ctr', ['--address', configuration.containerdAddress,
+    '--namespace', configuration.namespace, 'tasks', 'list', '--quiet']);
+  const inspect = () => workspaceRecoveryInventory(workspaceStorageRoot);
+  const runningTasks = await tasks(), initial = inspect();
+  if (brokerAlreadyFenced && (runningTasks.trim() || initial.active !== 0)) return { skipped: 'active_workspace_authority' };
+  assertWorkspaceRecoveryIdle(runningTasks, initial.active);
+  const broker = 'treeseed-sandbox-broker.service';
+  const state = brokerAlreadyFenced ? 'inactive' : await run('/usr/bin/systemctl', ['show', broker, '--property=ActiveState', '--value']);
+  if (!['active', 'inactive', 'failed'].includes(state)) throw new Error('Sandbox broker is transitioning.');
+  try {
+    if (state === 'active') await run('/usr/bin/systemctl', ['stop', broker]);
+    const snapshot = inspect();
+    assertWorkspaceRecoveryIdle(await tasks(), snapshot.active);
+    const detached: string[] = [];
+    for (const id of await readdir(join(workspaceStorageRoot, 'leases'))) {
+      if (!/^workspace-lease-[a-f0-9-]{36}$/u.test(id)) continue;
+      const directory = join(workspaceStorageRoot, 'leases', id), details = await lstat(directory);
+      if (!details.isDirectory() || details.uid !== 0 || (details.mode & 0o077) || await realpath(directory) !== directory) {
+        throw new Error('Workspace recovery directory custody changed.');
+      }
+      const path = join(directory, 'device.json');
+      let metadata;
+      try { metadata = await lstat(path); }
+      catch (error) { if ((error as NodeJS.ErrnoException).code === 'ENOENT') continue; throw error; }
+      if (!metadata.isFile() || metadata.uid !== 0 || metadata.nlink !== 1 || metadata.size > 4096 || (metadata.mode & 0o077)) {
+        throw new Error('Workspace recovery device custody changed.');
+      }
+      const device = JSON.parse(await readFile(path, 'utf8')) as { id: string; device: string };
+      if (device.id !== id) throw new Error('Workspace recovery identity changed.');
+      await detachWorkspaceDisk({ id, directory, device: device.device, image: join(directory, 'work.qcow2'), unit: `treeseed-${id}.service` }, true);
+      detached.push(id);
+    }
+    const removedAnalysisDisks = await recoverExpiredAnalysis(workspaceStorageRoot);
+    const catalog = new WorkspaceCatalog(database);
+    try {
+      for (const build of snapshot.builds) {
+        if (!catalog.failBuild(build.id, build.job_id)) throw new Error('Workspace recovery build ownership changed.');
+      }
+    } finally { catalog.close(); }
+    return { recoveredBuilds: snapshot.builds.map(build => build.id), detached, removedAnalysisDisks, workDiskContentsRetained: true, hostFilesystemMounts: 0 };
+  } finally {
+    if (state === 'active') await run('/usr/bin/systemctl', ['start', broker]);
+  }
+}
+
+EXACT src/sandbox/workspace-analysis-recovery.ts lines21-28
+export async function recoverExpiredAnalysis(root: string, now = new Date(), releasedOnly = false) {
+  const database = join(root, 'catalog.db'), db = new DatabaseSync(database, { readOnly: true });
+  let leases: RecoveryLease[];
+  try { leases = db.prepare('SELECT * FROM workspace_leases').all() as unknown as RecoveryLease[]; }
+  finally { db.close(); }
+  const catalog = new WorkspaceCatalog(database), removed: string[] = [];
+  try {
+    for (const name of await readdir(join(root, 'jobs'))) {
+
+EXACT src/sandbox/workspace-analysis-recovery.ts lines82-90
+        if (result.leaseId !== lease.id || result.teardownVerified !== true) throw new Error('Recovery result does not prove teardown.');
+      }
+      await rm(directory, { recursive: true }); removed.push(job.disk.id);
+    }
+    return removed;
+  } finally { catalog.close(); }
+}
+
+FULL source-cache-qualification
+import { mkdtemp, open, rm } from 'node:fs/promises';
+import { join } from 'node:path';
+import { initializeWorkspaceStorage, workspaceStorageRoot } from './workspace-block-store.js';
+import { sourceCacheVolumeBytes, withSourceCacheVolume } from './source-cache-volume.js';
+
+/** Fixed synthetic fixture through the manager; no caller paths, credentials or shell. */
+export async function qualifySourceCacheQuota() {
+  await initializeWorkspaceStorage();
+  const directory = await mkdtemp(join(workspaceStorageRoot, 'cache-qualification-'));
+  const limit = 1_048_576, capacity = sourceCacheVolumeBytes(limit);
+  let safeToRemove = false;
+  try {
+    const result = await withSourceCacheVolume(directory, limit, async mounted => {
+      const file = await open(join(mounted, 'synthetic-data'), 'wx', 0o600);
+      let rejected = false, written = 0;
+      try {
+        const block = Buffer.alloc(1_048_576, 7);
+        while (written <= capacity) {
+          try { written += (await file.write(block)).bytesWritten; }
+          catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOSPC') throw error; rejected = true; break; }
+        }
+        if (!rejected) throw new Error('Source cache did not enforce its filesystem quota.');
+      } finally { await file.close(); }
+      return { hardLimitEnforced: rejected, filesystemBytes: capacity, writtenBytes: written };
+    });
+    safeToRemove = true;
+    return { schemaVersion: 'treeseed.source-cache-qualification/v1', ...result,
+      trustedHostFilesystemOnly: true, guestFilesystemMountedOnHost: false, unmounted: true };
+  } finally { if (safeToRemove) await rm(directory, { recursive: true }); }
+}
