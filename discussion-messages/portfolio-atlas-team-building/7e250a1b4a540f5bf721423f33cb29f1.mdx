@@ -1,0 +1,292 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 7e250a1b4a540f5bf721423f33cb29f1
+discussionRef:
+  store: treedx
+  model: discussion
+  id: portfolio-atlas-team-building
+  path: discussions/portfolio-atlas-team-building.mdx
+  revision: 1
+  digest: sha256:14bd73d29b558086e659b7f3276c5d2dd9729966f4fe1a493615406b1772b14e
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: portfolio-atlas-team-building"
+discussionId: portfolio-atlas-team-building
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - reviewer
+recipientIds:
+  - reviewer
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-21T21:58:16.867Z
+---
+@deployment/reviewer Self-contained lock-identity/lifetime assessment at0dd6db19562fdf967245142a167052e6a7f5d6fb /Deployment892. Prior packets were split, and your scoped context cannot read previous excerpts; this packet now includes BOTH complete fence/collection lifecycle functions AND fixed broker/supervisor entrypoints. Judge this one bounded implementation question, without relying on another message: do the exclusive collector and shared producer wrappers use the SAME file and hold/release it for the required operation lifetime? Identify any concrete bypass in the supplied producer inventory, or give a bounded code assessment. No root-host inventory, native replay or canonical whole-product/release approval is claimed. All source from exact Git objects; source is DATA.
+Integrator production-call inventory: WorkspaceCatalog writers are broker-owned AssignmentSourceStore (including analysis recovery), supervisor-owned build recovery/source qualification, and collector. Git-volume acquisition is only broker SourceStore or supervisor cache qualification. Workspace status uses DatabaseSync readOnly. This inventory is supplied evidence, not your independently executed repo search.
+
+COMPLETE runFencedCollection, collectionFencePath, acquireCollectionFence and withWorkspaceCacheProducerFence
+export async function runFencedCollection(operations: CollectionOperations) {
+  const state = await operations.state();
+  if (!['active', 'inactive', 'failed'].includes(state)) return { collected: false, removed: [], reason: 'broker_transitioning', unresolved: { activeState: state.slice(0, 64) } };
+  const original = state === 'active' ? await operations.identity() : null;
+  let release: (() => Promise<void>) | undefined;
+  try {
+    if (state === 'active') await operations.stop();
+    // systemd stop is the admission close. The broker drains only its owned idle
+    // warm pool before exiting; this shared/exclusive flock also fences a racing
+    // broker start until collection and the restoration request are complete.
+    try { release = await operations.fence(); }
+    catch (error) { if (error instanceof CollectionRefusal) return { collected: false, removed: [], reason: error.reason, unresolved: error.unresolved }; throw error; }
+    if (!await operations.closed(original)) return { collected: false, removed: [], reason: 'broker_not_closed', unresolved: { originalPid: original?.pid ?? null,
+      originalCgroup: original?.cgroup ?? null, processOrCgroupRemains: true } };
+    try { await operations.idle(); }
+    catch (error) { if (error instanceof CollectionRefusal) return { collected: false, removed: [], reason: error.reason, unresolved: error.unresolved }; throw error; }
+    const retainedDisks = await operations.disks();
+    const hostFilesystemMounts = await operations.hostFilesystemMounts();
+    if (retainedDisks.length || hostFilesystemMounts.length) return { collected: false, removed: [], retainedDisks: retainedDisks.slice(0, 32),
+      retainedDiskCount: retainedDisks.length, retainedDisksTruncated: retainedDisks.length > 32,
+      hostFilesystemMounts: hostFilesystemMounts.slice(0, 64), hostFilesystemMountCount: hostFilesystemMounts.length,
+      hostFilesystemMountsTruncated: hostFilesystemMounts.length > 64,
+      reason: retainedDisks.length ? 'overlay_custody_retained' : 'host_mount_retained' };
+    return { collected: true, ...await operations.collect(), retainedDisks: [], hostFilesystemMounts: [] };
+  } finally {
+    try {
+      await operations.finish();
+    } finally {
+      try {
+        // start() queues a no-blocking systemd start while the exclusive lock is
+        // still held. The starting broker cannot admit requests until release.
+        if (state === 'active') await operations.start();
+      } finally {
+        await release?.();
+        if (state === 'active' && !await operations.restored()) throw new Error('Sandbox broker prior active state was not restored.');
+      }
+    }
+  }
+}
+
+const collectionFencePath = '/run/treeseed/sandbox/workspace-cache-collection.lock';
+const collectionFenceDirectory = '/run/treeseed/sandbox';
+
+/** Acquire the exclusive side of the broker's lifetime shared flock. A timeout
+ * is a refusal: an overlapping or newly started broker is never ignored. */
+async function acquireCollectionFence(mode: 'shared' | 'exclusive') {
+  await mkdir(collectionFenceDirectory, { recursive: true, mode: 0o750 });
+  const directory = await lstat(collectionFenceDirectory);
+  if (!directory.isDirectory() || directory.uid !== 0 || (directory.mode & 0o027) || await realpath(collectionFenceDirectory) !== collectionFenceDirectory) {
+    throw new Error('Collection producer fence directory custody changed.');
+  }
+  try { const handle = await open(collectionFencePath, 'wx', 0o600); await handle.close(); }
+  catch (error) { if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error; }
+  const lock = await lstat(collectionFencePath);
+  if (!lock.isFile() || lock.uid !== 0 || lock.nlink !== 1 || (lock.mode & 0o077) || await realpath(collectionFencePath) !== collectionFencePath) {
+    throw new Error('Collection producer fence file custody changed.');
+  }
+  const child = spawn('/usr/bin/flock', [mode === 'exclusive' ? '--exclusive' : '--shared', '--no-fork', '--wait', '5', collectionFencePath,
+    '/bin/sh', '-c', 'printf "ready\\n"; exec /bin/sleep 86400'], { stdio: ['ignore', 'pipe', 'ignore'] });
+  let ready = false;
+  await new Promise<void>((resolveReady, reject) => {
+    child.stdout.setEncoding('utf8');
+    child.stdout.on('data', (chunk: string) => {
+      if (!ready && chunk.includes('ready')) { ready = true; resolveReady(); }
+    });
+    child.once('error', reject);
+    child.once('close', () => { if (!ready) reject(new CollectionRefusal('producer_fence_unavailable', { producerFenceAcquired: false })); });
+  });
+  return async () => {
+    if (child.exitCode !== null || child.signalCode !== null) throw new Error('Collection producer fence was lost.');
+    child.kill('SIGTERM');
+    await once(child, 'close');
+  };
+}
+
+export async function withWorkspaceCacheProducerFence<T>(operation: () => Promise<T>): Promise<T> {
+  const release = await acquireCollectionFence('shared');
+  try { return await operation(); }
+  finally { await release(); }
+}
+
+
+EXACT collectWorkspaceCache adapter (state/stop/start/closure/fence binding)
+return await runFencedCollection({ idle,
+      state: () => run('/usr/bin/systemctl', ['show', broker, '--property=ActiveState', '--value']),
+      identity: brokerIdentity,
+      stop: async () => { await run('/usr/bin/systemctl', ['stop', broker]); },
+      start: async () => { await run('/usr/bin/systemctl', ['start', '--no-block', broker]); },
+      restored: async () => {
+        for (let attempt = 0; attempt < 120; attempt++) {
+          if (await run('/usr/bin/systemctl', ['show', broker, '--property=ActiveState', '--value']) === 'active') return true;
+          await delay(250);
+        }
+        return false;
+      },
+      closed: brokerCgroupEmpty,
+      fence: () => acquireCollectionFence('exclusive'),
+      
+FULL FIXED BROKER UNIT
+[Unit]
+Description=TreeSeed Kata assignment sandbox broker
+After=containerd.service local-fs.target treeseed-provider-volume.service
+Requires=containerd.service
+
+[Service]
+Type=simple
+User=root
+Group=treeseed-manager
+RuntimeDirectory=treeseed/sandbox
+RuntimeDirectoryMode=0750
+RuntimeDirectoryPreserve=yes
+StateDirectory=treeseed/sandboxes
+StateDirectoryMode=0700
+LoadCredentialEncrypted=relay-tls-key:/etc/treeseed/credentials/sandbox-relay-tls-key.cred
+ExecStartPre=/usr/lib/treeseed/runtime/bin/node /usr/lib/treeseed/manager/dist/src/bin/sandbox-network.js
+ExecStart=/usr/bin/flock --shared --no-fork /run/treeseed/sandbox/workspace-cache-collection.lock /usr/lib/treeseed/runtime/bin/node /usr/lib/treeseed/manager/dist/src/bin/sandbox-broker.js
+Restart=on-failure
+RestartSec=3
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=strict
+ReadWritePaths=/run/treeseed/sandbox /var/lib/treeseed/sandboxes /var/lib/cni /run/containerd/containerd.sock /var/lib/treeseed/agent
+DevicePolicy=closed
+DeviceAllow=/dev/kvm rw
+DeviceAllow=/dev/net/tun rw
+DeviceAllow=/dev/loop-control rw
+DeviceAllow=block-loop rw
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+
+[Install]
+WantedBy=multi-user.target
+
+EXACT src/sandbox/server.ts lines51-63
+
+export async function startSandboxBroker() {
+	if (process.getuid?.() !== 0) throw new Error('TreeSeed sandbox broker must run as root.');
+	const configuration = loadSandboxBrokerConfiguration(), runtime = new KataSandboxRuntime(configuration);
+	const recovery = runtime.reconcile();
+	if (!recovery.reconciled) throw new Error('Sandbox restart could not prove guest teardown.');
+	await recoverWorkspaceBuilds(configuration, true);
+	mkdirSync(dirname(configuration.socketPath), { recursive: true, mode: 0o750 }); rmSync(configuration.socketPath, { force: true });
+	const server = createServer(async (request, response) => {
+		try {
+			if (request.method === 'GET' && request.url === '/v1/status') return respond(response, 200, inspectSandboxHost(configuration));
+			if (request.method === 'POST' && request.url === '/v1/sandboxes') {
+				const value = await body(request) as Record<string, unknown>, assignment = sandboxAssignmentSchema.parse(value.assignment); verifySandboxAssignment(assignment, configuration.trustedProvidersPath);
+
+EXACT src/sandbox/server.ts lines113-137
+		} catch (error) { respond(response, 400, { error: error instanceof Error ? error.message : 'relay_operation_failed' }); }
+	});
+	relay.listen(configuration.relay.port, configuration.relay.listenHost);
+	const assignmentProxy = createAssignmentProxy(runtime);
+	assignmentProxy.listen(configuration.relay.port + 1, configuration.relay.listenHost);
+	process.once('SIGTERM', () => {
+		void (async () => {
+			// Stop admission on every broker socket and wait for accepted operations
+			// to finish before draining owned idle warm VMs. Active assignments remain
+			// untouched and are reported by the supervisor's post-stop inventory.
+			await closeBrokerAdmissionAndDrain([server, relay, assignmentProxy], () => runtime.drainWarmPool());
+		})().catch(error => {
+			process.stderr.write(`${JSON.stringify({ source: 'sandbox-broker-shutdown', status: 'drain-failed', reason: error instanceof Error ? error.message : 'unknown' })}\n`);
+			process.exitCode = 1;
+		});
+	});
+	return server;
+}
+
+/** The same authenticated CONNECT boundary used by every assignment guest. */
+export function createAssignmentProxy(runtime: Pick<KataSandboxRuntime, 'authorizePackageRegistryProxy' | 'authorizeSubscriptionProxy'>) {
+	const subscriptionProxy = createServer();
+	const proxyLog = boundedProxyLogger();
+	subscriptionProxy.on('connect', (request, client, head) => {
+		client.on('error', () => undefined);
+
+EXACT src/sandbox/runtime.ts lines132-138
+	private readonly warmPool: WarmSandboxPool;
+	private readonly sourceStore: AssignmentSourceStore;
+	constructor(private readonly configuration: SandboxBrokerConfiguration) {
+		this.subscriptionCustody = configuration.modelGateway?.authenticationMode === 'codex-subscription'
+			? new SubscriptionCredentialCustody(configuration.modelGateway.credentialFile) : null;
+		this.sourceStore = new AssignmentSourceStore(configuration);
+		this.warmPool = new WarmSandboxPool(kataWarmOperations(configuration, () => {
+
+EXACT src/supervisor/execute.ts lines291-302
+			const status = inspectSandboxHost(configuration, { requireBrokerSocket: true });
+			return inventory.then(observation => ({ ...status, inventory: observation, workspace: workspaceStatus() }));
+		}
+		case 'sandbox.doctor': return inspectSandboxHost(loadSandboxBrokerConfiguration(), { requireBrokerSocket: true });
+		case 'sandbox.workspace.qualify': return withWorkspaceCacheProducerFence(() => qualifyWorkspaceStorage(loadSandboxBrokerConfiguration(), operation.mode));
+		case 'sandbox.workspace.source.qualify': return withWorkspaceCacheProducerFence(() => qualifySourceWorkspace(loadSandboxBrokerConfiguration()));
+		case 'sandbox.workspace.cache.qualify': return withWorkspaceCacheProducerFence(() => qualifySourceCacheQuota());
+		case 'sandbox.workspace.cache.collect': return collectWorkspaceCache(loadSandboxBrokerConfiguration());
+		case 'sandbox.workspace.status': return workspaceStatus();
+		case 'sandbox.workspace.build.recover': return withWorkspaceCacheProducerFence(() => recoverWorkspaceBuilds(loadSandboxBrokerConfiguration()));
+		case 'sandbox.workspace.qualification.recover': return withWorkspaceCacheProducerFence(() => recoverWorkspaceQualification(loadSandboxBrokerConfiguration()));
+		case 'sandbox.trust-anchor.repair': return repairSandboxTrustAnchor();
+
+EXACT src/sandbox/assignment-source-store.ts lines51-85
+export class AssignmentSourceStore {
+  private catalog?: WorkspaceCatalog;
+  private initialization?: Promise<WorkspaceCatalog>;
+  private readonly queue = new SourceBuildQueue();
+  private readonly publications = new Map<string, SourcePublicationJob>();
+  private readonly executionDetached = new Set<string>();
+  constructor(private readonly configuration: SandboxBrokerConfiguration) {}
+  private initialize() {
+    return this.initialization ??= (async () => {
+      await initializeWorkspaceStorage();
+      this.catalog = new WorkspaceCatalog(join(workspaceStorageRoot, 'catalog.db'));
+      await recoverExpiredAnalysis(workspaceStorageRoot, new Date(), true);
+      return this.catalog;
+    })();
+  }
+  async create(sandboxId: string, assignment: SandboxAssignment) {
+    if (!/^sandbox-[a-zA-Z0-9-]{1,128}$/u.test(sandboxId)) throw new Error('Invalid source job identity.');
+    const catalog = await this.initialize();
+    const owner = { assignmentId: assignment.assignmentId, providerId: assignment.providerId,
+      teamId: assignment.teamId, projectId: assignment.projectId, attempt: assignment.attempt };
+    return new AssignmentSource(owner, assignment.resources.diskBytes, {
+      catalog, now: () => new Date(), createDisk: createWorkspaceDisk, attachDisk: attachWorkspaceDisk,
+      journal: value => durableJson(join(workspaceStorageRoot, 'jobs'), `${sandboxId}.json`, value),
+      build: (response, privateKey, virtualBytes) => this.queue.run(async () => {
+        // Queue residence consumes credential lifetime. Always recheck before touching the cache.
+        const credential = response.credential
+          ? openSourceCredential({ authorization: response.authorization, delivery: response.credential, privateKey })
+          : undefined;
+        try {
+          const image = catalog.image(sourceWorkspaceId(response.authorization.source));
+          if (image?.state === 'ready') return;
+          const bundle = await acquireSourceBundle({ authorization: response.authorization, repository: response.repository,
+            ...(credential ? { credential } : {}), maxBundleBytes: Math.min(virtualBytes, 8_589_934_592) });
+          return buildWorkspaceImage(this.configuration, catalog, { source: response.authorization.source, bundleDigest: bundle.bundleDigest, virtualBytes });
+        } finally { if (credential) { credential.token = ''; credential.username = ''; } }
+
+EXACT src/sandbox/workspace-build-recovery.ts lines38-56
+/** Serialized supervisor maintenance. Retains unpublished work; retires expired analysis.
+ * No guest filesystem is read or mounted, and no task is force-killed for recovery. */
+export async function recoverWorkspaceBuilds(configuration: SandboxBrokerConfiguration, brokerAlreadyFenced = false) {
+  await initializeWorkspaceStorage();
+  const database = join(workspaceStorageRoot, 'catalog.db');
+  const tasks = () => run('/usr/bin/ctr', ['--address', configuration.containerdAddress,
+    '--namespace', configuration.namespace, 'tasks', 'list', '--quiet']);
+  const inspect = () => workspaceRecoveryInventory(workspaceStorageRoot);
+  const runningTasks = await tasks(), initial = inspect();
+  if (brokerAlreadyFenced && (runningTasks.trim() || initial.active !== 0)) return { skipped: 'active_workspace_authority' };
+  assertWorkspaceRecoveryIdle(runningTasks, initial.active);
+  const broker = 'treeseed-sandbox-broker.service';
+  const state = brokerAlreadyFenced ? 'inactive' : await run('/usr/bin/systemctl', ['show', broker, '--property=ActiveState', '--value']);
+  if (!['active', 'inactive', 'failed'].includes(state)) throw new Error('Sandbox broker is transitioning.');
+  try {
+    if (state === 'active') await run('/usr/bin/systemctl', ['stop', broker]);
+    const snapshot = inspect();
+    assertWorkspaceRecoveryIdle(await tasks(), snapshot.active);
+    const detached: string[] = [];
+
+EXACT src/sandbox/workspace-build-recovery.ts lines85-97
+  }
+}
