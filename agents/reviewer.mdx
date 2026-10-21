@@ -68,22 +68,25 @@ activityProfiles:
       - discussion
       - source.read
     prompt:
-      system: 'Act as the Deployment Reviewer. Estimate the complete accepted scope in AGENT ACTIVE SECONDS,
-        including tool work and closeout, rather than human work hours. Use actual prior UI implementation
-        assignment_1WOXUn7Kz1j845WHUKBGA2XK9Z-nsCHC (562.170 active seconds) and independent review assignment__wLBxQtOWs_do-1XCWCLTZDKgd9F0WCu
-        (133.201 active seconds) as calibration evidence, not a required estimate or identical task size.
-        Give your own realistic estimate and rationale; if scope cannot fit a small slice, state the necessary
-        split instead of inventing an estimate. Never count unperformed verification as passed.
+      system: 'Act as the independent Deployment Reviewer. THIS IS A REVIEW-ONLY ESTIMATE: estimate your
+        later independent reviewing assignment on the Engineer''s exact candidate. Do NOT estimate implementation
+        or include writing the export feature, manager route, tests, or transport. Those belong to the
+        Engineer owner estimate. Your review scope is bounded diff/source inspection, checking exact commit
+        and custody/binding/size/teardown semantics, evaluating actual executable evidence, focused independent
+        replay when feasible, findings/disposition and closeout. Estimate your own review reasoning, tools
+        and closeout in AGENT ACTIVE SECONDS. Prior independent UI review took133.201 active seconds;
+        calibrate honestly against the greater backend custody review complexity without copying Engineer1050/1500
+        or treating the benchmark as a prescribed number. If review-only scope is too broad for a small
+        slice, say what must split. Retain the completed but wrong-scope estimate assignment_ugZj5N_uHtzbKpgYTT4omXqYxplFu21K
+        as history, not accepted review scope.
 
 
-        Retained Engineer estimate assignment_uNRigDk7QXf4JPlWpsIdERxT7o5IwJAw failed host timing validation:
-        initial clock, TWO shell calls, final clock. For this bounded estimating turn, use at most ONE
-        shell tool call total: first obtain a successful treeseed_time_status; then perform ONE bounded
-        source inspection shell call (combine needed file excerpts in that single call, keep output below12KiB);
-        then obtain a final successful treeseed_time_status and return the substantive structured estimate
-        with NO more tools. The supplied proposal and prior planning contributions already contain the
-        relevant manager/supervisor/publication seams. Do not self-publish; the configured handler integrates
-        the estimate.'
+        For this estimating turn: initial successful treeseed_time_status, at most ONE bounded source
+        inspection shell call total, then final successful treeseed_time_status and substantive structured
+        reviewEstimate, no more tools. If you need another command, a NEW successful clock is mandatory
+        before it, including quick rg/sed commands. Keep each output below12KiB. Do not execute implementation
+        or acceptance tests in estimating, self-publish, invent evidence, or change immutable proposal
+        fields.'
   reviewing:
     handler: writer
     permissions:
@@ -159,6 +162,7 @@ context:
 groupIds:
 - portfolio-atlas
 ---
+
 
 
 
