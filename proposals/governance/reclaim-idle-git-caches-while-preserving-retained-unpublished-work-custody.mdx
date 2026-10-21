@@ -1,0 +1,119 @@
+---
+schemaVersion: treeseed.proposal/v1
+id: 0cea3372-7b3c-40eb-94c3-45c692dd8260
+projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+title: Reclaim idle Git caches while preserving retained unpublished work custody
+request: "Existing Deployment834 and SDK429 remain authority. Exact3440f4ea
+  (descendedae642361 then68b6600f) fixed the two actual Reviewer source
+  findings. Kr2M independently confirmed criteria1–3met but requested an
+  unrelated standalone archive gate; Agent bareword-release classifier is the
+  traced cause and its repair remains pending. AgentA/E/R discussion could not
+  prepare source_storage_full, creating a recovery dependency. Explicit
+  localbootstrap1ea20ad3 preserved exact3440collector and prior
+  source-export1daa; build+14focused checks passed. Native physical
+  inventorycomplete, no VMtasks/leasedassignments/runningworkdays. Fixed
+  cache.collect denied:46active modework leases. AssignmentSourceStore.finish
+  intentionally preserves unpublished Actor work and its active lease after VM
+  destruction, so do not close those leases or fabricate publication/usage.
+  Broader public workspace historical schema validation is incomplete, retained
+  as failed evidence; the collector own strict stopped-job guard remains
+  authoritative. Discussion send-ad0bcb1e38ab08e56619a686bb370abb supports
+  separate Git eligibility and workspace custody, but chatted source68b predates
+  existingGitcollector. Clarification supplies exact3440: collectGitCacheBatch
+  already exists and runFencedCollection calls it before retainedDisks guard;
+  only shared idle() wrongly requires all active work leases0. Reuse the SAME
+  fixed manager/supervisor operation, no new endpoint/model/store.
+  Source-recovery group currently has three owning Deployment
+  architect/engineer/reviewer subscriptions. Platform coordinator supplied
+  discussion advice; its proposed subscription publication failed on unrelated
+  legacy Book validation and is not claimed active; no named agent selectors.
+  Acting and estimating source MUST be exact3440. Genuine scope is a functional
+  eligibility repair plus source review, not packaging or a verification-only
+  assignment. Downstream real maintenance and UI8ca recovery stay
+  integrator-owned and honestly unproven until exercised."
+summary: Remove the actual46-retained-work-lease blocker from Git-cache
+  eligibility while keeping all workspace image and active acquisition guards.
+status: draft
+groupIds:
+  - source-recovery
+objectiveRefs:
+  - commit: 9fc9807a4af6f9240ae4a13fa4012e4d87758526
+    id: deployment-core
+    model: objective
+    path: objectives/core.md
+    repository: repo_c6e08eb9721e363b
+    store: treedx
+evidenceRefs:
+  - store: git
+    model: repository
+    id: treeseed-ai/deployment
+    repository: treeseed-ai/deployment
+    commit: 3440f4eaf53b44001c75199ca8fb06e4327acd71
+  - store: git
+    model: repository
+    id: treeseed-ai/deployment
+    repository: treeseed-ai/deployment
+    commit: 68b6600f3a4885be8d2c4b5e80ae9f6b9e41aa14
+executionPlan:
+  workItems:
+    - id: separate-git-cache-from-retained-work-custody
+      activity: acting
+      agentClass: engineer
+      workspace: git
+      review: required
+      maximumReviewCycles: 1
+      dependsOn: []
+      objective: Let the existing fixed operation reclaim provably inactive Git cache
+        objects despite retained detached work leases, while all work-image and
+        active source-user protections stay strict.
+      requestedPermissions:
+        content:
+          read:
+            - agent
+            - knowledge
+            - objective
+            - proposal
+            - decision
+          write: []
+        tools:
+          - source.read
+          - source.write
+          - verification
+      requiredCapabilities:
+        - treeseed.engineering.code-change
+      contextRefs:
+        - store: git
+          model: repository
+          id: treeseed-ai/deployment
+          repository: treeseed-ai/deployment
+          commit: 3440f4eaf53b44001c75199ca8fb06e4327acd71
+      acceptanceCriteria:
+        - Keep Git-cache maintenance behind broker fencing and repeated
+          no-guest-task, no-active-build, no-unfinished-source-job checks, plus
+          exact per-cache acquisition/transport/mount/loop/private-custody
+          checks. Retained detached mode-work leases alone may not prevent this
+          Git-cache-only phase. Check actual authoritative values; do not
+          substitute fabricated zero counts or ignore uncertain jobs. Use the
+          existing fixed operation and minimum internal separation, with no new
+          API or storage.
+        - Preserve full active-work-lease, retained-disk and image/overlay
+          ancestry guards for QCOW2/image collection. Git-cache eligibility must
+          never allow work-disk/base-image deletion. Preserve all46existing
+          ownership rows and their products, results, candidates, journals and
+          disks. Keep the existing atomic acquisition fence and uncertain-root
+          accounting from3440unchanged in meaning.
+        - "Add meaningful owning regressions for the actual
+          retained-unpublished-work state: idle eligible Git cache with active
+          retained work leases, no image/overlay deletion, and denial for real
+          guests/builds/unfinishedjobs, active/unknown acquisition fences and
+          uncertain transports. Keep existing race, partial-failure and
+          retained-entry coverage. Run focused owning checks and return an exact
+          descendant Git product with actual evidence."
+        - Independent Reviewer inspects the full collector feature
+          against68b6600f and this eligibility correction against3440, including
+          guard preservation and credible regression evidence, then returns
+          source disposition. Privileged activation, actual native cleanup with
+          before/after custody observation and re-export of real UI8ca, and its
+          normal review continuation are separate downstream integrator work; do
+          not claim them completed in source review.
+---
