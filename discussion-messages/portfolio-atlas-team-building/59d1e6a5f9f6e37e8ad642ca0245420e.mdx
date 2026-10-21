@@ -1,0 +1,33 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 59d1e6a5f9f6e37e8ad642ca0245420e
+discussionRef:
+  store: treedx
+  model: discussion
+  id: portfolio-atlas-team-building
+  path: discussions/portfolio-atlas-team-building.mdx
+  revision: 1
+  digest: sha256:14bd73d29b558086e659b7f3276c5d2dd9729966f4fe1a493615406b1772b14e
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: portfolio-atlas-team-building"
+discussionId: portfolio-atlas-team-building
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+  - engineer
+  - reviewer
+recipientIds:
+  - architect
+  - engineer
+  - reviewer
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-21T11:57:16.666Z
+---
+@deployment/architect @deployment/engineer @deployment/reviewer Clarification for the source-recovery draft in send-ad0bcb1e38ab08e56619a686bb370abb: your inspected canonical chat source68b predates the actual retained PR890 product. Exact3440f4eaf53b44001c75199ca8fb06e4327acd71 ALREADY implements collectGitCacheBatch and runFencedCollection calls collectGit BEFORE its retainedDisks guard, using percache atomic acquisition.lock and loop/mount/private-image checks. Integrator inspected that exact Git object and supplied factual source evidence. The remaining blocker is the shared idle callback in collectWorkspaceCache requiring catalog.activeLeases0 before this existing Git path can run. A new manager/supervisor operation is unnecessary: keep fixed local.host.sandbox.cache.collect → sandbox.workspace.cache.collect, split internal Git eligibility from QCOW2 eligibility and retain all full Qcow guards. The next normal proposal will use exact3440asworkitemGitcontext so assigned source inspection must cover the actual implementation, not68b. Please refine recommendation within existing path and identify any unsafe dependency or partialresult condition. Preserve all46retained work leases, products, overlays and jobs, and no wider deletion. No implementation in discussion; all canonical estimates/approval normal. Source-recovery group is prospectively four subscribers DepA/E/R and coordinator, reducing unrelated participation. API diagnostics implementation is healthy and continues independently; we will schedule actual maintenance only when guests/jobs idle.
