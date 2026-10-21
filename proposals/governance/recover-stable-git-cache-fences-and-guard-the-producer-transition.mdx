@@ -1,0 +1,742 @@
+---
+schemaVersion: treeseed.proposal/v1
+id: 04eabfd9-c662-4d45-b54c-15c5c0d8c26b
+projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+title: Recover stable Git cache fences and guard the producer transition
+request: >-
+  Deployment834 and SDK429. This is a real follow-up implementation to genuine
+  Engineer product37206cb9c44b0be3b67b8ac66bec400faacf062a/result8568a729
+  (779elapsed,778.842active,60clock checks). Canonical review7KUC failed
+  exact-candidate preparation source_storage_full. The exact2730347-byte bundle
+  was retrieved and verified
+  SHA256b41fc32a0e3e3e0e647c7105858db20f8235addd23c6ce47ab467ac037abff1f.
+  Independent DeploymentReviewer discussion
+  send-3a03adb4a3804b5c7e2a9809a9067d84 completed with two REQUEST CHANGES:
+  stable fences have no recovery path; pre-change producers only use internal
+  acquisition.lock, so a new collector must establish transition quiescence or
+  keep the unfinished-job gate until those producers drain. Candidate372 is NOT
+  approved or activated.
+
+
+  Implement only those owning gaps and preserve the useful new per-cache shared
+  fence. Start cached3440 as the primary source so the storage blocker does not
+  prevent real work. Apply the complete genuine372 delta supplied below with
+  honest ancestry; do not falsely claim descendant ancestry from372 if only
+  applying its patch. Do not carry rejected1a/8a historical-journal classifiers.
+  Preserve all products and failed observations. The host has no successful
+  collection receipt; do not execute cleanup from the guest or grant it upstream
+  credentials. DeploymentArchitect/Engineer/Reviewer and PlatformArchitect
+  follow shared source-recovery; use actual peer planning and class-owned
+  implementation/review estimates. Prior779 is calibration, not an invented
+  estimate or shortened deadline.
+
+
+  For transition, inspect the actual owning source acquisition lifecycle and
+  broker/service stop behavior; do not claim tasks/VM absence alone proves old
+  host producers stopped. Use existing process/journal/mount/custody
+  authorities, no new epoch database, bypass runner, forced unmount, quota
+  increase or private-state edits. Runtime372 producer calls
+  recoverSourceCacheFence only after claiming the stable external fence; old
+  historical schemas and unknown ownership must remain fail closed.
+
+
+  The full actual372 source/test delta against3440 follows:
+
+  diff --git a/src/sandbox/source-cache-fence.ts
+  b/src/sandbox/source-cache-fence.ts
+
+  new file mode 100644
+
+  index 000000000..33dbe882e
+
+  --- /dev/null
+
+  +++ b/src/sandbox/source-cache-fence.ts
+
+  @@ -0,0 +1,16 @@
+
+  +import { lstat, mkdir, realpath, writeFile } from 'node:fs/promises';
+
+  +import { join } from 'node:path';
+
+  +
+
+  +export async function claimSourceCacheFence(root: string, cacheId: string,
+  owner: Record<string, unknown>) {
+
+  +  if (!/^[a-f0-9]{64}$/u.test(cacheId)) throw new Error('Invalid source cache
+  identity.');
+
+  +  const directory = join(root, 'git-fences');
+
+  +  await mkdir(directory, { recursive: true, mode: 0o700 });
+
+  +  const info = await lstat(directory);
+
+  +  if (!info.isDirectory() || info.uid !== process.getuid?.() || (info.mode &
+  0o077) || await realpath(directory) !== directory) {
+
+  +    throw new Error('Source cache fence directory escaped private custody.');
+
+  +  }
+
+  +  const fence = join(directory, `${cacheId}.lock`);
+
+  +  await mkdir(fence, { mode: 0o700 });
+
+  +  await writeFile(join(fence, 'job.json'), JSON.stringify(owner), { mode:
+  0o600, flag: 'wx' });
+
+  +  return fence;
+
+  +}
+
+  diff --git a/src/sandbox/source-cache-recovery.ts
+  b/src/sandbox/source-cache-recovery.ts
+
+  index ae6cae14b..ab96d3053 100644
+
+  --- a/src/sandbox/source-cache-recovery.ts
+
+  +++ b/src/sandbox/source-cache-recovery.ts
+
+  @@ -26,13 +26,19 @@ async function owned(path: string, directory: boolean) {
+   }
+   /** Recover only a trusted-host fetch fence after its owning process is gone.
+    * Never kills a process, mounts guest content, or removes source/work/candidate images. */
+  -export async function recoverSourceCacheFence(cache: string, operations =
+  production) {
+
+  +export async function recoverSourceCacheFence(cache: string, operations =
+  production, stableFence?: string) {
+
+  +  if (stableFence) {
+
+  +    const fenceInfo = await lstat(stableFence);
+
+  +    if (!fenceInfo.isDirectory() || fenceInfo.uid !== process.getuid?.() ||
+  (fenceInfo.mode & 0o077) || await realpath(stableFence) !== stableFence) {
+
+  +      throw new Error('Source cache recovery fence custody is invalid.');
+
+  +    }
+
+  +  }
+     const lock = join(cache, 'acquisition.lock');
+     const exists = await lstat(lock).catch(error => {
+       if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+       return null;
+     });
+  -  if (!exists) return false;
+
+  +  if (!exists) return true;
+     await owned(cache, true); await owned(lock, true);
+     const journal = join(lock, 'job.json'), info = await owned(journal, false);
+     if (info.size > 4096) throw new Error('Source cache recovery journal exceeds its bound.');
+  diff --git a/src/sandbox/source-git-cache.ts b/src/sandbox/source-git-cache.ts
+
+  index 0e7094d89..a4d131d25 100644
+
+  --- a/src/sandbox/source-git-cache.ts
+
+  +++ b/src/sandbox/source-git-cache.ts
+
+  @@ -7,6 +7,7 @@ import { initializeWorkspaceStorage, workspaceStorageRoot }
+  from './workspace-bl
+   import { runSourceGit, type SourceGitCredential } from './source-git-transport.js';
+   import { withSourceCacheVolume } from './source-cache-volume.js';
+   import { recoverSourceCacheFence } from './source-cache-recovery.js';
+  +import { claimSourceCacheFence } from './source-cache-fence.js';
+   import { simulationSourceRepository } from './simulation-source-repository.js';
+   
+   interface Repository { owner: string; name: string; cloneUrl: string }
+  @@ -50,16 +51,21 @@ export async function acquireSourceBundle(input: {
+     const identity = { controlPlaneId: source.controlPlaneId, teamId: source.teamId, projectId: source.projectId, repositoryId: source.repositoryId, repository };
+     const cacheId = createHash('sha256').update(JSON.stringify(identity)).digest('hex');
+     const root = join(dependencies.root, 'git'), bundles = join(dependencies.root, 'bundles'), cache = join(root, cacheId);
+  -  for (const directory of [root, bundles, cache]) await
+  privateDirectory(directory);
+
+  -  // An abandoned lock stays fenced until manager recovery proves its job has
+  stopped. No timeout-based stealing.
+
+  -  const lock = join(cache, 'acquisition.lock');
+
+  -  if (dependencies === production) await recoverSourceCacheFence(cache);
+
+  -  try { await mkdir(lock, { mode: 0o700 }); }
+
+  +  await privateDirectory(root); await privateDirectory(bundles);
+
+  +  // Claim before cache creation or recovery. The stable fence survives cache
+  deletion.
+
+  +  let lock: string;
+
+  +  try { lock = await claimSourceCacheFence(dependencies.root, cacheId, {
+  jobId: randomUUID(), assignmentId: authorization.assignmentId,
+  authorizationId: authorization.id, pid: process.pid }); }
+     catch (error) { if ((error as NodeJS.ErrnoException).code === 'EEXIST') throw new Error('Source acquisition is already owned or awaiting recovery.'); throw error; }
+  +  try {
+
+  +    if (dependencies === production && !await recoverSourceCacheFence(cache,
+  undefined, lock)) {
+
+  +      throw new Error('Source cache has a live legacy acquisition owner.');
+
+  +    }
+
+  +    await privateDirectory(cache);
+
+  +  } catch (error) { await rm(lock, { recursive: true }); throw error; }
+     const jobId = randomUUID();
+     let releaseFence = false, fetchEntered = false;
+     try {
+  -    await writeFile(join(lock, 'job.json'), JSON.stringify({ jobId,
+  assignmentId: authorization.assignmentId, authorizationId: authorization.id,
+  pid: process.pid }), { mode: 0o600, flag: 'wx' });
+
+  +    await writeFile(join(lock, 'job.json'), JSON.stringify({ jobId,
+  assignmentId: authorization.assignmentId, authorizationId: authorization.id,
+  pid: process.pid }), { mode: 0o600, flag: 'w' });
+       const result = await dependencies.volume(cache, input.maxBundleBytes, async volume => {
+       fetchEntered = true;
+       const temporary = join(volume, `${jobId}.bundle`);
+  diff --git a/src/sandbox/workspace-collection.ts
+  b/src/sandbox/workspace-collection.ts
+
+  index 2b283d652..c67066dba 100644
+
+  --- a/src/sandbox/workspace-collection.ts
+
+  +++ b/src/sandbox/workspace-collection.ts
+
+  @@ -1,11 +1,12 @@
+   import { execFile } from 'node:child_process';
+   import { randomUUID } from 'node:crypto';
+  -import { lstat, mkdir, open, readFile, readdir, realpath, rm, unlink,
+  writeFile } from 'node:fs/promises';
+
+  +import { lstat, open, readFile, readdir, realpath, rm, unlink } from
+  'node:fs/promises';
+   import { join } from 'node:path';
+   import { promisify } from 'node:util';
+   import { WorkspaceCatalog } from './workspace-catalog.js';
+   import { initializeWorkspaceStorage, workspaceImagePath, workspaceStorageRoot } from './workspace-block-store.js';
+   import type { SandboxBrokerConfiguration } from './protocol.js';
+  +import { claimSourceCacheFence } from './source-cache-fence.js';
+   
+   const exec = promisify(execFile);
+   const run = async (command: string, args: string[]) => (await exec(command, args, {
+  @@ -18,6 +19,12 @@ export function assertCollectionIdle(tasks: string,
+  activeLeases: number, builds
+     }
+   }
+
+   
+  +export function assertGitCollectionIdle(tasks: string, builds: number) {
+
+  +  if (tasks.trim() || !Number.isSafeInteger(builds) || builds !== 0) {
+
+  +    throw new Error('Git cache collection requires no guests or builds.');
+
+  +  }
+
+  +}
+
+  +
+   export function assertImageCustody(info: { isFile(): boolean; uid: number; nlink: number; mode: number }) {
+     if (!info.isFile() || info.uid !== 0 || info.nlink !== 1 || (info.mode & 0o222)) throw new Error('Source image custody changed.');
+   }
+  @@ -100,32 +107,31 @@ export async function collectGitCacheBatch(root: string,
+  isMounted: (path: strin
+         result.retained.push({ cacheId, reason: 'noncanonical_cache_entry' });
+         continue;
+       }
+  -    const cache = join(git, cacheId);
+
+  -    await privateDirectory(cache, process.getuid?.());
+
+  -    const names = await readdir(cache);
+
+  -    const lock = join(cache, 'acquisition.lock');
+
+  -    if (names.includes('acquisition.lock')) { result.retained.push({ cacheId,
+  reason: 'acquisition_fence_present_or_unknown' }); continue; }
+
+  -    if (names.some(name => name !== 'objects.ext4' && name !== 'mounted')) {
+
+  -      result.retained.push({ cacheId, reason: 'unexpected_cache_custody' });
+  continue;
+
+  -    }
+
+  -    const image = join(cache, 'objects.ext4'), mount = join(cache,
+  'mounted');
+
+  -    const imageInfo = await lstat(image).catch(error => { if ((error as
+  NodeJS.ErrnoException).code === 'ENOENT') return undefined; throw error; });
+
+  -    if (!imageInfo) { result.retained.push({ cacheId, reason:
+  'cache_volume_missing' }); continue; }
+
+  -    if (!imageInfo.isFile() || imageInfo.uid !== process.getuid?.() ||
+  imageInfo.nlink !== 1 || (imageInfo.mode & 0o222)
+
+  -      || (imageInfo.mode & 0o077) || await realpath(image) !== image) throw
+  new Error('Source cache image custody changed.');
+
+  -    const allocatedBytes = imageInfo.blocks * 512;
+
+  -    if (!Number.isSafeInteger(allocatedBytes)) throw new Error('Source cache
+  image size is uncertain.');
+
+  -    result.examinedBytes += allocatedBytes;
+
+  -    // mkdir is the same atomic fence used by acquisition. Hold it across
+  every
+
+  -    // custody recheck and unlink so acquisition cannot recreate the image.
+
+  -    try { await mkdir(lock, { mode: 0o700 }); }
+
+  +    let lock: string;
+
+  +    try { lock = await claimSourceCacheFence(root, cacheId, { jobId:
+  randomUUID(), pid: process.pid, operation: 'collection' }); }
+       catch (error) {
+         if ((error as NodeJS.ErrnoException).code === 'EEXIST') { result.retained.push({ cacheId, reason: 'acquisition_fence_present_or_unknown' }); continue; }
+         throw error;
+       }
+       let keepFence = true;
+  +    let deletionStarted = false;
+       try {
+  -      await writeFile(join(lock, 'job.json'), JSON.stringify({ jobId:
+  randomUUID(), pid: process.pid }), { mode: 0o600, flag: 'wx' });
+
+  +      const cache = join(git, cacheId);
+
+  +      try { await privateDirectory(cache, process.getuid?.()); }
+
+  +      catch (error) { if ((error as NodeJS.ErrnoException).code === 'ENOENT')
+  { keepFence = false; continue; } throw error; }
+
+  +      const names = await readdir(cache);
+
+  +      if (names.includes('acquisition.lock')) { result.retained.push({
+  cacheId, reason: 'acquisition_fence_present_or_unknown' }); keepFence = false;
+  continue; }
+
+  +      if (names.some(name => name !== 'objects.ext4' && name !== 'mounted'))
+  {
+
+  +        result.retained.push({ cacheId, reason: 'unexpected_cache_custody'
+  }); keepFence = false; continue;
+
+  +      }
+
+  +      const image = join(cache, 'objects.ext4'), mount = join(cache,
+  'mounted');
+
+  +      const imageInfo = await lstat(image).catch(error => { if ((error as
+  NodeJS.ErrnoException).code === 'ENOENT') return undefined; throw error; });
+
+  +      if (!imageInfo) { result.retained.push({ cacheId, reason:
+  'cache_volume_missing' }); keepFence = false; continue; }
+
+  +      if (!imageInfo.isFile() || imageInfo.uid !== process.getuid?.() ||
+  imageInfo.nlink !== 1 || (imageInfo.mode & 0o222)
+
+  +        || (imageInfo.mode & 0o077) || await realpath(image) !== image) throw
+  new Error('Source cache image custody changed.');
+
+  +      const allocatedBytes = imageInfo.blocks * 512;
+
+  +      if (!Number.isSafeInteger(allocatedBytes)) throw new Error('Source
+  cache image size is uncertain.');
+
+  +      result.examinedBytes += allocatedBytes;
+         if (await isMounted(mount)) { result.retained.push({ cacheId, reason: 'cache_mount_present_or_unknown' }); keepFence = false; continue; }
+         const mountInfo = await lstat(mount).catch(error => { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined; throw error; });
+         if (mountInfo && (!mountInfo.isDirectory() || mountInfo.uid !== process.getuid?.() || mountInfo.mode & 0o077 || await realpath(mount) !== mount)) {
+  @@ -134,14 +140,17 @@ export async function collectGitCacheBatch(root: string,
+  isMounted: (path: strin
+         if (mountInfo && (await readdir(mount)).length) { result.retained.push({ cacheId, reason: 'cache_mount_not_empty' }); keepFence = false; continue; }
+         // Recheck mount custody immediately before unlink while holding the fence.
+         if (await isMounted(mount)) { result.retained.push({ cacheId, reason: 'cache_mount_present_or_unknown' }); keepFence = false; continue; }
+  +      deletionStarted = true;
+         await unlink(image);
+         if (mountInfo) { const directory = await open(mount, 'r'); try { await directory.sync(); } finally { await directory.close(); } }
+         const directory = await open(cache, 'r'); try { await directory.sync(); } finally { await directory.close(); }
+         result.reclaimedBytes += allocatedBytes;
+         result.reclaimedCaches.push(cacheId);
+         keepFence = false;
+  -    } catch {
+
+  +    } catch (error) {
+         result.retained.push({ cacheId, reason: 'cache_reclamation_uncertain' });
+  +      keepFence = deletionStarted;
+
+  +      if (error instanceof Error && /custody/u.test(error.message)) throw
+  error;
+       } finally {
+         // Keep ownership on any uncertain/partial deletion; recovery validates
+         // this journal and releases it only after proving the owner stopped.
+  @@ -152,7 +161,7 @@ export async function collectGitCacheBatch(root: string,
+  isMounted: (path: strin
+   }
+   
+   interface CollectionOperations {
+  -  idle(): Promise<void>;
+
+  +  idle(scope: 'git' | 'workspace'): Promise<void>;
+     state(): Promise<string>;
+     stop(): Promise<void>;
+     start(): Promise<void>;
+  @@ -162,15 +171,16 @@ interface CollectionOperations {
+   }
+   
+   export async function runFencedCollection(operations: CollectionOperations) {
+  -  await operations.idle();
+
+  +  await operations.idle('git');
+     const state = await operations.state();
+     if (!['active', 'inactive', 'failed'].includes(state)) throw new Error('Sandbox broker is transitioning.');
+     try {
+       if (state === 'active') await operations.stop();
+  -    await operations.idle();
+
+  +    await operations.idle('git');
+       const retainedDisks = await operations.disks();
+       const gitCache = operations.collectGit ? await operations.collectGit() : undefined;
+       if (retainedDisks.length) return { ...(gitCache ? { gitCache } : {}), removed: [], retainedDisks, reason: 'overlay_custody_retained', hostFilesystemMounts: 0 };
+  +    await operations.idle('workspace');
+       return { ...await operations.collect(), ...(gitCache ? { gitCache } : {}), retainedDisks: [], hostFilesystemMounts: 0 };
+     } finally { if (state === 'active') await operations.start(); }
+   }
+  @@ -180,10 +190,12 @@ export async function
+  collectWorkspaceCache(configuration: SandboxBrokerConfigur
+     await initializeWorkspaceStorage();
+     const catalog = new WorkspaceCatalog(join(workspaceStorageRoot, 'catalog.db'));
+     const broker = 'treeseed-sandbox-broker.service';
+  -  const idle = async () => {
+
+  +  const idle = async (scope: 'git' | 'workspace') => {
+       const snapshot = catalog.collectionState();
+  -    assertCollectionIdle(await run('/usr/bin/ctr', ['--address',
+  configuration.containerdAddress,
+
+  -      '--namespace', configuration.namespace, 'tasks', 'list', '--quiet']),
+  snapshot.activeLeases, snapshot.builds, await unfinishedJobs());
+
+  +    const tasks = await run('/usr/bin/ctr', ['--address',
+  configuration.containerdAddress,
+
+  +      '--namespace', configuration.namespace, 'tasks', 'list', '--quiet']);
+
+  +    if (scope === 'git') assertGitCollectionIdle(tasks, snapshot.builds);
+
+  +    else assertCollectionIdle(tasks, snapshot.activeLeases, snapshot.builds,
+  await unfinishedJobs());
+     };
+     try {
+       return await runFencedCollection({ idle,
+  diff --git a/tests/source-git-cache.test.ts b/tests/source-git-cache.test.ts
+
+  index ae5bb84f2..f10833d86 100644
+
+  --- a/tests/source-git-cache.test.ts
+
+  +++ b/tests/source-git-cache.test.ts
+
+  @@ -8,6 +8,7 @@ import { acquireSourceBundle, type SourceGitCacheDependencies
+  } from '../src/san
+   import { runSourceGit, sourceGitCommand } from '../src/sandbox/source-git-transport.js';
+   import { simulationSourceRepository } from '../src/sandbox/simulation-source-repository.js';
+   import { buildSourceWorkspace } from '../src/sandbox/workspace-builder-guest.js';
+  +import { collectGitCacheBatch } from
+  '../src/sandbox/workspace-collection.js';
+   
+   const roots: string[] = [];
+   const volume: SourceGitCacheDependencies['volume'] = async (cache, _limit, action) => action(cache);
+  @@ -74,6 +75,12 @@ describe('trusted source acquisition', () => {
+       expect(await readFile(join(root, 'bundles', `${result.bundleDigest.slice(7)}.bundle`))).not.toContain(Buffer.from(input.credential.token));
+       await expect(acquireSourceBundle(request, { ...dependencies, now: () => new Date('2026-09-12T00:00:00Z') })).rejects.toThrow('expired');
+       expect(fetches).toHaveBeenCalledTimes(2);
+  +    const cacheRoot = join(root, 'git', result.cacheId), repositoryCache =
+  join(cacheRoot, 'repository.git');
+
+  +    await rm(repositoryCache, { recursive: true });
+
+  +    await mkdir(join(cacheRoot, 'mounted'), { mode: 0o700 });
+
+  +    await writeFile(join(cacheRoot, 'objects.ext4'), 'cache-volume', { mode:
+  0o400 });
+
+  +    expect((await collectGitCacheBatch(root, async () =>
+  false)).reclaimedCaches).toContain(result.cacheId);
+
+  +    expect(await acquireSourceBundle(request, dependencies)).toEqual(result);
+     });
+   
+   	it('acquires an exact predecessor commit from manager-owned simulation custody without a credential', async () => {
+  @@ -161,7 +168,7 @@ describe('trusted source acquisition', () => {
+       expect(limits).toEqual([input.maxBundleBytes, input.maxBundleBytes]);
+       expect(run).not.toHaveBeenCalled(); expect(input).toEqual(before);
+       for (const id of await readdir(join(root, 'git'))) {
+  -      await expect(access(join(root, 'git', id,
+  'acquisition.lock'))).rejects.toMatchObject({ code: 'ENOENT' });
+
+  +      await expect(access(join(root, 'git-fences',
+  `${id}.lock`))).rejects.toMatchObject({ code: 'ENOENT' });
+         await expect(access(join(root, 'git', id, 'objects.ext4'))).rejects.toMatchObject({ code: 'ENOENT' });
+       }
+       expect(await readdir(join(root, 'bundles'))).toEqual([]);
+  @@ -178,7 +185,7 @@ describe('trusted source acquisition', () => {
+         await expect(acquireSourceBundle(input, dependencies)).rejects.toThrow('awaiting recovery');
+         expect(run).toHaveBeenCalledTimes(entered ? 1 : 0);
+         const ids = await readdir(join(root, 'git')); expect(ids).toHaveLength(1);
+  -      const journal = JSON.parse(await readFile(join(root, 'git', ids[0]!,
+  'acquisition.lock', 'job.json'), 'utf8'));
+
+  +      const journal = JSON.parse(await readFile(join(root, 'git-fences',
+  `${ids[0]}.lock`, 'job.json'), 'utf8'));
+         expect(journal).toMatchObject({ assignmentId: authorization.assignmentId, authorizationId: authorization.id, pid: process.pid });
+       }
+     });
+  @@ -204,6 +211,6 @@ describe('trusted source acquisition', () => {
+       await expect(acquireSourceBundle(input, dependencies)).rejects.toThrow('Source cache storage admission is full; reclaim inactive caches before retrying.');
+       expect(admissions).toBe(2); expect(run).not.toHaveBeenCalled(); expect(input).toEqual(before);
+       const caches = await readdir(join(root, 'git')); expect(caches).toHaveLength(1);
+  -    await expect(access(join(root, 'git', caches[0]!,
+  'acquisition.lock'))).rejects.toMatchObject({ code: 'ENOENT' });
+
+  +    await expect(access(join(root, 'git-fences',
+  `${caches[0]}.lock`))).rejects.toMatchObject({ code: 'ENOENT' });
+     });
+   });
+  diff --git a/tests/workspace-collection.test.ts
+  b/tests/workspace-collection.test.ts
+
+  index ef1fb76e5..7dbdcf9f6 100644
+
+  --- a/tests/workspace-collection.test.ts
+
+  +++ b/tests/workspace-collection.test.ts
+
+  @@ -3,7 +3,7 @@ import { chmod, lstat, mkdtemp, mkdir, readFile, rm, unlink,
+  writeFile } from 'n
+   import { tmpdir } from 'node:os';
+   import { join } from 'node:path';
+   import { WorkspaceCatalog } from '../src/sandbox/workspace-catalog.js';
+  -import { assertCollectionIdle, assertImageCustody, collectGitCacheBatch,
+  collectLeafBatch, runFencedCollection } from
+  '../src/sandbox/workspace-collection.js';
+
+  +import { assertCollectionIdle, assertGitCollectionIdle, assertImageCustody,
+  collectGitCacheBatch, collectLeafBatch, runFencedCollection } from
+  '../src/sandbox/workspace-collection.js';
+   import type { SourceWorkspaceKey } from '@treeseed/sdk/capacity-provider/sandbox';
+   
+   const source: SourceWorkspaceKey = { controlPlaneId: 'api', teamId: 'team', projectId: 'project', repositoryId: 'repo',
+  @@ -15,12 +15,12 @@ function publish(catalog: WorkspaceCatalog, commit =
+  source.commit, parent: stri
+   }
+   
+   describe('fenced source collection', () => {
+  -  const operations = () => ({ idle: vi.fn(async () => {}), state: vi.fn(async
+  () => 'active'), stop: vi.fn(async () => {}),
+
+  +  const operations = () => ({ idle: vi.fn(async (_scope: 'git' | 'workspace')
+  => {}), state: vi.fn(async () => 'active'), stop: vi.fn(async () => {}),
+       start: vi.fn(async () => {}), disks: vi.fn(async (): Promise<string[]> => []), collect: vi.fn(async () => ({ removed: ['base'], remainingLeaves: 0 })) });
+     it('preserves detached and unclassified overlays and restores the broker', async () => {
+       const ops = operations(); ops.disks.mockResolvedValue(['unclassified']);
+       expect(await runFencedCollection(ops)).toMatchObject({ removed: [], retainedDisks: ['unclassified'], reason: 'overlay_custody_retained' });
+  -    expect(ops.idle).toHaveBeenCalledTimes(2);
+
+  +    expect(ops.idle).toHaveBeenNthCalledWith(1, 'git');
+  expect(ops.idle).toHaveBeenNthCalledWith(2, 'git');
+       expect(ops.collect).not.toHaveBeenCalled(); expect(ops.stop).toHaveBeenCalledOnce(); expect(ops.start).toHaveBeenCalledOnce();
+     });
+     it('collects independently fenced Git caches even when retained overlays block QCOW2 collection', async () => {
+  @@ -48,6 +48,23 @@ describe('fenced source collection', () => {
+       }
+       expect(() => assertCollectionIdle('warm-guest', 0, 0, 0)).toThrow();
+     });
+  +  it('keeps Git eligibility independent of leases and historical jobs but
+  strict for guests and builds', () => {
+
+  +    expect(() => assertGitCollectionIdle('', 0)).not.toThrow();
+
+  +    for (const [tasks, builds] of [['guest', 0], ['', 1], ['', -1], ['',
+  NaN]] as Array<[string, number]>) {
+
+  +      expect(() => assertGitCollectionIdle(tasks, builds)).toThrow();
+
+  +    }
+
+  +  });
+
+  +  it('collects Git through retained one and 46 lease cases while denying
+  workspace cleanup', async () => {
+
+  +    for (const leases of [1, 46]) {
+
+  +      const ops = { ...operations(), collectGit: vi.fn(async () => ({
+  examinedBytes: 1, reclaimedBytes: 1, reclaimedCaches: ['a'], retained: [] }))
+  };
+
+  +      ops.idle.mockImplementation(async scope => {
+
+  +        if (scope === 'git') assertGitCollectionIdle('', 0);
+
+  +        else assertCollectionIdle('', leases, 0, 0);
+
+  +      });
+
+  +      await expect(runFencedCollection(ops)).rejects.toThrow('leases');
+
+  +      expect(ops.collectGit).toHaveBeenCalledOnce();
+  expect(ops.collect).not.toHaveBeenCalled();
+
+  +    }
+
+  +  });
+     it('rejects symlinks, hardlinks, writable images and foreign ownership', () => {
+       const info = { isFile: () => true, uid: 0, nlink: 1, mode: 0o400 };
+       expect(() => assertImageCustody(info)).not.toThrow();
+  @@ -77,7 +94,8 @@ describe('fenced source collection', () => {
+           const cache = join(root, 'git', id); await mkdir(join(cache, 'mounted'), { recursive: true, mode: 0o700 });
+           await chmod(cache, 0o700); await writeFile(join(cache, 'objects.ext4'), 'volume', { mode: 0o400 });
+         }
+  -      await mkdir(join(root, 'git', fenceId, 'acquisition.lock'), { mode:
+  0o700 });
+
+  +      await mkdir(join(root, 'git-fences'), { mode: 0o700 });
+
+  +      await mkdir(join(root, 'git-fences', `${fenceId}.lock`), { mode: 0o700
+  });
+         const result = await collectGitCacheBatch(root, async path => path.includes(mountId));
+         expect(result.reclaimedBytes).toBe(0);
+         expect(result.retained.map(({ reason }) => reason)).toContain('acquisition_fence_present_or_unknown');
+  @@ -98,7 +116,7 @@ describe('fenced source collection', () => {
+         const bytes = (await lstat(join(cache, 'objects.ext4'))).blocks * 512;
+         let checks = 0, acquisitionDenied = false;
+         const result = await collectGitCacheBatch(root, async () => {
+  -        const lock = join(cache, 'acquisition.lock');
+
+  +        const lock = join(root, 'git-fences', `${id}.lock`);
+           try { await mkdir(lock); } catch (error) { acquisitionDenied = (error as NodeJS.ErrnoException).code === 'EEXIST'; }
+           if (++checks === 2) await unlink(join(cache, 'objects.ext4'));
+           return false;
+  @@ -109,7 +127,7 @@ describe('fenced source collection', () => {
+           { cacheId: 'unexpected', reason: 'noncanonical_cache_entry' }, { cacheId: id, reason: 'cache_reclamation_uncertain' },
+         ]));
+         await expect(lstat(join(cache, 'objects.ext4'))).rejects.toMatchObject({ code: 'ENOENT' });
+  -      await expect(lstat(join(cache,
+  'acquisition.lock'))).resolves.toBeDefined();
+
+  +      await expect(lstat(join(root, 'git-fences',
+  `${id}.lock`))).resolves.toBeDefined();
+       } finally { await rm(root, { recursive: true, force: true }); }
+     });
+     it('deletes only leaves, bounds each batch and repeats as noop', async () => {
+summary: "Complete the real cache-fence repair after independent findings:
+  recover abandoned stable fences safely and prevent races with pre-change
+  producers."
+status: draft
+groupIds:
+  - source-recovery
+objectiveRefs:
+  - commit: 9fc9807a4af6f9240ae4a13fa4012e4d87758526
+    id: deployment-core
+    model: objective
+    path: objectives/core.md
+    repository: repo_c6e08eb9721e363b
+    store: treedx
+evidenceRefs:
+  - store: git
+    model: repository
+    id: treeseed-ai/deployment
+    repository: treeseed-ai/deployment
+    commit: 3440f4eaf53b44001c75199ca8fb06e4327acd71
+  - store: git
+    model: repository
+    id: treeseed-ai/deployment
+    repository: treeseed-ai/deployment
+    commit: 8fecc19922b796bc927ee3d4ad56411a846ff46a
+  - store: git
+    model: repository
+    id: treeseed-ai/deployment
+    repository: treeseed-ai/deployment
+    commit: 1a297f53614a9c5e253fa0b3d0c9842635419397
+executionPlan:
+  workItems:
+    - id: recover-stable-cache-fences-and-transition
+      activity: acting
+      agentClass: engineer
+      workspace: git
+      review: required
+      maximumReviewCycles: 1
+      dependsOn: []
+      objective: "Complete the real cache-fence repair after independent findings:
+        recover abandoned stable fences safely and prevent races with pre-change
+        producers."
+      requestedPermissions:
+        content:
+          read:
+            - agent
+            - knowledge
+            - objective
+            - proposal
+            - decision
+          write: []
+        tools:
+          - source.read
+          - source.write
+          - verification
+      requiredCapabilities:
+        - treeseed.engineering.code-change
+      contextRefs:
+        - store: git
+          model: repository
+          id: treeseed-ai/deployment
+          repository: treeseed-ai/deployment
+          commit: 3440f4eaf53b44001c75199ca8fb06e4327acd71
+      acceptanceCriteria:
+        - Producer, collector and recovery use one stable per-cache fence before
+          any cache touch. Recover an abandoned stable fence only through an
+          atomic protocol that proves the original owner is gone, validates the
+          exact trusted journal/fence identity and private custody, and rechecks
+          mount/loop/image ownership. Concurrent recovery/acquisition/collection
+          must not admit two owners or delete a changed owner. Live, malformed,
+          missing, changed or uncertain ownership stays fenced; no elapsed-time
+          stealing. Keep old internal locks conservative.
+        - Prove the old-producer transition through actual owning lifecycle/stop
+          and process evidence before enabling Git-only cleanup. If quiescence
+          cannot be proven, retain the existing global unfinished-source-job
+          barrier for that transition rather than race an old producer before
+          legacy-lock creation. Thereafter Git-only cleanup may use its shared
+          stable fence and no-guests/builds guard; QCOW2 retains all original
+          active-lease, unfinished-job and ancestry protections. Do not classify
+          unread historical journals as stopped or replace unknown evidence with
+          a pass.
+        - Keep supplied372 functional and source/test history, exact1/46-lease
+          cases, real acquisition-after-collection and unknown-custody
+          retention. Add the missing real failed-owner recovery and old-producer
+          race checks at the existing owning boundaries, build strict
+          TypeScript, produce a genuine Git commit and report actual
+          usage/clock/closeout. Preserve original assertions and all failure
+          history. No fake or verification-only assignment.
+        - Canonical independent exact-product review remains required. If cold
+          review is still blocked by source_storage_full, preserve that failure;
+          after exact product retrieval and independent technical feedback on
+          its exact diff, coordinator may build a labelled temporary recovery
+          composition through supported activation. Require complete
+          physical/process inventory and quiescence and use only the existing
+          fixed cache collect operation after determining actual denial causes.
+          Resume canonical Reviewer on the same accepted authority/product after
+          capacity returns; do not duplicate Engineer work. No merge/release
+          until canonical review and required Actions.
+---
