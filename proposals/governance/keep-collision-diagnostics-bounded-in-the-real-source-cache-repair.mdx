@@ -1,0 +1,192 @@
+---
+schemaVersion: treeseed.proposal/v1
+id: ed4dc52c-2c11-47ac-94bb-0b4819d4f4d6
+projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+title: Keep collision diagnostics bounded in the real source-cache repair
+request: |-
+  Deployment834/UI70/Admin127. Narrow follow-on after REAL independent review of actual Engineer9ab606a, result-e42bd62dba27b93ead4a0076, workday21efb1fc. Reviewerassignment_xbOOvJ5KS4TCJu6KEGXu_yiFm0xHqNxB/result-a8e65819354ee80dfe226977 completed REQUEST_CHANGES with verified teardown and148reported seconds. Original proposalab4b7978v3/Decisionf07cc63e had maximumReviewCycles1 and is exhausted; do not change issued authority, overwrite original products or fabricate approval. This new proposal admits only the concrete correction through normal group discussion, own estimates, new Decision and Engineer→Reviewer. Original useful9ab code remains in ancestry of draftPR892 composition7407ef811; no release/adoption of that unapproved product.
+  Actual Reviewer finding: Revision required. Reviewed candidate Git commit `9ab606a87fde9e96e42addcc1c37cc9dba239b9c` against the original project source `7db58b0d55cc6cd9c906e72b29081ef48d51c944`; the full diff changes the collector and its tests. Criteria 1–2 and the implementation/test portions of criterion 4 are supported: Git cleanup is decoupled from retained-work journal counts, QCOW2 guards remain separate, uncertainty keeps the acquisition fence, and the new scan advances through the inventory with a 32-removal cap. However, criterion 3 is not fully met: in `src/sandbox/workspace-collection.ts` at candidate lines 204–207, the `EEXIST` acquisition-fence path appends directly to `retained` rather than using the bounded `retain` helper. That path therefore omits the entry from `retainedCount` and can exceed the 32-detail bound. Change it to use `retain(cacheId, 'acquisition_fence_present_or_unknown')` and add a regression checking count/truncation when this path is encountered among many retained entries. Criterion 5 remains pending: the predecessor reports that the protected manager operation on the real encrypted provider volume has not run, so reclaimed bytes and custody of the retained 48 work leases are unreported; complete that operation after review and report those exact results before resuming the UI Engineer→Reviewer→linkedAdmin sequence. The predecessor reports its focused tests and build passed; I did not independently rerun them. No governed continuation proposal was committed.
+  Implement the exact missed EEXIST branch through the existing bounded retain helper, and cover collision among many retained entries using a meaningful owning filesystem regression. Also remove the now-unused _unfinishedJobs argument/fake-zero caller from Git-only eligibility rather than retain a compatibility parameter; preserve actual unfinished-job checks for workspace/QCOW2 collection, the lifetime/physical/per-cache fences, unchanged private0600 metadata custody and all existing tests. Keep all unrelated9ab changes intact. The integrator separately preserved bootstrap historical-work/Infinity/fraction cases during composition; do not silently attribute those to the Engineer. No broad new framework or extra verification assignment.
+  Engineer and Reviewer each supply their OWN active-second estimates including closeout for this very small correction and full9ab+correction review respectively. Reviewer must inspect the whole actual candidate and exact canonical result, not just approve the one line. The protected native collector operation is INTEGRATOR closeout after approval; agents cannot mutate the trusted host or require that later operator action before they can approve code. Native scoped cleanup must preserve all retained work, report real bytes/counts, then resume already-approved UIv5→Adminv9. Source-free planning uses this exact current collector excerpt, not a fictitious Git inspection:
+  export interface GitCacheCollectionResult {
+    examinedBytes: number;
+    reclaimedBytes: number;
+    reclaimedCaches: string[];
+    retained: Array<{ cacheId: string; reason: string }>;
+    retainedCount: number;
+    retainedTruncated: boolean;
+  }
+
+  /** Reclaims only fixed, private cache volumes after the caller has fenced every source worker. */
+  export async function collectGitCacheBatch(root: string, isMounted: (path: string) => Promise<boolean>, limit = 32): Promise<GitCacheCollectionResult> {
+    if (!Number.isSafeInteger(limit) || limit < 1 || limit > 32) throw new Error('Invalid source collection limit.');
+    const git = join(root, 'git');
+    const result: GitCacheCollectionResult = { examinedBytes: 0, reclaimedBytes: 0, reclaimedCaches: [], retained: [], retainedCount: 0, retainedTruncated: false };
+    const gitInfo = await lstat(git).catch(error => { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined; throw error; });
+    if (!gitInfo) return result;
+    await privateDirectory(git, process.getuid?.());
+    const entries = await readdir(git);
+    const retain = (cacheId: string, reason: string) => {
+      result.retainedCount++;
+      if (result.retained.length < 32) result.retained.push({ cacheId, reason });
+      else result.retainedTruncated = true;
+    };
+    for (const cacheId of entries) {
+      if (!/^[a-f0-9]{64}$/u.test(cacheId)) {
+        retain(cacheId, 'noncanonical_cache_entry');
+        continue;
+      }
+      if (result.reclaimedCaches.length >= limit) {
+        retain(cacheId, 'batch_limit');
+        continue;
+      }
+      const cache = join(git, cacheId);
+      await privateDirectory(cache, process.getuid?.());
+      const cacheInfo = await lstat(cache);
+      const names = await readdir(cache);
+      const lock = join(cache, 'acquisition.lock');
+      if (names.includes('acquisition.lock')) { retain(cacheId, 'acquisition_fence_present_or_unknown'); continue; }
+      if (names.some(name => name !== 'objects.ext4' && name !== 'mounted')) {
+        retain(cacheId, 'unexpected_cache_custody'); continue;
+      }
+      const image = join(cache, 'objects.ext4'), mount = join(cache, 'mounted');
+      const imageInfo = await lstat(image).catch(error => { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined; throw error; });
+      if (!imageInfo) { retain(cacheId, 'cache_volume_missing'); continue; }
+      // This is private mutable host Git metadata, not an immutable QCOW2 base.
+      // Its owning writer creates mode0600; exclusion is established by fences
+      // and absent mount/loop custody, not by pretending the file is read-only.
+      if (!imageInfo.isFile() || imageInfo.uid !== process.getuid?.() || imageInfo.nlink !== 1
+        || (imageInfo.mode & 0o077) || await realpath(image) !== image) throw new Error('Source cache image custody changed.');
+      const allocatedBytes = imageInfo.blocks * 512;
+      if (!Number.isSafeInteger(allocatedBytes)) throw new Error('Source cache image size is uncertain.');
+      result.examinedBytes += allocatedBytes;
+      // mkdir is the same atomic fence used by acquisition. Hold it across every
+      // custody recheck and unlink so acquisition cannot recreate the image.
+      try { await mkdir(lock, { mode: 0o700 }); }
+      catch (error) {
+        if ((error as NodeJS.ErrnoException).code === 'EEXIST') { result.retained.push({ cacheId, reason: 'acquisition_fence_present_or_unknown' }); continue; }
+        throw error;
+      }
+      let keepFence = true;
+      try {
+        await writeFile(join(lock, 'job.json'), JSON.stringify({ jobId: randomUUID(), pid: process.pid }), { mode: 0o600, flag: 'wx' });
+        if (await isMounted(mount)) { retain(cacheId, 'cache_mount_present_or_unknown'); continue; }
+        const mountInfo = await lstat(mount).catch(error => { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined; throw error; });
+        if (mountInfo && (!mountInfo.isDirectory() || mountInfo.uid !== process.getuid?.() || mountInfo.mode & 0o077 || await realpath(mount) !== mount)) {
+          retain(cacheId, 'cache_mount_custody_uncertain'); continue;
+        }
+        if (mountInfo && (await readdir(mount)).length) { retain(cacheId, 'cache_mount_not_empty'); continue; }
+        // Recheck mount custody immediately before unlink while holding the fence.
+        if (await isMounted(mount)) { retain(cacheId, 'cache_mount_present_or_unknown'); continue; }
+        const currentGit = await lstat(git), currentCache = await lstat(cache);
+        if (!currentGit.isDirectory() || currentGit.dev !== gitInfo.dev || currentGit.ino !== gitInfo.ino
+          || currentGit.uid !== gitInfo.uid || currentGit.mode !== gitInfo.mode || await realpath(git) !== git
+          || !currentCache.isDirectory() || currentCache.dev !== cacheInfo.dev || currentCache.ino !== cacheInfo.ino
+          || currentCache.uid !== cacheInfo.uid || currentCache.mode !== cacheInfo.mode || await realpath(cache) !== cache) {
+          throw new Error('Source cache directory custody changed under its fence.');
+        }
+        const current = await lstat(image);
+        if (!current.isFile() || current.dev !== imageInfo.dev || current.ino !== imageInfo.ino
+          || current.uid !== imageInfo.uid || current.nlink !== 1 || current.mode !== imageInfo.mode
+          || current.size !== imageInfo.size || await realpath(image) !== image) throw new Error('Source cache image custody changed under its fence.');
+        await unlink(image);
+        if (mountInfo) { const directory = await open(mount, 'r'); try { await directory.sync(); } finally { await directory.close(); } }
+        const directory = await open(cache, 'r'); try { await directory.sync(); } finally { await directory.close(); }
+        result.reclaimedBytes += allocatedBytes;
+        result.reclaimedCaches.push(cacheId);
+        keepFence = false;
+      } catch {
+        retain(cacheId, 'cache_reclamation_uncertain');
+      } finally {
+        // Keep ownership on any uncertain/partial deletion; recovery validates
+        // this journal and releases it only after proving the owner stopped.
+        if (!keepFence) await rm(lock, { recursive: true });
+      }
+    }
+    return result;
+  }
+summary: Correct the independent Reviewer’s actual EEXIST count/truncation
+  finding and remove an unused Git-idle parameter without touching retained
+  products.
+status: draft
+groupIds:
+  - source-recovery
+objectiveRefs:
+  - commit: 9fc9807a4af6f9240ae4a13fa4012e4d87758526
+    id: deployment-core
+    model: objective
+    path: objectives/core.md
+    repository: repo_c6e08eb9721e363b
+    store: treedx
+evidenceRefs:
+  - store: git
+    model: repository
+    id: treeseed-ai/deployment
+    repository: treeseed-ai/deployment
+    commit: 9ab606a87fde9e96e42addcc1c37cc9dba239b9c
+  - store: treedx
+    model: note
+    id: assignment_xbOOvJ5KS4TCJu6KEGXu_yiFm0xHqNxB
+    repository: repo_c6e08eb9721e363b
+    commit: f280d3f37d6b87bc6e26e62a0f72fabba860d3b7
+    path: notes/assignment_xbOOvJ5KS4TCJu6KEGXu_yiFm0xHqNxB.mdx
+executionPlan:
+  workItems:
+    - id: bound-source-cache-collision-diagnostics
+      activity: acting
+      agentClass: engineer
+      workspace: git
+      review: required
+      maximumReviewCycles: 2
+      dependsOn: []
+      objective: Finish the actual reviewed source-cache repair so native cleanup can
+        unblock meaningful UI/Admin work.
+      requestedPermissions:
+        content:
+          read:
+            - agent
+            - knowledge
+            - objective
+            - proposal
+            - decision
+          write: []
+        tools:
+          - source.read
+          - source.write
+          - verification
+      requiredCapabilities:
+        - treeseed.engineering.code-change
+      contextRefs:
+        - store: git
+          model: repository
+          id: treeseed-ai/deployment
+          repository: treeseed-ai/deployment
+          commit: 9ab606a87fde9e96e42addcc1c37cc9dba239b9c
+        - store: treedx
+          model: note
+          id: assignment_xbOOvJ5KS4TCJu6KEGXu_yiFm0xHqNxB
+          repository: repo_c6e08eb9721e363b
+          commit: f280d3f37d6b87bc6e26e62a0f72fabba860d3b7
+          path: notes/assignment_xbOOvJ5KS4TCJu6KEGXu_yiFm0xHqNxB.mdx
+      acceptanceCriteria:
+        - Route EEXIST acquisition-fence collisions through the one existing
+          bounded retain helper. Counts include every retained entry and detail
+          arrays never exceed32; truncation is truthful, including collisions
+          among many other retained caches.
+        - Remove the unused unfinished-jobs argument/fake-zero Git-only caller
+          and adapt its owning tests to the current API. Preserve
+          workspace/QCOW2 unfinished-work protection, all native fences, batch
+          progress, bound32removals, custody revalidation and uncertainty
+          retention from actual9ab.
+        - Produce a real9ab-descendant Git correction with the focused collision
+          regression and strict build. Preserve existing cases and original
+          failed review; no made-up outputs or verification-only work.
+          Independent Reviewer reviews the complete source repair plus
+          correction, reporting what was actually replayed and what remains
+          unproven.
+        - After code approval, integrator composes through
+          existingPR892/Actions, uses the protected collector and reads back
+          exact reclaimed bytes and retained custody, then resumes approved
+          UI→Reviewer→Admin. No agent host mutation or requirement to run that
+          later operator action before issuing code review disposition.
+---
