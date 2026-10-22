@@ -71,10 +71,46 @@ request: >-
   fake or verification-only assignment. Independent Reviewer inspects the actual
   repair product. Original Agent7d6a015b and ffab1b67 products remain unapproved
   until their separate independent reviews can resume.
+
+
+  Scope revision after genuine group estimates and discussion
+  send-10b4d483db94acc05ed0221b0ccf5afb: the first product is ONLY
+  sandbox.assignment.teardown.recover at the existing protected
+  manager/supervisor/broker boundary, for an original failed analysis sandbox
+  still retained in the current broker's owned runtime state. Resolve the
+  assignment to its original sandbox and authority internally. Reuse destroy(),
+  its task/container absence checks, and existing source finish; record a
+  separate factual recovery observation with the existing journal/event
+  machinery. Do not require a host-wide scan of unrelated historical jobs to
+  retry this one exact owned sandbox. Reject missing, moved, foreign or live
+  authority; if original runtime authority is unavailable after restart, report
+  unavailable rather than reconstructing it.
+
+
+  Explicitly defer durable-state rehydration after broker restart, general
+  orphan recovery, whole-host workspace inventory repair, cache collection, new
+  schemas/stores, source export, remote coordinator/API/MCP projection and
+  canonical SDK/CLI command-tree exposure. Privileged real-host exercise, source
+  adoption and release belong to the integrator after checked code delivery;
+  they are not Engineer execution time. Required first-patch product remains
+  concrete: one fixed repeatable operator operation through existing custody,
+  original failed evidence retained, no detach/release before verified absence,
+  exact Git candidate and independent review. The blocked current Reviewer is
+  the real downstream operator case. Public projection reuses this same
+  operation in a later dependent small slice; no private ad-hoc invocation is
+  authorized in the meantime.
+
+
+  Preserve original v3 Engineer10800/21600 and Reviewer780/1500 estimates as
+  history. This is a scope reduction, not a request to lower numbers to fit a
+  budget. Every required group participant should assess this narrower scope
+  afresh, and Engineer/Reviewer must publish their own formal estimates through
+  the governed workday. Identify any remaining ambiguity before approval. Do not
+  claim the recovery has run.
 summary: Add a narrowly scoped supported retry for the real failed Reviewer
   teardown, preserving products and failed observations while releasing its
   analysis disk only after actual closure.
-status: draft
+status: discussing
 groupIds:
   - source-recovery
 executionPlan:
@@ -84,11 +120,47 @@ executionPlan:
       agentClass: engineer
       workspace: git
       review: required
-      maximumReviewCycles: 2
-      dependsOn: []
       objective: Implement one supported, assignment-scoped repeatable teardown
         recovery through the existing Deployment lifecycle, using the real
         failed Reviewer residue and preserving original custody.
+      estimate:
+        expectedSeconds: 10800
+        maximumSeconds: 21600
+        rationale: Full Deployment Engineer contribution in active agent seconds,
+          including reasoning, supported lifecycle retry implementation,
+          ownership and safety gates, truthful journal behavior, focused owning
+          checks, retained Reviewer operator evidence, and closeout. The
+          estimate is larger than the 562.170-second prior UI implementation
+          because this change crosses existing manager/supervisor/broker
+          lifecycle and source-finish seams and requires real retained-resource
+          readbacks; the 133.201-second prior independent review is excluded.
+          Based on supplied source excerpts for treeseed-ai/deployment at exact
+          commit b260976789dc5e56d96e4ab885bc68b97474ce7f; the bounded search of
+          the attached checkout found no matching symbols, so source adoption
+          and seams must be confirmed before implementation. Requires settling
+          the minimal supported command and recovery journal observation, and
+          completing the incomplete workspace job/candidate/result inventory.
+          Includes owning checks and closeout; excludes independent Reviewer
+          time, privileged integrator maintenance, release/adoption, and browser
+          exercise.
+      reviewEstimate:
+        expectedSeconds: 780
+        maximumSeconds: 1500
+        rationale: "Independent review of the exact Engineer candidate: inspect the
+          bounded lifecycle diff, assess ownership, stopped-source authority and
+          custody ordering, evaluate focused executable evidence, perform
+          focused replay where feasible, then report findings and close out.
+          Estimate is higher than the 133.201-second prior UI review because the
+          supplied excerpt spans container removal, absence verification,
+          destroy and source-finish custody. Depends on the exact candidate and
+          retained Reviewer evidence being available. The maximum allows for
+          tracing lifecycle interactions and resolving evidence discrepancies;
+          scope expansion into a new executor, service or store should be split.
+          Anchored to the supplied source excerpt for treeseed-ai/deployment at
+          b260976789dc5e56d96e4ab885bc68b97474ce7f; independent source
+          inspection was unavailable in this turn."
+      maximumReviewCycles: 2
+      dependsOn: []
       requestedPermissions:
         content:
           read:
