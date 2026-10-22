@@ -1,0 +1,29 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: d3627f930cb9d5fb1947da7b8e0f2928
+discussionRef:
+  store: treedx
+  model: discussion
+  id: mcp-coordination
+  path: discussions/mcp-coordination.mdx
+  revision: 1
+  digest: sha256:bcafa852734020c91ccdb690b23f92687df83177bc98567fbe550082528b5082
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: mcp-coordination"
+discussionId: mcp-coordination
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+recipientIds:
+  - architect
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-22T23:48:21.342Z
+---
+@api/architect @deployment/architect The real guest-adoption chain produced Engineer commit 03871b4bb49d956cfabd5a6b526a7e1a9f853de6 and independent Reviewer REQUEST_CHANGES result-02d7000d219c42c132216e39. Actor is ready revision4, Reviewer blocked revision4; rework admission fails execution_assignment_authority_mismatch. Shared API living-execution-admission.ts predecessorFence requires every prior result's node still completed/current revision and every Reviewer approved. Lifecycle increments both paired revisions on request-changes. Please advise the smallest authority-preserving repair permitting exact previous Actor plus exact paired request-changes review as rework context under remaining cycle limit. Stale/foreign reviews and downstream unapproved dependencies must remain denied. No direct assignments/claim/usage mutation. Source-free advice must be labelled. Existing API #553 / Agent #496.
