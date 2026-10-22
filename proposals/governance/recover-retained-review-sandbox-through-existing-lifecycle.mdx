@@ -1,0 +1,132 @@
+---
+schemaVersion: treeseed.proposal/v1
+id: 3385d505-88b3-4cc3-98e4-ef62fa8db66d
+projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+title: Recover one retained review sandbox through the existing teardown lifecycle
+request: >-
+  Owning Issues Deployment834 and Agent496; SDK429 tracks later supported
+  coordinator projection. This proposal is based on real Agent Architect
+  discussion send-438d89072944d10e9ba1a39f6c35f91d, durable
+  response-71f4bd318b89e4a3dd4b30b8.mdx, result-30e601c3dcc0d4b3d3e6e619. The
+  Architect recommends retaining the current team and repairing the owning
+  teardown lifecycle; its supplied-context analysis is not independent source
+  inspection or formal implementation review. Obtain genuine source-recovery
+  group planning and each class's own formal active-second estimate before
+  approval. No individual proposal targets or coordinator-supplied budgets.
+
+
+  Real failure: Agent496 timer Reviewer
+  assignment_MW1KBZ3W1swxlI8vdEXNda10PsGBZR7x failed lease renewal on a provider
+  capacity-lock timeout. Workday0972f9ef stopped/ended; no result or measured
+  model usage. Sandbox
+  sandbox-assignment-MW1KBZ3W1swxlI8vdEXNda10PsGBZR7x-1-7007306b reported
+  teardown.verified=false at14:00:30UTC. Fresh14:37UTC owning host inventory was
+  complete with no failed task/VM, one normal unrelated idle warm VM, but failed
+  container metadata/directory remain. Exact stopped source journal owns active
+  analysis lease f3718d90-cccf-478f-8835-2bca11aad52b, NBD0 disk
+  workspace-lease-2bf9e25d-58d3-4377-97af-2a8558c190ad. Workspace
+  job/candidate/result inventory remains incomplete. Preserve this residue and
+  all unknown usage until owning recovery proves closure. This must not touch
+  unrelated warm/active work, retained writable products or period holds.
+
+
+  Exact source checked at Deployment protected staging
+  b260976789dc5e56d96e4ab885bc68b97474ce7f: KataSandboxRuntime.removeContainer
+  synchronously invokes ctr tasks kill SIGKILL, tasks delete --force, containers
+  delete once, then checks list absence. destroy() verifies execution and warm
+  container removal, calls AssignmentSourceStore.finish(...,verified), and
+  retains directory/map if false. finish() stops the source job but returns
+  guest_teardown_unverified before detach/result/catalog lease release when
+  guestStopped=false. Startup reconciliation removes listed containers before
+  recoverWorkspaceBuilds, whose idle check rejects guests/unexpired workspace
+  authority. Public host sandbox currently has status/doctor;
+  assignments.recover is unknown-usage/operator-capacity recovery, not physical
+  teardown. A retry clearing this state is a hypothesis to verify, not an
+  asserted root cause or cleanup success.
+
+
+  Implement the smallest narrowly scoped repeatable recovery at the existing
+  manager/supervisor/broker lifecycle boundary, reusing existing identity,
+  removal, destroy verification, source finish and journal custody rather than a
+  new executor/service/store. Derive original authority from owned state, not
+  caller-supplied private paths or copied operation tokens. Determine the
+  concrete minimal supported public command during source-recovery discussion;
+  do not expose generic shell/private broker access. Do not weaken closure,
+  rewrite the original failure receipt, extend deadlines, fabricate
+  usage/review, reset the host, or delete retained work. Preserve failed
+  observations and add a distinct factual recovery observation through the
+  existing journal mechanism. Reuse existing accepted warm-drain/cache work
+  where applicable without merging unreviewed historical products or duplicating
+  cache collection. The existing source-export proposal4d06411c/Decision224bd575
+  and local bootstrap source-export implementation are separate follow-on
+  supported-delivery work, not part of this cleanup slice.
+
+
+  Meaningful product criteria: the exact failed Reviewer sandbox can be retried
+  through a supported boundary; verified absence permits only its stopped
+  analysis workspace closure/disk detach and lease release; repeated requests
+  are safe; denied/moved/foreign/active or still-present resources remain
+  retained and honestly reported. Use focused owning checks and the actual
+  retained Reviewer as the real operator case after checked source adoption. No
+  fake or verification-only assignment. Independent Reviewer inspects the actual
+  repair product. Original Agent7d6a015b and ffab1b67 products remain unapproved
+  until their separate independent reviews can resume.
+summary: Add a narrowly scoped supported retry for the real failed Reviewer
+  teardown, preserving products and failed observations while releasing its
+  analysis disk only after actual closure.
+status: draft
+groupIds:
+  - source-recovery
+executionPlan:
+  workItems:
+    - id: recover-retained-review-sandbox
+      activity: acting
+      agentClass: engineer
+      workspace: git
+      review: required
+      maximumReviewCycles: 2
+      dependsOn: []
+      objective: Implement one supported, assignment-scoped repeatable teardown
+        recovery through the existing Deployment lifecycle, using the real
+        failed Reviewer residue and preserving original custody.
+      requestedPermissions:
+        content:
+          read:
+            - agent
+            - book
+            - knowledge
+            - objective
+            - discussion
+            - discussion-message
+            - proposal
+            - question
+            - note
+            - decision
+          write: []
+        tools:
+          - source.read
+          - source.write
+          - verification
+      requiredCapabilities:
+        - treeseed.engineering.code-change
+      contextRefs:
+        - store: git
+          model: repository
+          id: treeseed-ai/deployment
+          repository: treeseed-ai/deployment
+          commit: b260976789dc5e56d96e4ab885bc68b97474ce7f
+      acceptanceCriteria:
+        - Only the exact owned retained sandbox and stopped analysis-source
+          authority can be recovered; foreign, moved or live work is denied and
+          all unrelated resources/products remain intact.
+        - Use existing lifecycle and source-finish paths; retain original failed
+          receipt and unknown usage, and do not detach/release while task or
+          container absence is unverified.
+        - Repeated supported requests and partial failures retain truthful
+          original observations; successful closure independently reads back
+          task/container absence, disk detachment, durable source result and
+          lease release.
+        - Return a clean exact Git product and honest focused-check evidence for
+          independent review; report any remaining actual host blocker without
+          claiming simulated release.
+---
