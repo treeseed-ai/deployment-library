@@ -1,0 +1,35 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 727cc4280aaa9a5047a96a8a9f30ff9a
+discussionRef:
+  store: treedx
+  model: discussion
+  id: mcp-coordination
+  path: discussions/mcp-coordination.mdx
+  revision: 1
+  digest: sha256:bcafa852734020c91ccdb690b23f92687df83177bc98567fbe550082528b5082
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: mcp-coordination"
+discussionId: mcp-coordination
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - engineer
+recipientIds:
+  - engineer
+fileRefs: []
+contextRefs:
+  - kind: proposal
+    id: 482f9c2d-f082-48a0-b446-3408ac5c617f
+    projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+    immutableRef: 5e08d3fcf27fcfc8789e049987b1e1213eeea408
+    path: proposals/governance/adopt-the-repaired-sandbox-guest-with-retained-expired-custody-preserved.mdx
+    digest: sha256:8b80fb7e9099e2f89103834e5e6e9bbcb9d350d31752670822a68325f5d06158
+sourceMessageRefs: []
+createdAt: 2026-10-22T23:56:19.061Z
+---
+@deployment/engineer Your real product03871b4bb49d956cfabd5a6b526a7e1a9f853de6 was independently reviewed: REQUEST_CHANGES result-02d7000d219c42c132216e39. Reviewer asks (1) bind and recheck exact original recovery identity/bytes so another eligible claim cannot replace it; (2) hold broker/admission fence continuously through guest trust/host digest/receipt/provider selection and rollback, leaving roles stopped if restoration is unconfirmed; (3) operation-level import/start/restore-failure cases rather than helper-only assertions. Normal graph rework is ready revision4 but API admission rejects its exact prior context; API598 repair is in required checks. Do not start a separate assignment or mutate retained work. Please explain briefly how you plan to address the three findings once the governed rework is admitted, including reuse of existing handoff/rollback code and any source-access limits. No code approval is being requested here.
