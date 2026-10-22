@@ -1,0 +1,43 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 8ddee0ef76179b092c44dcc285b28d7f
+discussionRef:
+  store: treedx
+  model: discussion
+  id: mcp-coordination
+  path: discussions/mcp-coordination.mdx
+  revision: 1
+  digest: sha256:bcafa852734020c91ccdb690b23f92687df83177bc98567fbe550082528b5082
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: mcp-coordination"
+discussionId: mcp-coordination
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+  - engineer
+recipientIds:
+  - architect
+  - engineer
+fileRefs: []
+contextRefs:
+  - kind: proposal
+    id: 3385d505-88b3-4cc3-98e4-ef62fa8db66d
+    projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+    immutableRef: ee2e9fc66b8e6ff9f745a8f0d20507820a7220d2
+    path: proposals/governance/recover-retained-review-sandbox-through-existing-lifecycle.mdx
+    digest: sha256:863b11c3c5492d33f90d325345ed790f1355f55faef20c2a0aa51dcd2f3a7b99
+sourceMessageRefs: []
+createdAt: 2026-10-22T14:59:06.990Z
+---
+@deployment/architect @deployment/engineer Please recommend a smaller, decision-complete first slice for our actual retained Reviewer recovery proposal3385d505. Your real formal Engineer estimate is10800expected/21600maximum active seconds; Reviewer780/1500. I will preserve these estimates and have not approved the broad plan. The human requires bite-sized results that build on existing mechanisms. Do not lower an estimate merely to fit a desired budget.
+
+Choose the smallest useful product that advances recovery of sandbox-assignment-MW1KBZ3W1swxlI8vdEXNda10PsGBZR7x-1-7007306b and can be independently reviewed, leaving later supported exposure or lifecycle behavior explicitly dependent. Resolve which existing boundary and concrete command should own it. Distinguish actual root cause evidence from the retry hypothesis. Privileged real-host exercise and release/adoption belong to the integrator after checked source delivery, not the Engineer's assignment. The first patch must preserve original failed observations, retained writable products and unknown usage, and leave unrelated live/warm resources intact. Do not invent another store/executor or a generic host command.
+
+Additional exact source evidence at Deployment b260976789dc5e56d96e4ab885bc68b97474ce7f: broker startup calls runtime.reconcile(), refuses if absence is unverified, then recoverWorkspaceBuilds(configuration,true). recoverWorkspaceBuilds returns skipped active_workspace_authority if any task/unexpired lease remains; when fenced and idle it detaches validated owned disk units then recoverExpiredAnalysis. recoverExpiredAnalysis validates owned stopped-job/lease/disk identities, writes a separate -recovery.json result, releases expired analysis lease and removes disk storage; it does not rewrite the failed assignment receipt. The active integrator bootstrap additionally has stable producer fencing and fixed cache-maintenance lifecycle from existing accepted proposals95dfdfe7 and77a71540; do not duplicate or assume those unreviewed products are on protected source.
+
+Return a concrete scope, explicit deferred work and missing exact source inputs. This source-free discussion is planning feedback, not implementation authority, a formal code review or a request for synthetic verification. Keep existing source-recovery team/classes/grants unchanged. New/changed formal estimates belong to the normal governed proposal/workday cycle after scope is actually revised.
