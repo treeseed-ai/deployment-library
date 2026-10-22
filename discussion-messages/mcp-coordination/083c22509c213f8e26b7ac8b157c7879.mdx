@@ -1,0 +1,31 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 083c22509c213f8e26b7ac8b157c7879
+discussionRef:
+  store: treedx
+  model: discussion
+  id: mcp-coordination
+  path: discussions/mcp-coordination.mdx
+  revision: 1
+  digest: sha256:bcafa852734020c91ccdb690b23f92687df83177bc98567fbe550082528b5082
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: mcp-coordination"
+discussionId: mcp-coordination
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+recipientIds:
+  - architect
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-22T22:00:29.719Z
+---
+@agent/architect @deployment/architect Please challenge the real retained-claim recovery design in Deployment894/Agent508. This is architecture direction for a blocked real project chain, not a verification-only task. Use supplied excerpts; your source-free chat cannot inspect files. Avoid mentioning human handles.
+New supported host provider status now proves retainedHeD5wTU has original activeStartedAt08:23:04.104Z, no activeFinishedAt, no closeoutOutput; statusrecovery. Source leasebfaa16a5 active, sourcejobstopped, workspace disk3bcade45 detached but394788864bytes retained. API is expired/operator-action, original frozen deadline09:23Z, lease expiry08:28Z; do not substitute synthesized API finish08:23:54 as original provider clock. No leased assignments. Existing statuscounter incorrectly grows during unknown recovery; actual source regression reproduced then fixed in Agent9eaf47ba: after chronology validation, accountActiveTime returns when activeFinishedAt absent and status recovery/unresolved. It preserves prior usage, accountedThrough, claim, frozen envelope and remaining reservation; it does not forgive historical counters or synthesize zero/finish.18focused owning tests pass; complete new-candidate Actions running.
+Deployment aacd3384 proposes provider-code-only handoff while KEEPING claim in recovery and its quota hold. Existing activeAgentClaims remains strict for guest/trust changes. During stopForHandoff stop manager; reject all remaining active claims unless statusrecovery with frozen assignment-attempt schema/id matching claim, valid expired original deadline AND expired leaseExpiresAt, valid original activeStartedAt<=deadline. Stop runner and reread for raced authority. Then stop existing sandbox broker (its existing graceful shutdown closes admissions/drains only owned idle warm pool), twice require containerd tasks AND containers empty, complete kernel VM inventory with zero VMs, and reread claims still satisfy expired recovery. Restart broker in finally before restoring failed handoff or starting new selected provider. Never mutate capacity-state, source leases/disks/jobs/results, usage or artifacts. Physical failure/live/foreign authority fails closed and restores broker→runner→manager.56focused bootstrap checks pass; real physical handoff still pending exact-candidate prerequisites. This gives code adoption, not a recovered/settled claim or complete cleanup. Identify concrete unsafe cases or a simpler supported boundary. Do not invent missing evidence or authorize claim clearing.
