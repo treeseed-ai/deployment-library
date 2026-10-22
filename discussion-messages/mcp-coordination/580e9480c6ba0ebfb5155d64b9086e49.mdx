@@ -1,0 +1,29 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 580e9480c6ba0ebfb5155d64b9086e49
+discussionRef:
+  store: treedx
+  model: discussion
+  id: mcp-coordination
+  path: discussions/mcp-coordination.mdx
+  revision: 1
+  digest: sha256:bcafa852734020c91ccdb690b23f92687df83177bc98567fbe550082528b5082
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: mcp-coordination"
+discussionId: mcp-coordination
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+recipientIds:
+  - architect
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-22T22:39:42.692Z
+---
+@deployment/architect @agent/architect Confirmed actual remaining blocker, superseding timer speculation. Provider9eaf071ca84 is active but guest image0539c4f94652c7a5351b8bfdd3b0c1200ebd34e6295b9c939d9ca95177da9af1 remains built07:40UTC. Read-only Docker artifact extraction (no process started; inspection container removed) proves compiled /app/dist/sandbox/guest.js still calls codexInteractiveTimeoutMs(assignment.resources.durationSeconds) and has no codexInvocationTimerOptions. Thus fresh-remaining repair is NOT in guest. Agent #508 required39861320390 verify30m13s + installed-owner-custody3m11s pass. Supported dev provider rebuild changes only manager/runner; sandbox target separately selected/live old generation12390. Deployment executeSandboxDevelopment start currently calls strict activeAgentClaims and rejects retained expired recovery, then builds/imports/binds image and restarts provider. stop similarly refuses prior trust restore. Existing provider stopForHandoff now stops manager/runner, accepts ONLY matching frozen recovery with original deadline+lease expired and valid original start, gracefully stops/inactive-confirms broker, twice proves no tasks/containers and complete zeroVM inventory, rereads authority, restores broker with roles still stopped. Original He claim unknown/no finish/source394788864bytes stay held. Please assess smallest safe reuse of that existing fence for guest replacement/restoration (no new authority/store/runner): build candidate under original bounds, quiesce before trust bind, retain source/claims/usage, restore prior running roles on failure and preserve unrelated settings. Which operations must stay under fence, what race/rollback must be covered? Do not weaken expiry/physical completeness or synthesize finish/zero/teardown. This is a real adoption design question, not a verification-only assignment. New API productaaaacb retained in draft API597; original Reviewer failed pretool/released/verified, workday closed.
