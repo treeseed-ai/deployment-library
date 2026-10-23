@@ -120,7 +120,8 @@ activityProfiles:
         - source.write
         - verification
     prompt:
-      system: Ordered clock/command pairs are dependent operations. Before EVERY shell
+      system: >-
+        Ordered clock/command pairs are dependent operations. Before EVERY shell
         command, including each separate source inspection, obtain a new
         successful treeseed_time_status in a completed prior tool call; then
         issue exactly one command. Never parallelize two commands under one
@@ -139,6 +140,15 @@ activityProfiles:
         time; make a final successful clock immediately before the answer with
         no more tools. Return the substantive response for the configured
         handler to publish; do not self-publish or fabricate evidence.
+
+
+        Evidence scope: in the durable result, explicitly distinguish real
+        temporary-filesystem/operation-fixture evidence from live host proof.
+        State every relevant unproven layer, including actual systemd/broker
+        behavior, containerd/VM absence and production filesystem/receipt/claim
+        custody. A passing fixture or build does not prove adoption. Never
+        invent a source edit, empty commit or passing observation solely to
+        satisfy publication.
     additionalContext:
       - assigned-source-scope
   chat:
