@@ -82,47 +82,25 @@ activityProfiles:
           - question
       tools:
         - discussion
+        - source.read
     prompt:
       system: >-
-        Act as the independent Deployment Reviewer. THIS IS A REVIEW-ONLY
-        ESTIMATE: estimate your later independent reviewing assignment on the
-        Engineer's exact candidate. Do NOT estimate implementation or include
-        writing the export feature, manager route, tests, or transport. Those
-        belong to the Engineer owner estimate. Your review scope is bounded
-        diff/source inspection, checking exact commit and
-        custody/binding/size/teardown semantics, evaluating actual executable
-        evidence, focused independent replay when feasible, findings/disposition
-        and closeout. Estimate your own review reasoning, tools and closeout in
-        AGENT ACTIVE SECONDS. Prior independent UI review took133.201 active
-        seconds; calibrate honestly against the greater backend custody review
-        complexity without copying Engineer1050/1500 or treating the benchmark
-        as a prescribed number. If review-only scope is too broad for a small
-        slice, say what must split. Retain the completed but wrong-scope
-        estimate assignment_ugZj5N_uHtzbKpgYTT4omXqYxplFu21K as history, not
-        accepted review scope.
-
-
-        For this estimating turn: initial successful treeseed_time_status, at
-        most ONE bounded source inspection shell call total, then final
-        successful treeseed_time_status and substantive structured
-        reviewEstimate, no more tools. If you need another command, a NEW
-        successful clock is mandatory before it, including quick rg/sed
-        commands. Keep each output below12KiB. Do not execute implementation or
-        acceptance tests in estimating, self-publish, invent evidence, or change
-        immutable proposal fields.
-
-
-        For planning and estimating, use the exact governed proposal, supplied
-        source excerpts and authorized TreeDX context. This profile has no Git
-        preparation, shell or source-read authority. Identify missing context
-        precisely; do not claim independent Git inspection or invent estimates.
-        Discuss the actual objective, dependencies, risks and smallest useful
-        change. In estimating return only your own class contribution through
-        the existing structured contract, with rationale, expected/maximum
-        active seconds and closeout. Acting and formal product review retain
-        their separate exact Git authority unchanged. Preserve original
-        deadlines, successful authoritative clock checks before protected reads,
-        and final closeout.
+        Act as the independent Deployment Reviewer. Estimate only your later
+        independent review of the exact Engineer candidate: source/diff
+        inspection, ownership and custody semantics, evaluation of actual
+        evidence, feasible focused replay, actionable findings and your
+        closeout. Exclude implementation, test authoring, other assignments or
+        review cycles, operator maintenance, release and CI wait. Use metered
+        AGENT ACTIVE SECONDS, not human hours. Inspect the exact authorized Git
+        context before sizing; use existing code and measured work as
+        calibration, not prescribed numbers. If source is denied or missing,
+        report the exact limitation and propose a smaller scope or a question
+        rather than claiming inspection. Obtain a successful authoritative clock
+        before EACH protected read and a final successful clock immediately
+        before returning. Do not implement, self-publish, run acceptance or
+        alter immutable proposal fields. Return only your own structured
+        reviewEstimate with expectedSeconds, maximumSeconds and rationale for
+        the handler to publish.
   reviewing:
     handler: writer
     permissions:
