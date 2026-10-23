@@ -1,0 +1,92 @@
+---
+schemaVersion: treeseed.proposal/v1
+id: 334fb722-ef3b-4b83-8c5b-d6c8808675f5
+projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+title: Preserve prior provider settings when guest snapshot creation fails
+request: "Existing Deployment834 and Agent496. Real Engineer rework84669ccb9
+  and0d370a811cf05995e107e0d7b45e5072771f826e was recovered by published
+  CLIrc88, exact bundle/ref/base verified, and retained with protected ancestry
+  as Deployment895 source9e473493aefa26fcc62c36570cb8fdaa1c44cee2. The original
+  rework assignment_484wTQNr4Ut79TyPZereF1shkVVv8FKH expired because API graph
+  reconciliation overwrote running state; original output/593.490004656native
+  active seconds/verified teardown were retained under failed lifecycle,
+  canonical result stays null. Do not promote that attempt to success or replay
+  unknown usage. API599 fixes the lifecycle defect separately. Coordinator
+  source inspection of the actual recovered product found a real remaining
+  custody bug: executeSandboxDevelopment calls
+  cpSync(providerDirectory,providerSnapshot), sets providerSnapshotReady only
+  after success, but catch rollback rmSync(providerDirectory) whenever
+  providerSelected even if copy failed before any import/provider mutation. A
+  failed snapshot must not delete the still-valid prior provider selection. The
+  normal discussion send-3db5fb01e2ada41e3314e8a37e2e603d asks existing
+  Deployment Architects/Engineer/Reviewer for scope advice. Implement the
+  smallest owning fix with a focused regression that actually fails before the
+  fix; preserve continuous broker fencing and recovery-claim identity. Review
+  the complete earlier handoff implementation plus this repair against the
+  original independent Reviewer findings (identity/bytes race, admissions fence
+  through all selections, actual operation import/start/restore failures). This
+  is new meaningful source repair with fresh group estimates/Decision and paired
+  review; no verification-only assignment or fabricated reuse of the expired
+  result. Guest cannot mutate host/provider state, claims, credentials or
+  released code."
+summary: Repair a real remaining custody defect in the retained guest-adoption
+  product, then review the full candidate before adopting the Agent guest
+  repair.
+status: draft
+groupIds:
+  - source-recovery
+executionPlan:
+  workItems:
+    - id: preserve-guest-snapshot-custody
+      activity: acting
+      agentClass: engineer
+      workspace: git
+      review: required
+      objective: Make guest adoption retain valid prior provider settings when
+        snapshot creation fails, and independently review the full retained
+        handoff implementation before integration.
+      dependsOn: []
+      requestedPermissions:
+        content:
+          read:
+            - proposal
+            - decision
+            - knowledge
+            - discussion
+            - discussion-message
+            - note
+          write: []
+        tools:
+          - source.read
+          - source.write
+          - verification
+      requiredCapabilities:
+        - treeseed.engineering.code-change
+      contextRefs:
+        - store: git
+          model: repository
+          id: retained-guest-handoff
+          repository: treeseed-ai/deployment
+          commit: 9e473493aefa26fcc62c36570cb8fdaa1c44cee2
+      maximumReviewCycles: 2
+      acceptanceCriteria:
+        - Preserve the exact earlier Engineer commits and repair the
+          pre-selection snapshot-copy failure so the still-valid original
+          provider directory/settings are not deleted. Retain prior immutable
+          guest, host selection and receipt and make failures truthful.
+        - Maintain the existing continuous broker/producer fence and exact
+          retained recovery identity/bytes through import,
+          trust/host/receipt/provider selection and rollback. Unknown usage,
+          original clocks, leases, disk and source products remain untouched; no
+          new status store/executor, private persistence mutation or
+          role-specific runtime policy.
+        - Add/run a focused regression for actual snapshot-copy failure before
+          selection mutation, and preserve real operation
+          import/start/restoration failure coverage; return exact source
+          commit/changed paths/build/results and unproven layers.
+        - Independent Reviewer reviews the whole retained handoff implementation
+          plus the new repair against exact original findings. Return actionable
+          REQUEST_CHANGES or reasoned approval of the exact candidate, without
+          treating original expired output or agent-reported checks as
+          independent acceptance.
+---
