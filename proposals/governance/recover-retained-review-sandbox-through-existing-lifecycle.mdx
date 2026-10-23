@@ -2,7 +2,7 @@
 schemaVersion: treeseed.proposal/v1
 id: 3385d505-88b3-4cc3-98e4-ef62fa8db66d
 projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
-title: Inspect exact retained sandbox custody after broker restart
+title: Read one retained sandbox journal through scoped status
 request: >-
   Owning Issues Deployment834 and Agent496; SDK429 tracks later supported
   coordinator projection. This proposal is based on real Agent Architect
@@ -155,22 +155,56 @@ request: >-
   visibility capability, not a verification-only assignment. Physical cleanup
   and Agent adoption remain unproved until later linked slices and actual
   supported host exercise.
-summary: "First small recovery slice: extend the existing protected sandbox
-  status backend to resolve one original retained assignment/sandbox from
-  existing durable custody, without cleanup or invented usage."
+
+
+  Bite-sized v11 correction, 2026-10-23: preserve actual v10 Engineer7800/15600
+  and Reviewer720/1440 estimates; do not lower or overwrite them. The first
+  scope is now ONLY a bounded lookup/readback of ONE original source job journal
+  through existing sandbox.status with paired assignmentId and sandboxId
+  selectors. Use the ACTUAL active host bootstrap
+  baseline62c1cd29569690e09c1894a34de87fcb6b76d663 (public GitHub commit
+  independently read back), where src/sandbox/workspace-status.ts exports
+  readSourcePublicationJournal(kind,sandboxId) and src/sandbox/source-export.ts
+  already demonstrates exact original owner validation. Reuse that existing
+  bounded private record reader and allowlist only safe original
+  owner/lease/state/source/failed-result facts needed for later recovery. Do not
+  scan unrelated historical jobs, reconstruct catalogue authority, infer
+  physical absence or perform teardown. Preserve existing unscoped status,
+  records, held work and unknown usage. A missing/conflicting/unsafe original
+  record is an explicit scoped unavailable/refusal outcome, not healthy empty
+  data. Catalogue/physical binding and cleanup remain later dependent slices
+  using this SAME resolver, never a parallel store. SDK/CLI selector exposure is
+  a linked integration slice, with no private ad-hoc wrapper meanwhile.
+
+
+  Team correction: governed Deployment Engineer and Reviewer estimating profiles
+  were published/read back at9b2c8dfaacab5aeb5877f6c7d11c674d19d10eaf through
+  native MCP knowledge governance. They now grant source.read and have concise
+  coherent source-aware own-active-time estimating prompts. Acting/review
+  profiles, classes/groups and all issued snapshots remain unchanged. Fresh
+  estimates for this narrower scope must actually inspect the exact source or
+  report the real denial; old source-free estimates are history, not current
+  sizing. Do not start acting until fresh group participation, own estimates and
+  exact approval. Source62 includes needed active bootstrap custody; do not
+  replace it with older protectedf586 or merge unrelated unapproved cache
+  products. The SDK original8/reserved Tester→Engineer chain remain unchanged;
+  its assessment draft was abandoned.
+summary: "Small first slice: reuse existing bounded original-journal read for
+  paired assignment/sandbox status; no catalogue reconstruction, physical
+  recovery or cleanup."
 status: discussing
 groupIds:
   - source-recovery
 executionPlan:
   workItems:
-    - id: inspect-retained-sandbox-custody
+    - id: read-one-retained-source-journal
       activity: acting
       agentClass: engineer
       workspace: git
       review: required
-      objective: Implement scoped retained assignment/sandbox status from original
-        durable custody after broker restart, reusing the existing status
-        backend without modifying resources or unknown usage.
+      objective: Add scoped retained assignment/sandbox status by reusing the existing
+        bounded original source journal reader; no cleanup, catalogue
+        reconstruction or new physical proof.
       dependsOn: []
       requestedPermissions:
         content:
@@ -191,31 +225,24 @@ executionPlan:
       contextRefs:
         - store: git
           model: repository
-          id: retained-sandbox-status-source
+          id: existing-retained-source-journal-reader
           repository: treeseed-ai/deployment
-          commit: f5869b14940cf5ef38ce40a44391b8f232845ac6
+          commit: 62c1cd29569690e09c1894a34de87fcb6b76d663
       maximumReviewCycles: 2
       acceptanceCriteria:
-        - Extend existing sandbox.status protected backend with paired public
-          assignmentId/sandboxId selectors; preserve unscoped behavior. Resolve
-          original owned durable sandbox/source journal and catalogue bindings
-          after broker restart, or report missing/conflicting/unavailable
-          truthfully without trusting caller-provided authority/private
-          paths/tokens.
-        - Return only exact selected custody and physical observations; retain
-          unrelated warm/active resources and original failed records. Do not
-          detach/delete/release, start execution, reconstruct model completion,
-          invent usage, expose credentials, mount guest data or introduce a new
-          store/index/executor.
-        - Keep the owning resolver reusable by the next physical
-          teardown-recovery slice, without duplicating policy into
-          handlers/prompts/CLI. Canonical SDK/CLI projection is a linked
-          subsequent product; no private operation wrapper or pretend live
-          recovery.
-        - Implement focused owning regression and real component-boundary checks
-          for exact/missing/conflicting/foreign records, absent runtime after
-          restart, incomplete physical inventory and duplicate reads without
-          mutation. Return exact candidate/evidence and remaining unproven
-          layers. Independent Reviewer reviews this scoped read product; broader
-          cleanup/activation requirements stay separately open.
+        - Extend existing sandbox.status with paired public
+          assignmentId/sandboxId selectors, preserving unscoped behavior. Reuse
+          readSourcePublicationJournal and existing owner-binding checks at
+          exact62c1 source; read only the selected existing job and any existing
+          result required for safe original-status readback.
+        - Allowlist original safe identity/lease/state/source and existing
+          failure/teardown facts; no credentials/private paths/tokens, mutable
+          source reads, host-wide scans, new stores/indexes/executors, catalogue
+          reconstruction or cleanup. Preserve original records and report
+          missing/conflicting/unsafe custody as scoped unavailable/refusal.
+        - Add focused regression and real owning component checks for
+          exact/missing/mismatched/unsafe selectors and immutable repeat reads.
+          Independent Reviewer reviews this bounded source/status product. Keep
+          physical recovery, unproven original teardown and unknown usage
+          explicit; no verification-only assignment or private test wrapper.
 ---
