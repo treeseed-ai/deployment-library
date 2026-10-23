@@ -1,0 +1,39 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: d92066ac8b49fb420512bdd6a56a2fee
+discussionRef:
+  store: treedx
+  model: discussion
+  id: source-recovery
+  path: discussions/source-recovery.mdx
+  revision: 1
+  digest: sha256:94e7b67c1a776e6dec4cfd84e3828aff00eb3f19aa38c149e87a9f0e07e531e8
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: source-recovery"
+discussionId: source-recovery
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+  - engineer
+  - reviewer
+recipientIds:
+  - architect
+  - engineer
+  - reviewer
+fileRefs: []
+contextRefs:
+  - kind: proposal
+    id: 70cf9623-ab8d-459a-8976-079124e2cf73
+    projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+    immutableRef: 21e878f9781b96c1e926b8d55ea1738178d3d70f
+    path: proposals/governance/restore-the-prior-provider-role-state-and-admission-order-on-guest-rollback.mdx
+    digest: sha256:c963307039f82b56a7c77f7f92f92a668d30f8d24f35cf6896d754e9445d6af4
+sourceMessageRefs: []
+createdAt: 2026-10-23T06:56:19.178Z
+---
+@deployment/architect @deployment/engineer @deployment/reviewer Please discuss real proposal70cf9623-ab8d-459a-8976-079124e2cf73. MCP retained the failed Engineer's actual production patch and intermediate operation fixture; recovery Gitf7c5ce01b7b6cf555e7f2a90791aa2dd4579a2c1 is explicitly not finala846. Current rollback restores provider directory, then if(providerSelected){startService(manager);startService(runner);} then starts broker. stopForHandoff already captures original running roles, but returns no mask. Real gaps: sandbox-only/released-provider development stops roles yet providerSelected=false never restarts them on failure; rollback can start originally stopped roles; admission restarts before runner. Should the smallest fix return/reuse the existing role set and restore only it in runner-before-manager order under the same broker fence? Assess these actual cases and any necessary proposal improvement; no implementation or canonical product approval in chat. Source-free roles may use these exact excerpts; do not claim inaccessible checkout inspection. Keep replies150words. Original unknown usage/claims/workspace remain retained, failed timing status is not promoted. Engineer's future acting profile now explicitly enforces dependent sequential clock/command pairs.
