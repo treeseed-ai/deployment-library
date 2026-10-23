@@ -1,0 +1,85 @@
+---
+schemaVersion: treeseed.proposal/v1
+id: 6eb029f4-9184-4629-abd4-b35fbbe058f4
+projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+title: Use the fenced replacement path when adopting a guest with retained
+  recovery claims
+request: "Existing Deployment834/draft895/draft898/Agent496. Exact host
+  d84af11a32956c6dacd866332c4308b9721f47d8 passed full owner/coded
+  components39920413404 and was activated dev-1792743099082-477cc8a7,
+  manifestfc7879aa1709c1952d45f1fd13adf6189347c590355b89422ac76215bc46a8c3. All
+  work/discussions closed first. Actual supported trsd dev rebuild agent.sandbox
+  on Agent9eaf entered the productive-expiry/physical fence, imported trust,
+  then failed. Public host.events records development.container 'Stopped
+  provider guest trust does not match its selected runtime.' Rollback restored
+  oldguest0539; all10 retained status/start/finish/accountedThrough records
+  identical and both roles healthy. Owning provider-start shortcut resumes an
+  existing immutable runtime whenever override+active claims+(limit reload or
+  both roles stopped), without excluding input.guestReplacement. During
+  intentional replacement those stopped containers still have old trust, so
+  shortcut rejects instead of using the EXISTING fenced replacement branch.
+  Smallest fix: exclude intentional guestReplacement from same-selection resume;
+  preserve ordinary same-trust resume, unintentional changed-trust denial,
+  daily-limit reload and all physical/producer/source/claim/usage guards.
+  Existing operation fixture has only unresolved claims and empty provider
+  metadata, missing the real recovery-claim branch. Add a realistic
+  actual-operation regression with an expired retained recovery claim, original
+  future workday deadline, exact prior runtime/mount/guest metadata, new guest
+  trust, preserved provider/source bytes and clocks. Reuse existing paths and
+  assertions; no new state/executor/allowance/compatibility route. Return real
+  code and explicit fixture/live-evidence limits. Independent Reviewer reviews
+  this correction on the complete supplied composition; integrator executes
+  exact-owner gates and retries the real retained guest adoption afterward."
+summary: Fix the actual stopped-provider trust rejection during intentional
+  Agent guest replacement while preserving ordinary interruption recovery.
+status: draft
+groupIds:
+  - source-recovery
+executionPlan:
+  workItems:
+    - id: skip-interruption-resume-during-intentional-guest-replacement
+      activity: acting
+      agentClass: engineer
+      workspace: git
+      review: required
+      objective: Repair the real guest adoption blocker through the existing fenced
+        replacement path without changing retained claims or unknown accounting.
+      maximumReviewCycles: 2
+      dependsOn: []
+      requiredCapabilities:
+        - treeseed.engineering.code-change
+      requestedPermissions:
+        content:
+          read:
+            - proposal
+            - decision
+            - knowledge
+            - discussion
+            - discussion-message
+            - note
+          write: []
+        tools:
+          - source.read
+          - source.write
+          - verification
+      contextRefs:
+        - store: git
+          model: repository
+          id: exact-active-checked-host-composition
+          repository: treeseed-ai/deployment
+          commit: d84af11a32956c6dacd866332c4308b9721f47d8
+      acceptanceCriteria:
+        - Intentional guest replacement with actual-shaped expired retained
+          recovery claims uses existing fenced runtime replacement, updates both
+          provider role trust selections and completes without the
+          stopped-runtime mismatch.
+        - Ordinary same-trust interruption resume, unintentional changed-trust
+          denial, limit reload, productive-expiry identity, continuous
+          producer/physical fence, rollback and preservation of claims/unknown
+          usage/source/provider settings remain enforced.
+        - Return a real commit with focused owning-operation evidence/build and
+          explicit unproven live layers. Independent Reviewer approves or gives
+          concrete findings. Integrator full owner/Actions and actual supported
+          guest adoption remain separate truthful gates; no fake acceptance or
+          publication-only edits.
+---
