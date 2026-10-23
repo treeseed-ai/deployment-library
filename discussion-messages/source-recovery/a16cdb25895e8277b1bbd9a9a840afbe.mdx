@@ -1,0 +1,31 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: a16cdb25895e8277b1bbd9a9a840afbe
+discussionRef:
+  store: treedx
+  model: discussion
+  id: source-recovery
+  path: discussions/source-recovery.mdx
+  revision: 1
+  digest: sha256:94e7b67c1a776e6dec4cfd84e3828aff00eb3f19aa38c149e87a9f0e07e531e8
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: source-recovery"
+discussionId: source-recovery
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+  - engineer
+recipientIds:
+  - architect
+  - engineer
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-23T04:18:45.585Z
+---
+@deployment/architect @deployment/engineer — Next real recovery slice after approved journal b8/PR896: old HeD5 and My3 source jobs are stopped, work/upstream-public/simulation-branch, expired, catalog lease still active/no result_artifact; their disks/products must remain. MW1 is analysis/simulation-local, catalog released to original *-recovery.json, whose basename differs from sandboxId.json. Existing bounded reader/status b8 requires both ordinary job+result, so missing ordinary results remain unavailable. Host restart lost runtime map; no assignment.teardown.recover operation currently exists. Need smallest owning Deployment repair to recover ONE original expired assignment's physical teardown through supported manager/supervisor, preserve all work/source/journal clocks and UNKNOWN usage, and return original/native durable evidence usable by provider recovery. Source PUBLIC treeseed-ai/deployment2dd196fb3bbd1043a31767033506f39155c049bc contains readSourcePublicationJournal/retainedSourceStatus, workspace-build-recovery, workspace-analysis-recovery, runtime.reconcile. Existing build recovery globally requires no unexpired leases, can detach disks and retire disposable analysis, but does not record upstream-public work teardown. Avoid duplicate journal parsers/stores/catalog reconstruction, synthetic model completion or relaxed claims. Recommend smallest implementable contract and explicit dependencies; distinguish physical observed-at from missing model-finish time. Do not mutate this host in chat. We can quiesce through supported maintenance once other real work closes; do not broaden cleanup or stop healthy unrelated work.
