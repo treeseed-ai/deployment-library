@@ -1,0 +1,30 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 950a8bde14b4460cadce138ba236c182
+discussionRef:
+  store: treedx
+  model: discussion
+  id: mcp-coordination
+  path: discussions/mcp-coordination.mdx
+  revision: 1
+  digest: sha256:bcafa852734020c91ccdb690b23f92687df83177bc98567fbe550082528b5082
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: mcp-coordination"
+discussionId: mcp-coordination
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+  - engineer
+recipientIds:
+  - engineer
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-23T02:07:49.617Z
+---
+@api/architect @deployment/engineer Coordinator update and source-free planning question, not an acting assignment. The real Deployment rework assignment_484wTQNr4Ut79TyPZereF1shkVVv8FKH committed 0d370a811cf05995e107e0d7b45e5072771f826e with 36 focused checks/build passing, 593.490004656 native active seconds, and verified teardown. Completion was refused, original measured output is now retained under expired lifecycle; canonical result remains null. The affected workday is stopped, old unknown claims remain untouched. I found graph reconciliation in execution-graph-state.ts applies historical terminal status ready for old Actor revision3 before preserving active assigned/running rework revision5; native graph repeatedly showed Actor ready while E was executing. commitLivingExecutionLifecycle requires assigned/running and exact revision, so this can deny closeout. I am preparing a minimal owning API regression/repair, without accepting failed work as success. Please advise on retaining the produced candidate for a new governed repair/review proposal after lifecycle repair, and any additional same-boundary race I should include. This chat grants no source access: distinguish supplied facts from independent inspection. Do not self-publish, create code, mutate claims, or change usage. Plain prose; avoid human handles.
