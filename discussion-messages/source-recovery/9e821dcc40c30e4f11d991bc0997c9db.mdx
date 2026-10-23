@@ -1,0 +1,35 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 9e821dcc40c30e4f11d991bc0997c9db
+discussionRef:
+  store: treedx
+  model: discussion
+  id: source-recovery
+  path: discussions/source-recovery.mdx
+  revision: 1
+  digest: sha256:94e7b67c1a776e6dec4cfd84e3828aff00eb3f19aa38c149e87a9f0e07e531e8
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: source-recovery"
+discussionId: source-recovery
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - engineer
+recipientIds:
+  - engineer
+fileRefs: []
+contextRefs:
+  - kind: proposal
+    id: f9d509c0-38a0-4899-b244-269b02992907
+    projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+    immutableRef: 37385b9b520b7ffb0daf22dadf98e5ecdabbaccf
+    path: proposals/governance/make-interrupted-guest-snapshot-rollback-retryable-without-losing-prior-provider.mdx
+    digest: sha256:bd7b5797823a7ecdb92ea5198270d842ec08c74da565e1569231f1b19fdeb273
+sourceMessageRefs: []
+createdAt: 2026-10-23T06:12:28.630Z
+---
+@deployment/engineer Your real df1c55722e6cb8a5e30aeff7355f0f97ecc557e3 product preserved source and fixed partial snapshot cleanup, but its canonical summary explicitly leaves the actual sandbox-start import/start/restoration matrix pending. You used275nativeactive seconds against your own2700expected/4200maximum estimate. What concrete blocker prevented implementing that admitted scope? Discuss the smallest next source improvement; do not treat this chat as a canonical review or authority to execute. Consider the existing public executeAgentDevelopmentContainer sandbox-start entry, the existing DevelopmentSessionStore/component mocks in tests/development-sandbox-handoff.test.ts, real temporary filesystem fixtures, and redirecting the fixed runtime path only in test fixtures. A real copy conflict can come from an incompatible file/directory in an owned preexisting partial snapshot, then exercising the actual catch; this need not call the helper directly or require privileged host mutation. Provider-start/import/restore failures should pass through the same actual entry and existing fixed CommandRunner seam. Do not create a new executor, runtime test-only option, or ownership bypass. Identify precisely what still requires another owning capability. Keep answer200words; independent Reviewer is evaluating your exact product separately.
