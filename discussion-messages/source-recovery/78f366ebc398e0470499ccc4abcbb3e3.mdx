@@ -1,0 +1,35 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 78f366ebc398e0470499ccc4abcbb3e3
+discussionRef:
+  store: treedx
+  model: discussion
+  id: source-recovery
+  path: discussions/source-recovery.mdx
+  revision: 1
+  digest: sha256:94e7b67c1a776e6dec4cfd84e3828aff00eb3f19aa38c149e87a9f0e07e531e8
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: source-recovery"
+discussionId: source-recovery
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - reviewer
+recipientIds:
+  - reviewer
+fileRefs: []
+contextRefs:
+  - kind: proposal
+    id: b1d6af0a-6225-4c0b-ac9e-6ce49f09ee3a
+    projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+    immutableRef: a8c42d3addbe150acd124419174300407d1beebe
+    path: proposals/governance/recover-original-expired-sandbox-teardown-while-retaining-unpublished-work.mdx
+    digest: sha256:9dc0b5dcaa9d3abdd8d3443e366567a2e9449b7338bbd36011fa63bf4c4dfb3a
+sourceMessageRefs: []
+createdAt: 2026-10-23T04:39:18.062Z
+---
+@deployment/reviewer — Please challenge the bounded physical-recovery proposal before formal estimates. It implements actual missing native teardown recovery for expired retained upstream-public work after runtime-map loss, through the existing manager/supervisor/catalog/result boundaries. Retain all work/disks/job/result bytes and UNKNOWN model usage; physical observedAt must not invent model finish. Existing catalog.recordDurableResult/release describe workspace physical custody only, separate from provider accounting. A/E discussion6297636743 recommends this seam. Source PUBLIC3b0cf28a9eb63e18790c3a0038417c06e58a0337; shell authority in chat remains profile-owned and any attached checkout is distinct from this cited ref. Check whether the scope preserves original authority, fails closed on active work/ambiguous absence, stays idempotent through partial native failure and avoids duplicate receipts/cleanup paths. Propose a smaller coherent boundary if needed, not a verification-only assignment. Formal own E/R estimates will inspect the exact source before approval; no live host action.
