@@ -2,52 +2,79 @@
 schemaVersion: treeseed.proposal/v1
 id: 6eb029f4-9184-4629-abd4-b35fbbe058f4
 projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
-title: Use the fenced replacement path when adopting a guest with retained
-  recovery claims
-request: "Existing Deployment834/draft895/draft898/Agent496. Exact host
-  d84af11a32956c6dacd866332c4308b9721f47d8 passed full owner/coded
-  components39920413404 and was activated dev-1792743099082-477cc8a7,
-  manifestfc7879aa1709c1952d45f1fd13adf6189347c590355b89422ac76215bc46a8c3. All
-  work/discussions closed first. Actual supported trsd dev rebuild agent.sandbox
-  on Agent9eaf entered the productive-expiry/physical fence, imported trust,
-  then failed. Public host.events records development.container 'Stopped
-  provider guest trust does not match its selected runtime.' Rollback restored
-  oldguest0539; all10 retained status/start/finish/accountedThrough records
-  identical and both roles healthy. Owning provider-start shortcut resumes an
-  existing immutable runtime whenever override+active claims+(limit reload or
-  both roles stopped), without excluding input.guestReplacement. During
-  intentional replacement those stopped containers still have old trust, so
-  shortcut rejects instead of using the EXISTING fenced replacement branch.
-  Smallest fix: exclude intentional guestReplacement from same-selection resume;
-  preserve ordinary same-trust resume, unintentional changed-trust denial,
-  daily-limit reload and all physical/producer/source/claim/usage guards.
-  Existing operation fixture has only unresolved claims and empty provider
-  metadata, missing the real recovery-claim branch. Add a realistic
-  actual-operation regression with an expired retained recovery claim, original
-  future workday deadline, exact prior runtime/mount/guest metadata, new guest
-  trust, preserved provider/source bytes and clocks. Reuse existing paths and
-  assertions; no new state/executor/allowance/compatibility route. Return real
-  code and explicit fixture/live-evidence limits. Independent Reviewer reviews
-  this correction on the complete supplied composition; integrator executes
-  exact-owner gates and retries the real retained guest adoption afterward."
-summary: Fix the actual stopped-provider trust rejection during intentional
-  Agent guest replacement while preserving ordinary interruption recovery.
-status: draft
+title: Restore real provider mounts and role state after failed guest adoption
+request: "Existing Deployment834/Agent496/drafts895,898. v1 could admit no
+  models while provider was down; workday75adc07a ended degraded
+  with0assignments, not a completed implementation. Integrator repaired two
+  earliest boundaries under the blocked-delegation exception: ce0 excludes
+  intentional guestReplacement from interruption resume; complete
+  required39924945542 passed, but actual guest retry failed08:57:33 because
+  broker was stopped while Compose waited for provider health. c385 starts
+  broker only after selected trust/source and the second physical/claim fence,
+  before role readiness; its focused regression reproduced the exact socket
+  failure before fix,21checks/3files passed after, fresh full Actions39929084379
+  pending. Do NOT redo those changes. Real remaining functional work: failed
+  guest rollback restores the provider directory by removing the mounted
+  directory and renaming its snapshot, then merely docker-starts old containers.
+  Actual prior rollback later produced MODULE_NOT_FOUND
+  /app/dist/provider/lifecycle/entrypoint.js despite initial running=true
+  status. Recreated new roles may also retain new-guest environment after old
+  trust is restored. Repair this owning rollback to rebind the restored prior
+  source/configuration/trust before resuming exactly the original running roles,
+  runner before manager. Preserve originally stopped roles, original
+  claims/accounting/unknown usage/products/settings/receipt and all fences. Fail
+  closed with truthful diagnostics if restoration/readiness is incomplete. Use
+  existing container/Compose ownership and transaction paths; no second
+  executor/state or general Docker options. Actual retained-claim snapshots
+  prove all10 IDs/status/start/finish/accountedThrough unchanged after both
+  failed attempts; that does not establish healthy rollback or settlement. Keep
+  fixture claims honest, use meaningful filesystem/operation cases for the
+  stale-mount/role-state failure, and return a real functional product. Exact
+  Gitc385 is public and frozen. Own source-aware estimates and normal approval
+  required before Engineer→Reviewer. Coordinator's live read-back/complete
+  Actions are separate gates; no verification-only assignment."
+summary: Repair the observed stale mounted-runtime rollback without losing
+  retained work or unknown usage.
+status: discussing
 groupIds:
   - source-recovery
 executionPlan:
   workItems:
-    - id: skip-interruption-resume-during-intentional-guest-replacement
+    - acceptanceCriteria:
+        - After restoring a completed provider-directory snapshot, existing
+          provider containers must bind the restored source/configuration and
+          prior guest trust before original running roles resume. A stale bind
+          mount or new-guest environment must not survive as an apparently
+          successful rollback.
+        - Preserve each original running/stopped role state and
+          runner-before-manager admission order; do not start originally stopped
+          roles. Preserve claims, original clocks/deadlines, unknown usage,
+          source/settings/receipt bytes and unrelated services. Retain a closed
+          admission/broker fence and an explicit error when restoration or
+          readiness cannot be established.
+        - Reuse the existing guest handoff and rollback paths. Preserve ce0
+          intentional-replacement exclusion and c385
+          broker-before-provider-health ordering; those repairs are already
+          implemented and must not be reassigned as new work. Return a genuine
+          functional commit with realistic owning-operation/filesystem
+          regression evidence, focused checks/build, and explicit fixture versus
+          actual-live limits. Independent Reviewer reviews the actual code and
+          evidence; coordinator performs exact-owner Actions and supported live
+          adoption separately.
       activity: acting
       agentClass: engineer
-      workspace: git
-      review: required
-      objective: Repair the real guest adoption blocker through the existing fenced
-        replacement path without changing retained claims or unknown accounting.
-      maximumReviewCycles: 2
+      contextRefs:
+        - store: git
+          model: repository
+          repository: treeseed-ai/deployment
+          commit: c385a4eb865e8aca67d65a002fc3989586a444b5
+          id: exact-host-with-minimum-retained-adoption-repairs
       dependsOn: []
-      requiredCapabilities:
-        - treeseed.engineering.code-change
+      id: recreate-restored-provider-roles-after-guest-rollback
+      maximumReviewCycles: 2
+      objective: Restore actual prior provider mounts, guest trust and original role
+        state after failed guest adoption; keep admission fenced if recovery
+        cannot be proven.
       requestedPermissions:
         content:
           read:
@@ -62,24 +89,8 @@ executionPlan:
           - source.read
           - source.write
           - verification
-      contextRefs:
-        - store: git
-          model: repository
-          id: exact-active-checked-host-composition
-          repository: treeseed-ai/deployment
-          commit: d84af11a32956c6dacd866332c4308b9721f47d8
-      acceptanceCriteria:
-        - Intentional guest replacement with actual-shaped expired retained
-          recovery claims uses existing fenced runtime replacement, updates both
-          provider role trust selections and completes without the
-          stopped-runtime mismatch.
-        - Ordinary same-trust interruption resume, unintentional changed-trust
-          denial, limit reload, productive-expiry identity, continuous
-          producer/physical fence, rollback and preservation of claims/unknown
-          usage/source/provider settings remain enforced.
-        - Return a real commit with focused owning-operation evidence/build and
-          explicit unproven live layers. Independent Reviewer approves or gives
-          concrete findings. Integrator full owner/Actions and actual supported
-          guest adoption remain separate truthful gates; no fake acceptance or
-          publication-only edits.
+      requiredCapabilities:
+        - treeseed.engineering.code-change
+      review: required
+      workspace: git
 ---
