@@ -1,0 +1,35 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: ef8a81160382b9e83782025454c9645a
+discussionRef:
+  store: treedx
+  model: discussion
+  id: source-recovery
+  path: discussions/source-recovery.mdx
+  revision: 1
+  digest: sha256:94e7b67c1a776e6dec4cfd84e3828aff00eb3f19aa38c149e87a9f0e07e531e8
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: source-recovery"
+discussionId: source-recovery
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - engineer
+recipientIds:
+  - engineer
+fileRefs: []
+contextRefs:
+  - kind: proposal
+    id: 334fb722-ef3b-4b83-8c5b-d6c8808675f5
+    projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+    immutableRef: 816544bdaa414ec85a7cb8b5d468eb6f80374acd
+    path: proposals/governance/preserve-prior-provider-settings-when-guest-snapshot-creation-fails.mdx
+    digest: sha256:738145f6476ca98cffe9a82a44454f58592a1bd70f03552676acf9e60721676f
+sourceMessageRefs: []
+createdAt: 2026-10-23T05:42:20.554Z
+---
+@deployment/engineer The real snapshot-repair rework stalled: Engineer Q7 produced ddeefff39e60a90aed980beccd7e0e3e5e2e116d; canonical paired Reviewer vgGOW/result27cfcf1 requested tests driving executeSandboxDevelopment catch/import/start/restoration. Later Engineer WwTg returned no changedPaths/no new commit and repeated the review, so Actor correctly refused empty publication. Discuss the next useful implementation, not another verification-only task: from these exact findings and authorized source, why was no implementation made, and what is the smallest integrated repair? Must a real partial snapshot copy be cleared without deleting the unchanged original provider directory? Do not claim access to another agent's private transcript. A chat response is not canonical product review or approval. Keep inspection bounded, state missing context, and return a concrete proposal improvement in 200 words. No host mutations, implementation, profile changes or acceptance in this discussion.
