@@ -1,0 +1,88 @@
+---
+schemaVersion: treeseed.proposal/v1
+id: f9d509c0-38a0-4899-b244-269b02992907
+projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+title: Make interrupted guest snapshot rollback retryable without losing prior
+  provider settings
+request: "Existing Deployment834 / Agent496, retained PR895. Use exact Git
+  ddeefff39e60a90aed980beccd7e0e3e5e2e116d, preserving
+  earlier84669ccb9/0d370a811/9e473 and actual Engineer Q7 product. Canonical
+  Reviewer vgGOW/result-27cfcf1fb9c5cc15ff563998 requested integrated operation
+  coverage. Normal MCP discussion send-f2a00929435f0bc7b8100a5fbfb6a3d8 adds a
+  concrete functional gap: cpSync can create a partial provider-prior
+  destination before throwing; current helper returns when
+  hadProviderDirectory&&!providerSnapshotReady and leaves that incomplete
+  snapshot. The subsequent native retry WwTg made no changed paths/commit and
+  repeated review, so empty publication was refused. This proposal requires a
+  real functional fix, not a verification-only assignment. Current exact helper:
+  if (!providerSelected || (hadProviderDirectory && !providerSnapshotReady))
+  return; rmSync(providerDirectory,{recursive:true,force:true});
+  if(providerSnapshotReady)renameSync(providerSnapshot,providerDirectory). In
+  executeSandboxDevelopment, snapshot copy occurs after
+  stopForHandoff(keepBrokerStopped:true) and before import; readiness becomes
+  true only after copy succeeds. Repair only owned incomplete snapshot cleanup
+  while keeping the original unchanged provider directory. Drive the actual
+  executeAgentDevelopmentContainer sandbox-start catch with real filesystem
+  failure and fixed command boundaries; do not just call a helper. Cover actual
+  operation import/start/restoration failure behavior; do not widen authority,
+  change retained claims/usage/source, invent receipts or discard partial worker
+  source. Original He/My/API Reviewer unknown usage stays unknown. Engineer owns
+  implementation and actual checks/new commit; canonical independent Reviewer
+  alone supplies approval. Internal helper opinions and chat are not canonical
+  review. Source-aware E/R must submit their own active-second estimates before
+  approval; no coordinator-prescribed values."
+summary: Clear only an incomplete provider snapshot, preserve the unchanged
+  selected provider, and complete the real guest-handoff repair with independent
+  review.
+status: draft
+groupIds:
+  - source-recovery
+executionPlan:
+  workItems:
+    - id: retryable-guest-snapshot-rollback
+      activity: acting
+      agentClass: engineer
+      workspace: git
+      review: required
+      objective: Repair owned partial snapshot cleanup and prove actual guest handoff
+        rollback preserves prior provider/guest/host/receipt so the real Agent
+        repair can be adopted.
+      maximumReviewCycles: 2
+      dependsOn: []
+      requiredCapabilities:
+        - treeseed.engineering.code-change
+      requestedPermissions:
+        content:
+          read:
+            - proposal
+            - decision
+            - knowledge
+            - discussion
+            - discussion-message
+            - note
+          write: []
+        tools:
+          - source.read
+          - source.write
+          - verification
+      contextRefs:
+        - store: git
+          model: repository
+          id: retained-snapshot-repair
+          repository: treeseed-ai/deployment
+          commit: ddeefff39e60a90aed980beccd7e0e3e5e2e116d
+      acceptanceCriteria:
+        - Preserve all earlier Engineer commits. On actual partial snapshot-copy
+          failure, retain byte-identical prior provider settings and remove only
+          the incomplete owned snapshot; leave no stale snapshot that
+          contaminates retry.
+        - Exercise the actual sandbox-start catch and rollback for
+          copy/import/provider-start/restoration failures; preserve continuous
+          stopped-producer/broker fence and truthful fail-closed restoration.
+          Retain original guest/host/receipt and claims/usage/source custody. No
+          private store writes, invented usage or new operation/runner.
+        - Return a real implementation commit, changed paths, focused results
+          and strict build with remaining unproven layers explicit. Independent
+          Reviewer evaluates the entire original retained guest-handoff plus
+          these repairs and returns exact actionable findings or approval.
+---
