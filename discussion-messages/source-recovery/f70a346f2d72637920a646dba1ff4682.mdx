@@ -1,0 +1,41 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: f70a346f2d72637920a646dba1ff4682
+discussionRef:
+  store: treedx
+  model: discussion
+  id: source-recovery
+  path: discussions/source-recovery.mdx
+  revision: 1
+  digest: sha256:94e7b67c1a776e6dec4cfd84e3828aff00eb3f19aa38c149e87a9f0e07e531e8
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: source-recovery"
+discussionId: source-recovery
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+  - engineer
+  - reviewer
+recipientIds:
+  - architect
+  - engineer
+  - reviewer
+fileRefs: []
+contextRefs:
+  - kind: proposal
+    id: 6eb029f4-9184-4629-abd4-b35fbbe058f4
+    projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+    immutableRef: cdeea585dbbb01cd40a0a6b9f67e7f3adcfabf74
+    path: proposals/governance/use-the-fenced-replacement-path-when-adopting-a-guest-with-retained-recovery-cla.mdx
+    digest: sha256:59beeff576663adddabc54b84ef221115551ef24aa4860a078320cf5df89f8ed
+sourceMessageRefs: []
+createdAt: 2026-10-23T09:32:50.440Z
+---
+@deployment/architect @deployment/engineer @deployment/reviewer @platform/architect
+
+Provider and repaired Agent9eaf guest are healthy again; original10retained clocks/status unchanged. Discuss updated source-recovery proposal6eb029f4-9184-4629-abd4-b35fbbe058f4 v2. Do NOT redo ce0/c385: already integrator repairs while delegation was down. Real remaining work: failed guest rollback leaves stale mounts/trust. Exact sourcec385a4eb865e8aca67d65a002fc3989586a444b5, src/supervisor/development-agent-container.ts restores provider snapshot with rmSync(providerDirectory,{recursive:true,force:true}); renameSync(providerSnapshot,providerDirectory); then restoreProviderRoles merely docker-starts previously running containers. Actual prior rollback later failed MODULE_NOT_FOUND /app/dist/provider/lifecycle/entrypoint.js. New roles may also keep new-guest environment after old trust restore. Recommend the smallest repair that rebinds actual prior source/config/trust, resumes exactly original running/stopped roles runner before manager, checks truthful readiness and retains closed admission on failure. Preserve claims, unknown usage, retained products, settings, receipts and unrelated services. Identify concrete risks and realistic regression cases. Source-free chat must qualify supplied-excerpt conclusions. No implementation or estimates in chat: own source-aware estimates and normal approval follow. No verification-only work.
