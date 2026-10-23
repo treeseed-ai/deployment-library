@@ -1,0 +1,112 @@
+---
+schemaVersion: treeseed.proposal/v1
+id: b1d6af0a-6225-4c0b-ac9e-6ce49f09ee3a
+projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+title: Recover original expired sandbox teardown while retaining unpublished work
+request: "Existing Deployment834 and Agent496. Follow independently approved
+  journal proposal3385 v13/Decision8305 and PR896 (real Engineerb8, Rapproved).
+  Exact PUBLIC source
+  treeseed-ai/deployment3b0cf28a9eb63e18790c3a0038417c06e58a0337. Real public
+  host observations: stopped HeD5
+  sandbox-assignment-HeD5wTUeCI4US7H7EIC-lXDdI-VcAY7B-1-1ecbc5ae,
+  leasebfaa16a5-9e44-42a2-8bdb-2d1a5add146b,
+  work/upstream-public/simulation-branch expired2026-10-22T08:28:01.937Z,
+  catalog active/no result; My3
+  sandbox-assignment-My3LsafvX-0liYFeyCCwBeBgzZpN4kFe-1-59580327,
+  lease73c6d946-61f6-4b81-b5d6-ed85788ddbfa, sameworkmode,
+  expired2026-10-23T02:49:51.689Z, active/no result. Their source disks/work and
+  original provider clocks must remain. HeD5 has no model finish and unknown
+  usage; My3 original provider finish02:44:59.274 but no teardown. MW1 analysis
+  lease is already released to *-recovery.json; never replace its original
+  receipt. Discussion6297636743c8f96623d600f2a15ae91b recommends one physical
+  recovery boundary and explicitly distinguishes physical observedAt from model
+  completion. Existing runtime map can disappear on restart; do not require it
+  or reconstruct a catalog. Existing workspace build recovery is too broad and
+  removes disposable analysis; do not call it as a substitute. This slice
+  implements only owning Deployment native recovery and focused real-boundary
+  checks. Subsequent canonical SDK/CLI projection and Agent consumption use the
+  same operation; do not invent a second runner/store or change SDK
+  reservedchain. Guests implement source only, never operate this live host."
+summary: Add one bounded native manager/supervisor recovery operation for the
+  real HeD5/My3 retained source leases, keeping physical teardown distinct from
+  unknown model finish and usage.
+status: draft
+groupIds:
+  - source-recovery
+executionPlan:
+  workItems:
+    - id: recover-original-expired-sandbox-teardown
+      activity: acting
+      agentClass: engineer
+      workspace: git
+      review: required
+      objective: Implement one fixed local manager/supervisor operation that verifies
+        physical teardown of an original expired assignment source lease after
+        runtime-map loss, durably records native interrupted recovery evidence
+        in the existing source-result mechanism, and preserves unpublished work
+        and unknown usage. Reuse existing custody readers, managers, workspace
+        catalog and serialized maintenance boundaries.
+      dependsOn: []
+      requestedPermissions:
+        content:
+          read:
+            - agent
+            - book
+            - knowledge
+            - objective
+            - discussion
+            - discussion-message
+            - proposal
+            - question
+            - note
+            - decision
+          write: []
+        tools:
+          - source.read
+          - source.write
+          - verification
+      requiredCapabilities:
+        - code-change
+      contextRefs:
+        - store: git
+          model: repository
+          id: deployment-native-retained-recovery-source
+          repository: treeseed-ai/deployment
+          commit: 3b0cf28a9eb63e18790c3a0038417c06e58a0337
+      maximumReviewCycles: 3
+      acceptanceCriteria:
+        - Expose only exact assignmentId+sandboxId through the existing
+          protected local manager and strict supervisor protocol; no caller
+          paths, sockets, namespace, shell, deadlines or synthetic result/usage
+          input. Bind the original bounded job, exact catalog lease
+          owner/attempt/source and immutable original expiry; refuse missing,
+          active, foreign, malformed or conflicting authority without mutation.
+        - Reuse existing serialized native maintenance fencing. Refuse live
+          healthy assignment authority; preserve prior broker state and
+          unrelated resources. With admissions/producers fenced, independently
+          verify task/container and physical VM absence before releasing any
+          workspace transport; no expiry-as-teardown assumption or fabricated
+          physical absence. Do not call broad cleanup or reconstruct the
+          catalog.
+        - Record durable interrupted physical recovery using the existing
+          original source-result/recovery artifact mechanism and existing
+          catalog custody, retaining any prior result/recovery bytes. Replays
+          return original evidence and timestamp; partial/concurrent retries
+          cannot overwrite different evidence. Physical observedAt is not a
+          model-finish timestamp; model result remains null and usage
+          UNKNOWN/unsettled. Never edit provider claims, original active clocks,
+          billing/period holds, Decisions, guest trust or source authority.
+        - Retain the target work disk, candidate directories, simulation
+          repositories, published and unpublished products and original job
+          bytes. Only verified physical transport closure and exact durable
+          workspace-result association may change. No disk/product deletion,
+          global analysis retirement or fabricated successful assignment.
+        - Add focused owning regression/integration checks for the actual
+          expired upstream-public retained-work case and its
+          refusal/idempotency/failure boundaries; preserve existing scene
+          bindings and strengthen the existing coded scene where appropriate.
+          Run available strict build/focused checks, record deferred layers
+          honestly. Independent Reviewer reviews the exact committed
+          implementation, explicit preservation and native-proof boundaries; no
+          host mutation in simulation.
+---
