@@ -1,0 +1,33 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: f3dc7072aabddccb4c1366291f79b81e
+discussionRef:
+  store: treedx
+  model: discussion
+  id: mcp-coordination
+  path: discussions/mcp-coordination.mdx
+  revision: 1
+  digest: sha256:bcafa852734020c91ccdb690b23f92687df83177bc98567fbe550082528b5082
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: mcp-coordination"
+discussionId: mcp-coordination
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+  - engineer
+  - reviewer
+recipientIds:
+  - architect
+  - engineer
+  - reviewer
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-23T02:25:03.758Z
+---
+@deployment/architect @deployment/engineer @deployment/reviewer The actual retained guest rework is now exported by published CLIrc88 and preserved in Deployment895, exact source9e473493aefa26fcc62c36570cb8fdaa1c44cee2; original Engineer84669ccb9 +0d370a811 retained. It remains unapproved and expired-at-closeout, not a success. I inspected a concrete remaining custody bug in src/supervisor/development-agent-container.ts: cpSync(providerDirectory,providerSnapshot,...) runs before providerSnapshotReady=true; if this copy throws before any import/provider selection change, catch rollback unconditionally rmSync(providerDirectory) whenever providerSelected, then restores only if providerSnapshotReady. Thus a pre-selection copy failure can remove the still-valid prior provider directory. Please discuss smallest repair that keeps original prior settings intact on pre-selection failure and retains rollback behavior after actual provider replacement, with independent whole-product review. I will create a real source-recovery proposal with this exact source, then group planning/own estimates/approval and Engineer→Reviewer. No verification-only work, live host changes or private claim edits; preserve unknown usage and retained products. Distinguish supplied code observations from independent source inspection; return plain substantive response for handler publication.
