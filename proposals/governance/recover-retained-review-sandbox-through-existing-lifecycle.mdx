@@ -2,7 +2,7 @@
 schemaVersion: treeseed.proposal/v1
 id: 3385d505-88b3-4cc3-98e4-ef62fa8db66d
 projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
-title: Recover retained sandbox custody through the existing teardown lifecycle
+title: Inspect exact retained sandbox custody after broker restart
 request: >-
   Owning Issues Deployment834 and Agent496; SDK429 tracks later supported
   coordinator projection. This proposal is based on real Agent Architect
@@ -109,63 +109,68 @@ request: >-
   claim the recovery has run.
 
 
-  Scope correction v8, 2026-10-23: do not build a current-process-only helper
-  that cannot address the retained failures we actually have. Source inspection
-  confirms the operation named above is still proposed, not implemented in
-  protectedf586 or activehost62. The real My3 snapshot-custody Engineer attempt
-  failed after about1second while API was rebuilt; original clock
-  start02:44:58.110/finish02:44:59.274 and closeout are retained but no
-  canonical result or physical teardown receipt. Public inventory now has only a
-  distinct unrelated warm sandbox. Native MCP assignments.recover recorded
-  unresolved/unsettled audit and released only its API terminal slot, but the
-  provider correctly retains custody pending physical proof. Original HeD5
-  already has an immutable unresolved audit; a differently worded replay was
-  denied, preserving history. No old model finish or usage may be invented. The
-  old current-broker-only restriction is superseded: the first product must
-  resolve the original narrowly selected ownership from existing durable
-  sandbox/source journals and catalogue when in-memory broker state is absent
-  after restart, or truthfully deny if those exact original records are
-  unavailable. Do not add a rehydrated executor, new store/index, host-wide
-  orphan sweep or caller-supplied private path/token. Public sandbox/assignment
-  IDs may select an exact existing record; all authority comes from existing
-  protected records and original ownership checks. Preserve the original failed
-  teardown observation and report a distinct new factual physical recovery
-  observation using existing host/journal/event machinery. Unpublished writable
-  work stays retained; an analysis lease may detach/release only after exact
-  verified physical absence. Physical teardown time is not original model
-  execution finish or measured usage.
+  Corrected small-slice v8 (2026-10-23): the current-runtime-only v7 scope
+  cannot address retained failures after broker restart. Discussion
+  send-2a37787d3ed8023952428eb689ae110c returned Architect, Engineer and
+  Reviewer advice to split durable exact-owner lookup from physical recovery.
+  The first new product is therefore ONLY a scoped read in the existing
+  sandbox.status protected manager/supervisor/backend: accept public
+  assignmentId and sandboxId selectors together, resolve the original owned
+  sandbox/source journal and catalogue bindings even when current broker memory
+  is absent, and report exact matching custody plus current physical
+  observations or a truthful missing/conflicting/unavailable result. Reuse
+  existing status/inventory/owned journal readers and result representation; no
+  new executor/store/index, host-wide orphan scan, private path/token input,
+  cleanup, mutable source mount or fabricated receipt. Global status remains
+  unchanged when no scope is supplied. The linked next slice will consume this
+  exact same resolver for sandbox.assignment.teardown.recover, with a distinct
+  factual physical observation and no deletion of unpublished work. SDK/CLI
+  selection projection then consumes this same backend; no private ad-hoc
+  invocation is authorized meanwhile. Agent consumption of physical proof while
+  preserving unknown model finish/usage is separate owning work.
 
 
-  Fresh planning must assess this corrected real scope through the
-  source-recovery group and publish new own Engineer/Reviewer estimates; all
-  v3/v7 estimates and discussion history remain historical, not current
-  authorization. Source baseline is protected
-  Deploymentf5869b14940cf5ef38ce40a44391b8f232845ac6. Current active bootstrap62
-  and retained guest repair895 are separate integration custody and must be
-  preserved, not silently replaced. Existing discussion
-  send-2a37787d3ed8023952428eb689ae110c records the correction and need to split
-  if necessary. Implementation and independent review are first; canonical
-  SDK/CLI projection and Agent consumption of distinct physical proof are linked
-  subsequent slices through the same backend, with no private ad-hoc invocation
-  meanwhile. Integrator owns actual retained MW1/My3/HeD5 exercise only when the
-  checked supported path can address each scope truthfully. No synthetic sandbox
-  or verification-only assignment.
-summary: Implement one narrowly scoped public backend operation for real
-  retained failures, using original durable ownership and fresh physical proof
-  while preserving work and unknown usage.
+  Actual operator cases are original MW1 failed Reviewer, original HeD5 expired
+  claim, and My3 expired guest-custody Engineer. My3 executed about1second
+  during an API rebuild; provider retains original
+  start02:44:58.110/finish02:44:59.274 and original closeout but no canonical
+  result or verified teardown receipt. Public full inventory contains only a
+  distinct unrelated warm sandbox; global workspace inventory remains incomplete
+  due unrelated retained records. Native MCP assignments.recover recorded My3
+  usageStatus unresolved/settled false and released only its API terminal slot;
+  provider still correctly holds physical custody. HeD5 already has an immutable
+  recovery audit; a differently worded replay was denied. Preserve all original
+  failed observations, leases/disks/products and unknown usage. Fresh group
+  participants and formal own estimates are required for this changed scope;
+  v3/v7 estimates remain history. Protected baseline is
+  Deploymentf5869b14940cf5ef38ce40a44391b8f232845ac6; active host62 bootstrap
+  and retained guest repair895 remain separate integration custody.
+
+
+  A prior broader v8 update authored TreeDX content but failed governance
+  binding because changeReason was absent; active version remained7. Preserve
+  that failed observation rather than claiming a proposal transition. This
+  corrected revision supplies the required reason and narrows the work per team
+  advice. This is functional source implementation of a necessary operator
+  visibility capability, not a verification-only assignment. Physical cleanup
+  and Agent adoption remain unproved until later linked slices and actual
+  supported host exercise.
+summary: "First small recovery slice: extend the existing protected sandbox
+  status backend to resolve one original retained assignment/sandbox from
+  existing durable custody, without cleanup or invented usage."
 status: discussing
 groupIds:
   - source-recovery
 executionPlan:
   workItems:
-    - id: recover-retained-sandbox-custody
+    - id: inspect-retained-sandbox-custody
       activity: acting
       agentClass: engineer
       workspace: git
       review: required
-      objective: Add the minimum repeatable owning teardown-recovery operation that
-        can address original durable retained sandbox custody after broker
-        restart without discarding unpublished work or inventing usage.
+      objective: Implement scoped retained assignment/sandbox status from original
+        durable custody after broker restart, reusing the existing status
+        backend without modifying resources or unknown usage.
       dependsOn: []
       requestedPermissions:
         content:
@@ -186,32 +191,31 @@ executionPlan:
       contextRefs:
         - store: git
           model: repository
-          id: retained-sandbox-recovery-source
+          id: retained-sandbox-status-source
           repository: treeseed-ai/deployment
           commit: f5869b14940cf5ef38ce40a44391b8f232845ac6
       maximumReviewCycles: 2
       acceptanceCriteria:
-        - Reproduce the original retained failure boundary in focused owning
-          coverage and implement exactly sandbox.assignment.teardown.recover
-          through the existing protected supervisor/manager/broker path. Select
-          public sandbox/assignment IDs only; derive authority from original
-          owned durable records, including after broker restart, and deny
-          missing/moved/foreign/live/unsafe authority without reconstructing
-          execution.
-        - Reuse original removal/destroy/physical verification and source
-          lifecycle machinery. Preserve unrelated warm/active work; no global
-          reset, generic shell, new executor/store/index or broad orphan sweep.
-          No detach/release before fresh exact task/container/VM absence proof.
-        - Keep original failed receipts, clocks, unknown model usage and period
-          holds unchanged. Record a distinct factual recovery observation in
-          existing journal/host event machinery; do not call it model
-          completion. Retain unpublished writable data/candidate custody, and
-          close an owned analysis lease only with verified physical absence.
-        - Return exact committed owning-package code, changed paths/check
-          evidence and remaining unproven layers. Independent Reviewer must
-          inspect the exact product for original ownership, duplicate/retry,
-          interrupted removal, restart, refusal and retained-work behavior.
-          Canonical SDK/CLI projection and Agent unknown-usage consumption are
-          linked subsequent slices, not a private test launch or an asserted
-          completed host recovery.
+        - Extend existing sandbox.status protected backend with paired public
+          assignmentId/sandboxId selectors; preserve unscoped behavior. Resolve
+          original owned durable sandbox/source journal and catalogue bindings
+          after broker restart, or report missing/conflicting/unavailable
+          truthfully without trusting caller-provided authority/private
+          paths/tokens.
+        - Return only exact selected custody and physical observations; retain
+          unrelated warm/active resources and original failed records. Do not
+          detach/delete/release, start execution, reconstruct model completion,
+          invent usage, expose credentials, mount guest data or introduce a new
+          store/index/executor.
+        - Keep the owning resolver reusable by the next physical
+          teardown-recovery slice, without duplicating policy into
+          handlers/prompts/CLI. Canonical SDK/CLI projection is a linked
+          subsequent product; no private operation wrapper or pretend live
+          recovery.
+        - Implement focused owning regression and real component-boundary checks
+          for exact/missing/conflicting/foreign records, absent runtime after
+          restart, incomplete physical inventory and duplicate reads without
+          mutation. Return exact candidate/evidence and remaining unproven
+          layers. Independent Reviewer reviews this scoped read product; broader
+          cleanup/activation requirements stay separately open.
 ---
