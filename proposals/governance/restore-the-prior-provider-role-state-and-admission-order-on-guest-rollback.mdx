@@ -1,0 +1,94 @@
+---
+schemaVersion: treeseed.proposal/v1
+id: 70cf9623-ab8d-459a-8976-079124e2cf73
+projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+title: Restore the prior provider role state and admission order on guest rollback
+request: "Existing Deployment834 and Agent496, draft895. Original actual
+  Engineer rework jtn reported a8468132e4cb5e2727d23f377d5d856adeb7e278 and
+  implemented role restoration plus operation fixtures, but failed one
+  per-command clock check. Its assignment stays failed, original workspace and
+  unknown native custody are preserved. Native MCP workdays.events.list
+  diagnostics:full authenticated exact event
+  provider-runtime:assignment_jtnQey6heJoKzj4fVHzboAhu1EsV1yjX:trace:fb778767af\
+  97015ad01d01ff:156. Actual provider event216 contains final production diff
+  and a full intermediate test; no later production edit, but one later test
+  edit is not captured. Integrator recovery snapshot
+  f7c5ce01b7b6cf555e7f2a90791aa2dd4579a2c1 preserves that observed artifact on
+  df1, not the final a846 Git object/test. No fake successful result or Reviewer
+  approval. The actual production patch starts manager then runner only when
+  providerSelected. Coordinator found real remaining state bugs: standalone
+  sandbox development with a released provider also stops roles but never
+  restores them on failure; a provider role originally stopped can be started by
+  rollback; manager/admission restarts before runner. Reuse the original
+  running-role set already captured by stopForHandoff; do not add a parallel
+  state store, executor, schema or test-only runtime switch. Restore only
+  original running roles in runner-before-manager order, independent of whether
+  provider code is selected. Keep broker fenced until restoration is confirmed;
+  failed restoration leaves roles/broker stopped and fails truthfully. The
+  observed operation tests are an explicitly intermediate starting fixture, not
+  acceptance of original a846. Improve them with actual temporary
+  filesystem/fixed existing command seams for these real prior-state cases and
+  original copy/import/start/restoration/retry cases. Keep original retained
+  claims/clocks/unknown usage/products untouched. Complete feasible admitted
+  work rather than returning early partial scope. Fresh source-aware own E/R
+  estimates and all source-recovery subscribers required. Reviewer evaluates the
+  entire retained guest-handoff and fixes against actual original findings.
+  Every clock and shell command is a dependent ordered pair; never parallelize
+  two commands under one clock or weaken assertions."
+summary: Complete the real guest recovery product by restoring only originally
+  running roles, including the released-provider case, and reopening admission
+  last.
+status: draft
+groupIds:
+  - source-recovery
+executionPlan:
+  workItems:
+    - id: preserve-prior-provider-roles-on-rollback
+      activity: acting
+      agentClass: engineer
+      workspace: git
+      review: required
+      objective: Preserve original provider running/stopped state through failed guest
+        adoption and restore runner before admission, with independent review of
+        the full real recovery product.
+      maximumReviewCycles: 2
+      dependsOn: []
+      requiredCapabilities:
+        - treeseed.engineering.code-change
+      requestedPermissions:
+        content:
+          read:
+            - proposal
+            - decision
+            - knowledge
+            - discussion
+            - discussion-message
+            - note
+          write: []
+        tools:
+          - source.read
+          - source.write
+          - verification
+      contextRefs:
+        - store: git
+          model: repository
+          id: observed-actual-sandbox-rollback-source
+          repository: treeseed-ai/deployment
+          commit: f7c5ce01b7b6cf555e7f2a90791aa2dd4579a2c1
+      acceptanceCriteria:
+        - Restore the exact original running-role set through actual
+          sandbox-start rollback, including providerSelected=false
+          released-provider development and initially stopped roles; never
+          reopen admission before runner or bring stopped roles up as a rollback
+          side effect.
+        - Use existing stopForHandoff custody/state, preserve original source
+          commits, provider/guest/host/receipt/claims/usage/source bytes and
+          continuous physical/producer fence. Failed restoration remains
+          fail-closed; no synthetic result/usage, guard weakening or alternate
+          execution path.
+        - Run actual operation entry cases for partial copy, import,
+          provider-start, restoration, clean retry and original role-state cases
+          plus strict build. Return a real code commit and exact
+          evidence/unproven layers; canonical independent Reviewer approves or
+          requests concrete changes to the whole retained handoff.
+---
