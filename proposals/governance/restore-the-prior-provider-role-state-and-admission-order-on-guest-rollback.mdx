@@ -3,38 +3,9 @@ schemaVersion: treeseed.proposal/v1
 id: 70cf9623-ab8d-459a-8976-079124e2cf73
 projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
 title: Restore the prior provider role state and admission order on guest rollback
-request: "Existing Deployment834 and Agent496, draft895. Original actual
-  Engineer rework jtn reported a8468132e4cb5e2727d23f377d5d856adeb7e278 and
-  implemented role restoration plus operation fixtures, but failed one
-  per-command clock check. Its assignment stays failed, original workspace and
-  unknown native custody are preserved. Native MCP workdays.events.list
-  diagnostics:full authenticated exact event
-  provider-runtime:assignment_jtnQey6heJoKzj4fVHzboAhu1EsV1yjX:trace:fb778767af\
-  97015ad01d01ff:156. Actual provider event216 contains final production diff
-  and a full intermediate test; no later production edit, but one later test
-  edit is not captured. Integrator recovery snapshot
-  f7c5ce01b7b6cf555e7f2a90791aa2dd4579a2c1 preserves that observed artifact on
-  df1, not the final a846 Git object/test. No fake successful result or Reviewer
-  approval. The actual production patch starts manager then runner only when
-  providerSelected. Coordinator found real remaining state bugs: standalone
-  sandbox development with a released provider also stops roles but never
-  restores them on failure; a provider role originally stopped can be started by
-  rollback; manager/admission restarts before runner. Reuse the original
-  running-role set already captured by stopForHandoff; do not add a parallel
-  state store, executor, schema or test-only runtime switch. Restore only
-  original running roles in runner-before-manager order, independent of whether
-  provider code is selected. Keep broker fenced until restoration is confirmed;
-  failed restoration leaves roles/broker stopped and fails truthfully. The
-  observed operation tests are an explicitly intermediate starting fixture, not
-  acceptance of original a846. Improve them with actual temporary
-  filesystem/fixed existing command seams for these real prior-state cases and
-  original copy/import/start/restoration/retry cases. Keep original retained
-  claims/clocks/unknown usage/products untouched. Complete feasible admitted
-  work rather than returning early partial scope. Fresh source-aware own E/R
-  estimates and all source-recovery subscribers required. Reviewer evaluates the
-  entire retained guest-handoff and fixes against actual original findings.
-  Every clock and shell command is a dependent ordered pair; never parallelize
-  two commands under one clock or weaken assertions."
+request: |-
+  Existing Deployment834 and Agent496, draft895. Original actual Engineer rework jtn reported a8468132e4cb5e2727d23f377d5d856adeb7e278 and implemented role restoration plus operation fixtures, but failed one per-command clock check. Its assignment stays failed, original workspace and unknown native custody are preserved. Native MCP workdays.events.list diagnostics:full authenticated exact event provider-runtime:assignment_jtnQey6heJoKzj4fVHzboAhu1EsV1yjX:trace:fb778767af97015ad01d01ff:156. Actual provider event216 contains final production diff and a full intermediate test; no later production edit, but one later test edit is not captured. Integrator recovery snapshot f7c5ce01b7b6cf555e7f2a90791aa2dd4579a2c1 preserves that observed artifact on df1, not the final a846 Git object/test. No fake successful result or Reviewer approval. The actual production patch starts manager then runner only when providerSelected. Coordinator found real remaining state bugs: standalone sandbox development with a released provider also stops roles but never restores them on failure; a provider role originally stopped can be started by rollback; manager/admission restarts before runner. Reuse the original running-role set already captured by stopForHandoff; do not add a parallel state store, executor, schema or test-only runtime switch. Restore only original running roles in runner-before-manager order, independent of whether provider code is selected. Keep broker fenced until restoration is confirmed; failed restoration leaves roles/broker stopped and fails truthfully. The observed operation tests are an explicitly intermediate starting fixture, not acceptance of original a846. Improve them with actual temporary filesystem/fixed existing command seams for these real prior-state cases and original copy/import/start/restoration/retry cases. Keep original retained claims/clocks/unknown usage/products untouched. Complete feasible admitted work rather than returning early partial scope. Fresh source-aware own E/R estimates and all source-recovery subscribers required. Reviewer evaluates the entire retained guest-handoff and fixes against actual original findings. Every clock and shell command is a dependent ordered pair; never parallelize two commands under one clock or weaken assertions.
+  Clarification from the real Architect/Engineer/Reviewer discussion: reuse the INITIAL running-role set captured before the first handoff. Do not recapture after partial provider start. Assert exact original role-state combinations and both providerSelected paths, runner-before-manager-before-broker ordering, and stopping partially restored roles on any restore failure. This is evidence-driven proposal refinement before estimates, not a canonical approval.
 summary: Complete the real guest recovery product by restoring only originally
   running roles, including the released-provider case, and reopening admission
   last.
@@ -53,8 +24,6 @@ executionPlan:
         the full real recovery product.
       maximumReviewCycles: 2
       dependsOn: []
-      requiredCapabilities:
-        - treeseed.engineering.code-change
       requestedPermissions:
         content:
           read:
@@ -69,6 +38,8 @@ executionPlan:
           - source.read
           - source.write
           - verification
+      requiredCapabilities:
+        - treeseed.engineering.code-change
       contextRefs:
         - store: git
           model: repository
