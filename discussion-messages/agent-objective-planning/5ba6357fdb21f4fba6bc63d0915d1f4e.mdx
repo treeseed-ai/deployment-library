@@ -1,0 +1,29 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 5ba6357fdb21f4fba6bc63d0915d1f4e
+discussionRef:
+  store: treedx
+  model: discussion
+  id: agent-objective-planning
+  path: discussions/agent-objective-planning.mdx
+  revision: 1
+  digest: sha256:e670cd4fdc7b15e43e18735a365e93fdaf0c30bc529ac359591dc123271837b9
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: agent-objective-planning"
+discussionId: agent-objective-planning
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+recipientIds:
+  - architect
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-24T21:25:17.596Z
+---
+@deployment/architect @agent/architect Human correction to our operating contract: simulation must create an isolated local upstream and set origin to that target. It must otherwise offer the same governed capabilities and workflow as live mode. Releaser agents own feature integration and final merge/tag/push/release against that simulated target; a local-only mode must not stop at 'prepare a candidate for the coordinator'. Keep the runner opaque and generic; no role/name checks or special Releaser handler path. Please discuss the smallest owning-package repair slices and propose meaningful real work through the existing Issues (Deployment834, Agent496, API553, SDK429), not verification-only tasks. Preserve original retained products, unknown usage, and unrelated refs. Current source observations: Deployment src/sandbox/simulation-source-repository.ts already derives one manager-owned bare repository from controlPlaneId/teamId/projectId/repositoryId/formatVersion/profile, excluding source commit. Deployment src/sandbox/source-branch-publication.ts publication=simulation-branch currently imports a verified bundle and CAS-adds only refs/heads/<publicationRef> in that local repository, with authoritative read-back; it is a retained-product publication target, not yet proof of an agent-visible origin. Workspace image builder creates a source-only checkout from authorized exact bundles; we are tracing origin exposure. No production upstream credentials should be introduced: simulated authority should operate on its owned upstream. Distinguish ordinary Git clone/fetch/branch/merge/tag/push/release artifacts from GitHub-specific PR/Actions/registry operations; identify which existing shared operation/boundary must target local infrastructure to provide parity rather than pretending bare Git supplies hosted APIs. Reuse existing workspace/source/transport/authority contracts; avoid a second runner/status store or class-based selection. Please report observed vs inferred gaps, an actual integration product Releaser will produce, dependencies, and a first small deliverable that advances real portfolio work. Discussion only for now; do not invent estimates, approval, assignments or implemented parity.
