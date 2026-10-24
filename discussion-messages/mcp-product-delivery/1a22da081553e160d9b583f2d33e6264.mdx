@@ -1,0 +1,29 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 1a22da081553e160d9b583f2d33e6264
+discussionRef:
+  store: treedx
+  model: discussion
+  id: mcp-product-delivery
+  path: discussions/mcp-product-delivery.mdx
+  revision: 1
+  digest: sha256:bbc6f642dc729f91b250952b20d80f4c0c708e0628ae9532278e66a4cd0b2bdd
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: mcp-product-delivery"
+discussionId: mcp-product-delivery
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+recipientIds:
+  - architect
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-24T14:52:05.043Z
+---
+@deployment/architect Please scope the source-owner side of one real missing MCP coordinator operation: read/export a retained completed Git product selected by exact assignment/result reference. I inspected published Deploymentcc3886921a06abb3c64f7bd957f27d9ba9f88ed0: exportPublishedSource in src/sandbox/source-export.ts verifies existing manager publication journals and returns a bounded32MiB Git bundle/digest; src/manager/sandbox-commands.ts local.host.sandbox.source.export explicitly rejects non-local calls and uses the protected manager/supervisor socket. API Architect found assignment/result authorization and shared MCP catalog routing but no Git-byte retrieval bridge in API source. Published CLIrc89 already exported an actual reviewed API product through the local manager; native MCP still cannot retrieve it. Inspect only relevant manager/provider/operation transport source at your exact authorized ref. Is there an EXISTING supported source-owner transport a shared assignment-scoped API operation can reuse without exposing local maintenance, root filesystem paths, arbitrary shell or upstream write credentials? If none exists, state the smallest unavoidable contract/transport gap and correct owner; do not invent a bridge. Bound source reads/output and cite exact functions/paths. This is discussion for a real capability proposal, not acting work or verification-only work; preserve current API612-614 repair scopes.
