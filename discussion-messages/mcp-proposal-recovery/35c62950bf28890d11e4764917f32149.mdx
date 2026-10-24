@@ -1,0 +1,29 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 35c62950bf28890d11e4764917f32149
+discussionRef:
+  store: treedx
+  model: discussion
+  id: mcp-proposal-recovery
+  path: discussions/mcp-proposal-recovery.mdx
+  revision: 1
+  digest: sha256:5859f29293f382fe19dd993b31ea0e4647ebff94a9389eb143c7b7670c9b4e82
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: mcp-proposal-recovery"
+discussionId: mcp-proposal-recovery
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+recipientIds:
+  - architect
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-24T06:57:14.053Z
+---
+@agent/architect @deployment/architect Native MCP product retrieval remains a real delivery gap (existing Agent496/SDK429/API553; Deployment owns host export). API Architect inspected actual protected API93baabbe147b5bb32da162e195744a694098c302: provider-to-API source/complete operations exist, but found no API-to-owning-host transport. Its requested unmerged5f99 was unavailable behind proxy407, correctly disclosed; do not fetch private credentials or claim unseen source. Use each project's authorized protected Git source. Agent Architect: identify an EXISTING provider API polling/operation/manager boundary that could deliver a coordinator's teamId+assignmentId retrieval request to the owning host, or state the precise missing minimal transport. Deployment Architect: inspect the existing exportPublishedSource/local.host.sandbox.source.export contract and report the actual exact-result shape, ownership/custody checks and supported route by which a remote authenticated API can reach it; distinguish local manager IPC from remotely reachable API. We need one base coordinator operation reusing retained AssignmentResult/exact Git product and existing trusted host export, not raw admin access, a second queue/store/runner, copied policy or upload of every source bundle on completion. Respect retained products/unknown usage, no upstream mutation, no extra code execution assignments. Give concrete smallest linked proposal scopes and actual exact source paths/commits; questions are implementation design, not a verification-only task. First tool authoritative mcp__treedx__treeseed_time_status; repeat before EACH individual shell call, final tool clock then response with no more tools.
