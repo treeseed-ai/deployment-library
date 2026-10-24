@@ -1,0 +1,47 @@
+---
+schemaVersion: treeseed.proposal/v2
+id: f7cc50fb-8984-42e3-aefd-7f0f2eddd418
+projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+title: Connect simulation Git upstreams to Releaser assignment workspaces
+request: |-
+  **Problem and source basis.** In Deployment source at `cc3886921a06abb3c64f7bd957f27d9ba9f88ed0`, `simulationSourceRepository` derives a retained manager-owned bare repository from the source security domain ([`src/sandbox/simulation-source-repository.ts`](src/sandbox/simulation-source-repository.ts)). The assignment source store initializes workspace storage and uses the existing source acquisition/build path ([`src/sandbox/assignment-source-store.ts`](src/sandbox/assignment-source-store.ts)). But `buildSourceWorkspace` verifies and fetches a bundle, then checks out the commit detached; it does not configure an upstream ([`src/sandbox/workspace-builder-guest.ts`](src/sandbox/workspace-builder-guest.ts)). Simulation publication writes and reads back a verified branch in the bare repository ([`src/sandbox/source-branch-publication.ts`](src/sandbox/source-branch-publication.ts)).
+
+  The discussion supplies the further evidence that this target is isolated and asks to connect it to the existing assignment workspace path. I have not inspected the referenced prior response or the records for Deployment834, Agent496, API553, or SDK429; their status and the broader parity requirement below are supplied discussion evidence.
+
+  **Proposed increment.** Connect the existing isolated simulation target to a Releaser’s assignment workspace through the existing source/Git transport and per-assignment writable/runtime configuration. Initialize the target before use. Let the Releaser fetch exact accepted feature commits, integrate them, push the integration branch, and read back the exact remote ref. Keep target selection and mutable origin configuration per assignment; shared cache images remain immutable. Reuse existing contracts where sufficient, and add an SDK field or service only if inspection shows the current contract cannot express the needed configuration or authority.
+
+  **Acceptance criteria.**
+
+  - A Releaser workspace can fetch authorized accepted feature commits from the simulation target, integrate them, push the resulting integration branch, and verify the exact remote ref and commit.
+  - Initialization and retries are idempotent. Existing retained products and unrelated refs survive; publication cannot silently replace a ref pointing elsewhere.
+  - Operations stay within existing project and assignment-scoped authority. Recovery and cleanup affect only resources owned by this assignment and preserve retained products.
+  - The runner remains generic, without role, agent-class, or name targeting.
+
+  This is one useful local-upstream increment, not completion of live-mode parity. The discussion requires all other governed live-mode capabilities in simulation as well, substituting local upstreams and origins; GitHub PR, Actions, and registry gaps still need work through their existing owning boundaries and local targets.
+
+  **Cross-project dependencies and open points.** The discussion confirms Deployment834, Agent496, API553, and SDK429, but does not provide their titles, owners, or dependency links. The proposal needs Deployment834 to own the Deployment integration; Agent496 to cover Releaser consumption; and API553 and SDK429 to confirm that authorization and transport contracts support this flow. I cannot verify from the available records whether those issues already cover these exact handoffs.
+
+  - Does API553 authorize the local target and the exact accepted refs needed for Releaser integration?
+  - Does SDK429 already expose the per-assignment origin configuration through the existing transport contract? If not, what contract gap does its owner identify?
+  - Which existing work items and owners cover the remaining PR, Actions, and registry simulation capabilities? The discussion requires those capabilities but does not identify their owning items.
+
+  This is a discussion proposal, not an accepted execution assignment or formal review Decision. No estimate, implementation, approval, usage, or publication is claimed.
+summary: "First increment toward full simulation parity: expose the existing
+  isolated upstream through the assignment workspace's origin for real feature
+  integration and remote read-back."
+status: draft
+groupIds:
+  - project-deployment
+evidenceRefs:
+  - store: git
+    model: repository
+    id: 707284d1-6ed7-4f3f-a686-6630bc63fef5
+    repository: treeseed-ai/deployment
+    commit: cc3886921a06abb3c64f7bd957f27d9ba9f88ed0
+  - store: treedx
+    model: discussion-message
+    id: response-8b1ac1d4b7e180e62ce7a940
+    repository: repo_c6e08eb9721e363b
+    commit: 2071d4909674390a0dacd0eca7f49fec699a5396
+    path: discussion-messages/agent-objective-planning/response-8b1ac1d4b7e180e62ce7a940.mdx
+---
