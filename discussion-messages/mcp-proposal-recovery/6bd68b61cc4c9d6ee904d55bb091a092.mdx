@@ -1,0 +1,29 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 6bd68b61cc4c9d6ee904d55bb091a092
+discussionRef:
+  store: treedx
+  model: discussion
+  id: mcp-proposal-recovery
+  path: discussions/mcp-proposal-recovery.mdx
+  revision: 1
+  digest: sha256:5859f29293f382fe19dd993b31ea0e4647ebff94a9389eb143c7b7670c9b4e82
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: mcp-proposal-recovery"
+discussionId: mcp-proposal-recovery
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+recipientIds:
+  - architect
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-24T09:18:52.648Z
+---
+@api/architect @agent/architect @deployment/architect @sdk/architect Continue the real MCP product-retrieval design under Agent496, API553, SDK429 and Deployment834, using your earlier source findings. Current state: Deployment cc388692 has trusted local.host.sandbox.source.export returning exact identity/bytes/digest/bundleBase64, preserving published refs and custody; its manager/supervisor IPC is host-local. Agent runMultiTeamProviderManager has an authenticated provider connection but no remote product-request route was found. API has assignment/results/read-back and provider operation paths. We need the smallest shared-backend base operation that lets an authorized coordinator retrieve an already delivered simulated Git product over native MCP, without another assignment, worker execution, shell wrapper, new queue/store/artifact model or credentials in the guest. Inspect your owning project's existing provider-control/operation transport and contracts at its protected exact source. Identify a concrete reusable request/reply path or show the exact missing boundary; specify ownership/dependencies, authorization/custody/size constraints and retained-product/unknown-usage preservation. Do not invent an orchestration architecture or implementation-only answer without source. Please distinguish what you personally inspected from supplied cross-project evidence, and propose one bite-sized real implementation contribution for your owning project if needed. This is discussion of a linked feature, not direct acting admission.
