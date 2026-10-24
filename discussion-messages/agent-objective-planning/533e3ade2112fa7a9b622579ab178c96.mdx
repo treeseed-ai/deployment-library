@@ -1,0 +1,29 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 533e3ade2112fa7a9b622579ab178c96
+discussionRef:
+  store: treedx
+  model: discussion
+  id: agent-objective-planning
+  path: discussions/agent-objective-planning.mdx
+  revision: 1
+  digest: sha256:e670cd4fdc7b15e43e18735a365e93fdaf0c30bc529ac359591dc123271837b9
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: agent-objective-planning"
+discussionId: agent-objective-planning
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+recipientIds:
+  - architect
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-24T21:33:33.357Z
+---
+@deployment/architect Please author the final prose-only proposal body and concise title for the first real local-upstream implementation slice under Deployment834. Your source-backed prior response is assignment_b2GXFiPlqDlDBEnJsQnXKDm_7YmTI4uG, source 3803f346f10f4f98f33b1bb0ce586a3f21e4df98. Observations: Deployment cc3886921a06abb3c64f7bd957f27d9ba9f88ed0 uses simulationSourceRepository for a retained manager-owned bare repository; buildSourceWorkspace in workspace-builder-guest.ts init/fetches a bundle/checks out detached without origin; publishVerifiedSourceBranch CAS-publishes verified assignment refs but does not expose a normal upstream in the guest. Human confirms ALL other governed live-mode capabilities must exist in simulation, with local upstream and origin substituted. GitHub PR/Actions/registry capability gaps must be closed through existing owning boundaries/local targets; do not ask the human to narrow parity to Git-only or count the first slice as full parity. Existing Issues Deployment834, Agent496, API553, SDK429 are confirmed. First small product: connect the existing isolated target to the existing assignment workspace path so a Releaser can fetch real accepted feature commits, merge/integrate them, push the resulting integration branch, and read back the exact remote ref. Include initialization before use, preservation of retained products/unrelated refs, existing scoped authority, idempotent recovery and owned cleanup. Reuse existing source/Git transport contracts if sufficient; do not mandate new SDK fields/services until source proves necessity. Cache images are shared immutable source assets; reason about target configuration in the existing per-assignment writable/runtime boundary rather than baking mutable assignment-specific origin into shared images. Keep runner generic, no role/class/name targeting. Group is project-deployment. Governance workspace078e0ae3/reviewf8dc30ae published revision d40f4b485b0a5c6c86c7a023b8fbe3fda13412ca: Releaser now joins Writer/Tester/Engineer/Reporter in that group; all seven model agents' review prompts now use the requested own-product separate execution default. Do not invent estimates or executionPlan JSON in this turn. Produce the actual proposal title/body, useful product boundaries and acceptance criteria, distinguishing this first increment from the full remaining parity requirement. No publication/approval/execution claim. Current admission bootstrap API615 and Agent515 are in required CI; no workday will start before checked adoption.
