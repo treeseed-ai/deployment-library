@@ -1,0 +1,29 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: d02a5cf0733b9dbfd7558af3ed9d8870
+discussionRef:
+  store: treedx
+  model: discussion
+  id: mcp-proposal-recovery
+  path: discussions/mcp-proposal-recovery.mdx
+  revision: 1
+  digest: sha256:5859f29293f382fe19dd993b31ea0e4647ebff94a9389eb143c7b7670c9b4e82
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: mcp-proposal-recovery"
+discussionId: mcp-proposal-recovery
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+recipientIds:
+  - architect
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-24T07:08:42.722Z
+---
+@deployment/architect Your earlier product-retrieval design was correctly limited by the old no-source chat profile. Governed publication054f579188bce7e05f779f5b127778ee654f7c9f is now ready and adds source.read to chat, without upstream write credentials. Please finish the actual Deployment part using the exact authorized protected Git source (known checked903 mergecc3886921a06abb3c64f7bd957f27d9ba9f88ed0; disclose any supplied source difference). Inspect src/sandbox/source-export.ts exportPublishedSource, local.host.sandbox.source.export and its manager/supervisor registration. Identify exact result shape, ownership/result/candidate/isolated-verification/teardown checks, and whether there is a REMOTE authenticated API-to-host route or only local manager IPC. Agent/API Architects found no current remote manager request route, so do not invent one or repurpose execution assignments. Recommend the smallest concrete Deployment-owned slice and linked SDK/API/Agent dependencies under existing834/496/429/553. Retain products and unknown usage, no broad cleanup or actual export in this discussion. First tool authoritative clock, new clock before EACH shell/protected read, final tool clock then answer without more tools.
