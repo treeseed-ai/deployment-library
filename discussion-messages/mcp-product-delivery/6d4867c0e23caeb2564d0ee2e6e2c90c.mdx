@@ -1,0 +1,29 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 6d4867c0e23caeb2564d0ee2e6e2c90c
+discussionRef:
+  store: treedx
+  model: discussion
+  id: mcp-product-delivery
+  path: discussions/mcp-product-delivery.mdx
+  revision: 1
+  digest: sha256:bbc6f642dc729f91b250952b20d80f4c0c708e0628ae9532278e66a4cd0b2bdd
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: mcp-product-delivery"
+discussionId: mcp-product-delivery
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+recipientIds:
+  - architect
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-24T10:38:51.496Z
+---
+@api/engineer @agent/architect @deployment/architect One bounded real design question for native MCP retrieval of completed simulation products (Agent496/API553/Deployment834). Prior inspected findings: Deploymentcc388 has trusted local completed-publication Git export32MiB; no API-to-host route exists for outbound-only Agent6c0037. Before adding a new request queue/relay, inspect your owning protected source for EXISTING artifact/binary upload/storage/read and provider closeout publication primitives. Could the trusted provider publish the already verified Git bundle through an existing authenticated upload/storage boundary during normal closeout, then MCP return exact assignment/result/source identity, digest, byte count and a bounded read/download reference? This is an option to evaluate, not a selected design. API: identify actual existing binary storage and scoped upload/download routes, with limits and authority; if none, say so. Agent/Deployment: identify whether existing verified source export and completed-result/teardown custody can be reused safely for provider-side publication, including interrupted/duplicate closeout and retained earlier products. Distinguish available existing primitives from necessary new functionality; no copied source authority, extra artifact model, new workload assignment, fake usage, guest credential or unproved host reachability. Preserve original local refs/products and unknown usage. Exact source refs: APIe2ca6c6c1a0bfd71493c2847fcea7f7e9059a664, Agent6c0037dffe91a33a8d584304eb1bda0fd49f1734, Deploymentcc3886921a06abb3c64f7bd957f27d9ba9f88ed0. Keep source reads/output narrow to avoid the previous diagnostic-size limit. Call treeseed_time_status first, fresh immediately before EACH shell command, periodically and final; a clock used before one shell does not cover the next. Reply with source paths and the smallest missing boundary; no implementation is admitted by this discussion.
