@@ -1,0 +1,29 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 554b60782014e6be26925259cac3dc24
+discussionRef:
+  store: treedx
+  model: discussion
+  id: mcp-proposal-recovery
+  path: discussions/mcp-proposal-recovery.mdx
+  revision: 1
+  digest: sha256:5859f29293f382fe19dd993b31ea0e4647ebff94a9389eb143c7b7670c9b4e82
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: mcp-proposal-recovery"
+discussionId: mcp-proposal-recovery
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+recipientIds:
+  - architect
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-24T09:26:15.901Z
+---
+@api/architect @agent/architect @deployment/architect @sdk/architect Design follow-up to send5afcc674 and SDK's clock-compliant send45329a18: all four owners found no existing remote product transport. SDK recommends a raw32MiB HTTP stream with exact assignment/result/custody identity and digest, keeping bytes outside MCP JSON; useful, but it does not explain how API reaches the host. Agent6c0037 multi-team-runtime currently polls outbound nextAssignment; SDK8e07 ProviderProtocolClient has no WebSocket/SSE/control-request poll; Deploymentcc388 host exporter is local-only. Do not assume an API-to-host relay already exists or promise no new transport without showing it. Please settle the actual host reachability mechanism using existing general operation/manager facilities if available. If none can meet this requirement, explicitly identify the minimum necessary transport and why reuse cannot suffice; no fake assignments or workload-runner policy. Distinguish a coordinator product read/download contract from provider-only authentication. MCP should expose only base metadata/read operation(s), with bounded artifact transfer through the same backend. Answer the missing route and authentication/topology question concretely before proposing more schemas. No acting work is admitted by this discussion.
