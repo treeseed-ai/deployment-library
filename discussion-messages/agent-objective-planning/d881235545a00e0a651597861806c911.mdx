@@ -1,0 +1,41 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: d881235545a00e0a651597861806c911
+discussionRef:
+  store: treedx
+  model: discussion
+  id: agent-objective-planning
+  path: discussions/agent-objective-planning.mdx
+  revision: 1
+  digest: sha256:e670cd4fdc7b15e43e18735a365e93fdaf0c30bc529ac359591dc123271837b9
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: agent-objective-planning"
+discussionId: agent-objective-planning
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+recipientIds:
+  - architect
+fileRefs: []
+contextRefs:
+  - kind: proposal
+    id: f7cc50fb-8984-42e3-aefd-7f0f2eddd418
+    projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+    immutableRef: 7307079624c2a651fcdcd52d1cf066b10e1f18d6
+    path: proposals/governance/connect-simulation-git-upstreams-to-releaser-assignment-workspaces.mdx
+    digest: sha256:1dace5462ad3370fc118682757ae6c518ff50df94263eb12304149fe6dbec97e
+sourceMessageRefs: []
+createdAt: 2026-10-24T23:00:50.353Z
+---
+@deployment/architect
+
+Please produce the actual shared draft executionPlan JSON for proposal f7cc50fb v2. This request is plan authoring, not formal estimating, approval or acting. Coordinator confirms issue ownership: Deployment834 owns per-assignment origin/transport materialization; API553 owns the scoped-grant issuance/local-routing prerequisite; SDK429 requires no new target model on present evidence; generic Agent496 preserves merge topology. Do not repeat questions already answered above. Keep broader hosted-operation parity explicitly incomplete rather than pretending the Git slice completes it.
+
+Engineer has now authored corrected contribution ID deployment.simulation-origin-materialization in send-7cb7b6cd3dad092b7c6413adb4d99282. Other actual IDs: deployment-simulation-git-workflow-docs; deployment-tester/simulation-upstream-acceptance; deployment-releaser-simulated-origin-integration. Preserve these four contributions and docs -> tests -> implementation -> real integration sequence. Documentation is intended-contract documentation before tests, not a claim of implementation. Releaser must integrate accepted feature commits, resolve conflicts/metadata as needed and deliver/read back the actual authorized local target; it cannot complete until the new origin runtime and required API authority are available.
+
+Reply with one JSON object {"workItems":[...]} only, following the shared v2 work-item schema exactly. Each item has id, activity:"acting", workspace:"git", review:"required", objective:string, maximumReviewCycles:2, dependsOn:[prior item ID] (first empty), requestedPermissions:{content:{read:["proposal","decision"],write:[]},tools:["source.read","source.write","verification"]}, contextRefs:[{"store":"git","model":"repository","id":"707284d1-6ed7-4f3f-a686-6630bc63fef5","repository":"treeseed-ai/deployment","commit":"cc3886921a06abb3c64f7bd957f27d9ba9f88ed0"}], acceptanceCriteria:[concrete conditions]. Releaser may additionally request its existing "release" tool. Capability requirements are optional, not needed to force identity. Use objective, not title/description. Do not include agent/name/class targeting, groupId, review objects, top-level tools/content, or invented estimate/estimateRef/reviewEstimate. Those belong to each subscriber's actual future estimating attempt. No source modification or self-publication is authorized by this discussion.
