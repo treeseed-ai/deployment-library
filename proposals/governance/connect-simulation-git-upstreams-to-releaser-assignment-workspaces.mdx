@@ -40,6 +40,10 @@ request: |-
   SDK architect result-0c91225ae59a68713b623b81 / source a8d69077de112a29462fd6c997587edb5bc71485 inspected SDK8e07d9ad: existing provider-operation contracts can express scoped repository/ref operations. No necessity for a new SDK target model or schema is demonstrated. Reuse that contract for the first authorized branch operation; API must issue and route the appropriate grant, and Deployment must materialize the target/origin through the existing assignment boundary. Keep the GitHub source repository as provenance.
 
   The first increment connects the isolated origin and already-authorized branch operations. Final integration refs/tags/releases require their own issued authority, just as in live mode. All other governed live capabilities remain the required destination, including applicable hosted operations through supported local targets. No simulation-only role filter, substitute runner, invented successful operation, or candidate-only handoff satisfies the final workflow. These are planning findings, not implemented capability or completed release.
+
+  ## Actual executable draft from group discussion
+
+  Architect send-fd8578e26f35bcc4394a517b9f93ac54 authored the attached four-item executionPlan, preserved unchanged after shared SDK validation passed. Engineer send-7cb7b6cd3dad092b7c6413adb4d99282 explicitly corrected its invalid Issue-label work-item ID to deployment.simulation-origin-materialization; Deployment #834 remains the owning Issue. The source discussion product is discussion-messages/agent-objective-planning/response-929edda2170f6b5cb673d9eb.mdx. This draft has no invented estimates or agent targets. Each subscriber must provide its own actual acting and reviewing estimate and assignment-attempt provenance before approval. Runtime/authority adoption gates precede Releaser delivery; the local Git slice does not complete all hosted-operation parity.
 summary: "First increment toward full simulation parity: expose the existing
   isolated upstream through the assignment workspace's origin for real feature
   integration and remote read-back."
@@ -58,4 +62,164 @@ evidenceRefs:
     repository: repo_c6e08eb9721e363b
     commit: 2071d4909674390a0dacd0eca7f49fec699a5396
     path: discussion-messages/agent-objective-planning/response-8b1ac1d4b7e180e62ce7a940.mdx
+executionPlan:
+  workItems:
+    - id: deployment-simulation-git-workflow-docs
+      activity: acting
+      workspace: git
+      review: required
+      objective: "Document the intended simulation Git workflow before test authoring:
+        preserve GitHub source provenance, expose the isolated simulation
+        repository as a per-assignment writable origin, and describe authorized
+        feature-commit fetch, integration, publication, and exact read-back.
+        Mark broader hosted-operation parity as incomplete; this documentation
+        defines the contract and does not claim implementation."
+      maximumReviewCycles: 2
+      dependsOn: []
+      requestedPermissions:
+        content:
+          read:
+            - proposal
+            - decision
+          write: []
+        tools:
+          - source.read
+          - source.write
+          - verification
+      contextRefs:
+        - store: git
+          model: repository
+          id: 707284d1-6ed7-4f3f-a686-6630bc63fef5
+          repository: treeseed-ai/deployment
+          commit: cc3886921a06abb3c64f7bd957f27d9ba9f88ed0
+      acceptanceCriteria:
+        - The documentation describes the intended per-assignment origin and
+          authorized Git flow, including exact remote-ref read-back.
+        - It identifies the GitHub repository as provenance and states that this
+          Git increment does not complete broader hosted-operation parity.
+        - The documentation is available as the contract for the dependent
+          acceptance tests.
+    - id: deployment-tester/simulation-upstream-acceptance
+      activity: acting
+      workspace: git
+      review: required
+      objective: Add acceptance coverage against the documented intended contract for
+        simulation-origin materialization and Releaser Git operations. Cover
+        exact authorized commits and refs, successful integration and read-back,
+        retry and existing-ref behavior, and rejection when required authority
+        is absent.
+      maximumReviewCycles: 2
+      dependsOn:
+        - deployment-simulation-git-workflow-docs
+      requestedPermissions:
+        content:
+          read:
+            - proposal
+            - decision
+          write: []
+        tools:
+          - source.read
+          - source.write
+          - verification
+      contextRefs:
+        - store: git
+          model: repository
+          id: 707284d1-6ed7-4f3f-a686-6630bc63fef5
+          repository: treeseed-ai/deployment
+          commit: cc3886921a06abb3c64f7bd957f27d9ba9f88ed0
+      acceptanceCriteria:
+        - Tests exercise the documented authorized fetch, integration, push, and
+          exact remote-ref read-back path.
+        - Tests cover idempotent initialization/retry and ensure a ref
+          identifying another commit is not silently replaced.
+        - Tests verify failure when the required scoped API authority is
+          unavailable.
+        - The tests are suitable to validate the dependent
+          origin-materialization implementation.
+    - id: deployment.simulation-origin-materialization
+      activity: acting
+      workspace: git
+      review: required
+      objective: Implement Deployment-owned per-assignment materialization of the
+        isolated simulation repository as a writable origin through the existing
+        assignment workspace and Git transport. Keep mutable target
+        configuration assignment-scoped and shared cache images immutable.
+        Coordinate with API553 for the scoped-grant issuance and local routing
+        prerequisite; reuse existing SDK provider-operation contracts, since
+        current evidence does not establish a need for a new SDK target model.
+        Preserve generic merge topology as established by the supplied Agent496
+        source finding.
+      maximumReviewCycles: 2
+      dependsOn:
+        - deployment-tester/simulation-upstream-acceptance
+      requestedPermissions:
+        content:
+          read:
+            - proposal
+            - decision
+          write: []
+        tools:
+          - source.read
+          - source.write
+          - verification
+      contextRefs:
+        - store: git
+          model: repository
+          id: 707284d1-6ed7-4f3f-a686-6630bc63fef5
+          repository: treeseed-ai/deployment
+          commit: cc3886921a06abb3c64f7bd957f27d9ba9f88ed0
+      acceptanceCriteria:
+        - A Releaser assignment workspace can address the isolated simulation
+          repository through its per-assignment origin using the existing
+          transport path.
+        - Materialization and retries preserve retained products and unrelated
+          refs and do not overwrite a ref that identifies another commit.
+        - Operations require the applicable API553 scoped authority and fail
+          closed when that authority is unavailable.
+        - The implementation passes the dependent documented acceptance tests
+          without adding a new SDK target model absent evidence of a contract
+          gap.
+        - The runner remains generic and shared cache images remain immutable.
+    - id: deployment-releaser-simulated-origin-integration
+      activity: acting
+      workspace: git
+      review: required
+      objective: Integrate the accepted feature commits through the actual authorized
+        local simulation target in the Releaser assignment workspace, resolve
+        integration conflicts or metadata as needed, publish the resulting
+        integration branch, and read back the exact authorized ref and commit.
+        Coordinate Releaser consumption through Agent496. This item depends on
+        Deployment origin materialization and API553 scoped-grant/local-routing
+        authority; it cannot complete before both are available. The Git slice
+        does not complete broader hosted-operation parity.
+      maximumReviewCycles: 2
+      dependsOn:
+        - deployment.simulation-origin-materialization
+      requestedPermissions:
+        content:
+          read:
+            - proposal
+            - decision
+          write: []
+        tools:
+          - source.read
+          - source.write
+          - verification
+          - release
+      contextRefs:
+        - store: git
+          model: repository
+          id: 707284d1-6ed7-4f3f-a686-6630bc63fef5
+          repository: treeseed-ai/deployment
+          commit: cc3886921a06abb3c64f7bd957f27d9ba9f88ed0
+      acceptanceCriteria:
+        - The Releaser fetches and integrates authorized accepted feature
+          commits from the materialized local origin.
+        - The resulting integration branch is published only with the required
+          scoped authority, and the exact authorized remote ref and commit are
+          read back.
+        - The Releaser handles integration conflicts or required metadata and
+          delivers the actual authorized local target.
+        - The work is not represented as completing remaining hosted-operation
+          parity.
 ---
