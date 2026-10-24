@@ -1,0 +1,41 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 8949f5e1787c2e890adde03c07136e06
+discussionRef:
+  store: treedx
+  model: discussion
+  id: agent-objective-planning
+  path: discussions/agent-objective-planning.mdx
+  revision: 1
+  digest: sha256:e670cd4fdc7b15e43e18735a365e93fdaf0c30bc529ac359591dc123271837b9
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: agent-objective-planning"
+discussionId: agent-objective-planning
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - technical-writer
+  - tester
+  - engineer
+  - releaser
+recipientIds:
+  - engineer
+  - releaser
+  - technical-writer
+  - tester
+fileRefs: []
+contextRefs:
+  - kind: proposal
+    id: f7cc50fb-8984-42e3-aefd-7f0f2eddd418
+    projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+    immutableRef: d341bcf76a0ed8a332c9ccf27abf71e467e8f789
+    path: proposals/governance/connect-simulation-git-upstreams-to-releaser-assignment-workspaces.mdx
+    digest: sha256:d58ec4fdacf59c862ab002877cf04c27bbef73f616d322da51981cf835438aba
+sourceMessageRefs: []
+createdAt: 2026-10-24T21:38:06.075Z
+---
+@deployment/technical-writer @deployment/tester @deployment/engineer @deployment/releaser Discuss your own meaningful contribution to the real OPEN project-deployment proposal f7cc50fb-8984-42e3-aefd-7f0f2eddd418, Connect simulation Git upstreams to Releaser assignment workspaces. This is a shared group proposal; these names address discussion, not private execution targeting. Actual Architect assignment_Uh_VeF6lx3o5gqvketmoCCKKUI7y80k1 authored its body; coordinator mechanically published it unchanged. Proposal source d341bcf76a0ed8a332c9ccf27abf71e467e8f789 at proposals/governance/connect-simulation-git-upstreams-to-releaser-assignment-workspaces.mdx. Exact Git source is Deployment cc3886921a06abb3c64f7bd957f27d9ba9f88ed0. Observed gap: buildSourceWorkspace in src/sandbox/workspace-builder-guest.ts init/fetches authorized bundles and detached checkout, without origin. src/sandbox/simulation-source-repository.ts already identifies a manager-owned local bare repository; source-branch-publication.ts retains verified assignment refs there. First product: expose that isolated target through the existing per-assignment writable/runtime source path, initialize it before use, and let normal Git fetch/integrate/merge/push/read-back work against origin. Preserve retained products, unrelated refs, current scope/grants, unknown usage, owned cleanup and replay/conflict handling. Do not bake mutable origin into shared immutable cache images, introduce role/name filters, or add SDK fields/services without proving existing contracts insufficient. Human requires ALL other governed live capabilities in simulation; first Git increment is not full parity. Hosted PR/Actions/registry gaps remain real owning-boundary work, not permission to narrow the goal. Releaser owns actual feature integration and final delivery against the simulated origin, not a candidate-only coordinator handoff. Governed team revision d40f4b485b0a5c6c86c7a023b8fbe3fda13412ca adds Releaser to project-deployment and fixes seven model agents' own-product reviewing instructions; Reporter stays reporting-only. Please inspect the authorized exact source needed, choose a stable useful own work-item ID, describe the source/documentation/test/integration product you will author, identify actual peer dependencies or questions, and discuss concrete acceptance criteria. No estimates or code changes in this discussion turn; each subscriber will supply its own actual estimate later through the normal process after checked API615/Agent515 adoption. Source/public transport necessity is a real design question to answer, not an invitation to create another runner.
