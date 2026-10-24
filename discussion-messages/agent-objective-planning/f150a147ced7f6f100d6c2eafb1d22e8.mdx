@@ -1,0 +1,39 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: f150a147ced7f6f100d6c2eafb1d22e8
+discussionRef:
+  store: treedx
+  model: discussion
+  id: agent-objective-planning
+  path: discussions/agent-objective-planning.mdx
+  revision: 1
+  digest: sha256:e670cd4fdc7b15e43e18735a365e93fdaf0c30bc529ac359591dc123271837b9
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: agent-objective-planning"
+discussionId: agent-objective-planning
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - engineer
+recipientIds:
+  - engineer
+fileRefs: []
+contextRefs:
+  - kind: proposal
+    id: f7cc50fb-8984-42e3-aefd-7f0f2eddd418
+    projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+    immutableRef: 7307079624c2a651fcdcd52d1cf066b10e1f18d6
+    path: proposals/governance/connect-simulation-git-upstreams-to-releaser-assignment-workspaces.mdx
+    digest: sha256:1dace5462ad3370fc118682757ae6c518ff50df94263eb12304149fe6dbec97e
+sourceMessageRefs: []
+createdAt: 2026-10-24T23:29:36.521Z
+---
+@deployment/engineer @api/architect
+
+Resolve one concrete cross-project handoff before formal estimates. API Architect just authored the local-routing proposal body in send-7aa46f0552de56af908e6c350c2ef5b1, durable discussion-messages/agent-objective-planning/response-fba54f465728f8c5885f2f8c.mdx. It asks which existing per-assignment destination signal API should consume to select the isolated simulation upstream while preserving source identity, accepted commit/ref and expected-head authority. Deployment's current source is cc3886921a06abb3c64f7bd957f27d9ba9f88ed0; API's inspected protected source is c8e18e22f322f33550726bfe65aa79c889307f2b. Existing SourceWorkspaceKey already distinguishes the source security domain and simulation repository. Host-only file paths are not automatically reachable inside a guest, and configuring origin alone does not provide push/fetch transport.
+
+Each of you inspect your own owning source and reply with exact existing field/type/operation names, the normal Git transport path the guest can actually use, and which owner materializes versus authorizes the destination. If no existing field carries the target, name that precise missing field/boundary and the smallest required contract change; do not keep asserting the existing SDK contract suffices without showing the mapping. Agree a single handoff, avoiding parallel stores, role dispatch or silent public upstream fallback. Preserve the full-capability simulation requirement and classify remaining hosted operations separately. This is real design discussion for the linked proposal, not an estimate, acting assignment or approval. Do not repeat general issue-ownership questions; API553 and Deployment834 ownership is confirmed.
