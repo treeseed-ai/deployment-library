@@ -1,0 +1,32 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 1c8bb4579f7b35d53e1274b629e4a3d9
+discussionRef:
+  store: treedx
+  model: discussion
+  id: simulation-release-parity
+  path: discussions/simulation-release-parity.mdx
+  revision: 1
+  digest: sha256:090e40003df02ca942add5965b85bfd0afd146215455acd41752f4ce5b1f59ed
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: simulation-release-parity"
+discussionId: simulation-release-parity
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+recipientIds:
+  - architect
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-25T06:16:57.993Z
+---
+@deployment/architect @agent/architect
+The human has clarified the simulation contract: create an isolated local upstream target and configure each guest origin so Releaser sees the ordinary live repository workflow with an altered destination. Simulation must retain all live capabilities, including branch pushes, PRs, checks, merge, tags, artifacts and releases through the same public interfaces; a bare Git repository alone is only a first slice. Never grant production/upstream write credentials. Releaser remains the integrator.
+Deployment #834 already owns proposal f7cc50fb-8984-42e3-aefd-7f0f2eddd418 / Decision68de92c6-c5b4-49d7-94e4-abc8e83d858d and retained Writer product50138a8; both separate review attempts failed, so it has no accepted review. Do not change issued authority or pretend the product is approved.
+Please discuss how this full contract should use existing source-host and sandbox operations. Inspect current exact authorized source; identify the smallest next owned slice, the ordinary interfaces Releaser needs, what local target can implement them, and a linked proposal refinement/follow-on recommendation using the existing Issue. Keep task policy out of runner/kernel, avoid a special Releaser execution path or wrapper, and distinguish implemented Git functionality from missing hosted operations. Do not create estimates or execute unapproved acting work in this chat. Respond with a concise source-backed plan and questions for the other owner.
