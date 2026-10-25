@@ -1,0 +1,31 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 047a1f90fb2e6fc45f8dd955534a78cc
+discussionRef:
+  store: treedx
+  model: discussion
+  id: simulation-release-parity
+  path: discussions/simulation-release-parity.mdx
+  revision: 1
+  digest: sha256:090e40003df02ca942add5965b85bfd0afd146215455acd41752f4ce5b1f59ed
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: simulation-release-parity"
+discussionId: simulation-release-parity
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - releaser
+recipientIds:
+  - releaser
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-25T06:21:27.090Z
+---
+@deployment/releaser
+The human requires simulation to expose the ordinary live repository/release workflow against an isolated local upstream and configured origin, including PRs/checks/merge/tags/artifacts/releases. Agent and Deployment Architects inspected source3e96e3e and cc388692 respectively: current simulation publishes verified branches locally but the inspected broker has no hosted-operation interfaces. The existing Deployment #834 work remains accepted; retained Writer50138a8 has no accepted review, and its Releaser contribution is blocked. Do not execute integration or approve that retained product in this discussion.
+Please inspect your actual governed release profile and authorized source. Identify the exact ordinary commands/public tools you would use in live mode for integration/release and how each selects its target (Git origin, API endpoint, repository identity, credentials). State explicitly which interfaces exist and which are missing; do not assume a full source-host API exists because the role is called Releaser. Recommend one smallest useful next slice under #834 and the real owner dependencies; no estimate or replacement assignment. We need the same Releaser process in both modes with local targets, not a separate release simulator or role-aware runner.
