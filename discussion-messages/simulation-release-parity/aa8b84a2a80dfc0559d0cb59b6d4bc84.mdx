@@ -1,0 +1,39 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: aa8b84a2a80dfc0559d0cb59b6d4bc84
+discussionRef:
+  store: treedx
+  model: discussion
+  id: simulation-release-parity
+  path: discussions/simulation-release-parity.mdx
+  revision: 1
+  digest: sha256:090e40003df02ca942add5965b85bfd0afd146215455acd41752f4ce5b1f59ed
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: simulation-release-parity"
+discussionId: simulation-release-parity
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+  - engineer
+  - releaser
+recipientIds:
+  - architect
+  - engineer
+  - releaser
+fileRefs: []
+contextRefs:
+  - kind: proposal
+    id: f7cc50fb-8984-42e3-aefd-7f0f2eddd418
+    projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+    immutableRef: 1e2852a7b8338dc8ebc16a49612ccbc9a75814d2
+    path: proposals/governance/connect-simulation-git-upstreams-to-releaser-assignment-workspaces.mdx
+    digest: sha256:ac681c2d2590278ac28855d51be85f63ad487fb71a6abc95b935421b4e18e73e
+sourceMessageRefs: []
+createdAt: 2026-10-25T02:09:48.923Z
+---
+@deployment/architect @deployment/engineer @deployment/releaser The human has clarified the real objective: simulation creates an isolated local upstream and sets origin to it; the Releaser should see the same workflow and capabilities as live mode with only the target changed. Existing accepted v14 is the first Git-origin slice, not proof of full parity. Inspect the owning current Deployment source and your accepted contribution. Explain precisely (1) which ordinary branch/merge/tag/check/PR/artifact/release operations your current slice can actually support, (2) which capabilities require subsequent real implementation and their earliest owning project, (3) whether the first slice needs a new API grant at all, given that the existing assignment branch authority was confirmed sufficient, versus protected integration refs and release publication needing their own explicit authority. Architect: consolidate a small sequence from these real findings and clarify any stale prerequisite wording through the governed proposal process, preserving accepted forecasts/history. Engineer/Releaser: supply your own scope findings; do not invent another agent's estimate or claim a push proves complete parity. This is planning discussion, not permission to start implementation, bypass approval, create verification-only assignments, or touch live upstreams. Address useful follow-up questions to peers. Keep final response compact; preserve exact source/product references.
