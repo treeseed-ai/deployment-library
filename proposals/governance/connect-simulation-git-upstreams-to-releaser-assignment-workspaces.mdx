@@ -70,16 +70,101 @@ evidenceRefs:
     path: discussion-messages/agent-objective-planning/response-8b1ac1d4b7e180e62ce7a940.mdx
 executionPlan:
   workItems:
+    - id: deployment-releaser-simulated-origin-delivery
+      activity: acting
+      workspace: git
+      review: required
+      objective: Integrate the accepted feature commits through the authorized local
+        simulation origin in the Releaser assignment workspace. Resolve actual
+        conflicts or required metadata, publish the authorized integration
+        branch, read back the exact remote ref and commit, and record the
+        evidence. This work depends on the documentation, acceptance tests, and
+        Deployment origin materialization. API scoped-grant and local-routing
+        authority is also a prerequisite, but its work-item ID was not supplied;
+        refine that linkage before execution. This Git increment does not
+        complete broader hosted-operation parity.
+      estimate:
+        expectedSeconds: 960
+        maximumSeconds: 1800
+        rationale: Active time for checking exact accepted inputs and authority,
+          integrating the commits and resolving real conflicts or metadata,
+          publishing and verifying the exact remote ref, and recording evidence
+          and closeout. Maximum allows for a retry or nontrivial conflict.
+          Excludes other contributors’ work, operator maintenance, external API
+          implementation, and CI wait.
+      reviewEstimate:
+        expectedSeconds: 300
+        maximumSeconds: 600
+        rationale: "Separate active review of the delivered integration against its
+          criteria: inspect the exact candidate and authorization, verify
+          integration evidence and exact-ref read-back, document findings and
+          disposition, and close out. Maximum allows for tracing a discrepancy.
+          Excludes remediation and CI wait."
+      maximumReviewCycles: 2
+      dependsOn:
+        - deployment-simulation-git-workflow-docs
+        - deployment-tester/simulation-upstream-acceptance
+        - deployment.simulation-origin-materialization
+      requestedPermissions:
+        content:
+          read:
+            - proposal
+            - decision
+          write: []
+        tools:
+          - source.read
+          - source.write
+          - verification
+          - release
+      requiredCapabilities:
+        - treeseed.engineering.code-change
+      contextRefs:
+        - store: git
+          model: repository
+          id: 707284d1-6ed7-4f3f-a686-6630bc63fef5
+          repository: treeseed-ai/deployment
+          commit: cc3886921a06abb3c64f7bd957f27d9ba9f88ed0
+      acceptanceCriteria:
+        - The Releaser integrates the accepted feature commits through the
+          authorized local simulation origin and resolves actual integration
+          conflicts or required metadata.
+        - The integration branch is published only under applicable scoped
+          authority, and the exact authorized remote ref and commit are read
+          back.
+        - Evidence records the integration and exact-ref verification without
+          claiming broader hosted-operation parity.
+        - Work proceeds after the documentation, acceptance tests, Deployment
+          origin materialization, and API scoped-grant/local-routing authority
+          are available.
+      estimateRef:
+        store: postgresql
+        model: assignment-attempt
+        id: assignment__YSIpX7HorIfifJ0TwxEwS0yH1aS2V96
+        revision: 1
     - id: deployment-simulation-git-workflow-docs
       activity: acting
       workspace: git
       review: required
-      objective: "Document the intended simulation Git workflow before test authoring:
-        preserve GitHub source provenance, expose the isolated simulation
-        repository as a per-assignment writable origin, and describe authorized
-        feature-commit fetch, integration, publication, and exact read-back.
-        Mark broader hosted-operation parity as incomplete; this documentation
-        defines the contract and does not claim implementation."
+      objective: "Add a concise Deployment document defining the intended simulation
+        Git workflow: retain GitHub as source provenance; describe a
+        per-assignment writable origin to the isolated simulation repository;
+        specify authorized feature-commit fetch, integration, publication and
+        exact remote-ref read-back. Clearly distinguish the planned contract
+        from behavior verified in the current source, and state that broader
+        hosted-operation parity remains incomplete."
+      estimate:
+        expectedSeconds: 120
+        maximumSeconds: 165
+        rationale: Active time for checking the relevant source and documentation
+          conventions, drafting the workflow contract with precise
+          implementation-status caveats, verifying source references and links,
+          and closeout. Excludes CI wait and other contributors’ work.
+      reviewEstimate:
+        expectedSeconds: 55
+        maximumSeconds: 75
+        rationale: Separate active review to check the document against its acceptance
+          criteria and inspected source, confirm it does not claim unverified
+          behavior, and record closeout.
       maximumReviewCycles: 2
       dependsOn: []
       requestedPermissions:
@@ -92,6 +177,8 @@ executionPlan:
           - source.read
           - source.write
           - verification
+      requiredCapabilities:
+        - treeseed.engineering.code-change
       contextRefs:
         - store: git
           model: repository
@@ -99,21 +186,52 @@ executionPlan:
           repository: treeseed-ai/deployment
           commit: cc3886921a06abb3c64f7bd957f27d9ba9f88ed0
       acceptanceCriteria:
-        - The documentation describes the intended per-assignment origin and
-          authorized Git flow, including exact remote-ref read-back.
-        - It identifies the GitHub repository as provenance and states that this
-          Git increment does not complete broader hosted-operation parity.
-        - The documentation is available as the contract for the dependent
-          acceptance tests.
+        - The document explains per-assignment origin materialization and the
+          authorized fetch, integrate, publish, and exact remote-ref read-back
+          flow.
+        - It identifies GitHub as source provenance and distinguishes the
+          intended contract from behavior verified at the referenced source
+          commit.
+        - It states that this Git workflow increment does not complete broader
+          hosted-operation parity and is available as the contract for the
+          dependent acceptance tests.
+      estimateRef:
+        store: postgresql
+        model: assignment-attempt
+        id: assignment_7AmQZolCI326jGkTvN5Qfu6W_MJq53qM
+        revision: 1
     - id: deployment-tester/simulation-upstream-acceptance
       activity: acting
       workspace: git
       review: required
-      objective: Add acceptance coverage against the documented intended contract for
-        simulation-origin materialization and Releaser Git operations. Cover
-        exact authorized commits and refs, successful integration and read-back,
-        retry and existing-ref behavior, and rejection when required authority
-        is absent.
+      objective: Add focused acceptance coverage for the documented intended
+        simulation-origin flow in the Deployment assignment workspace. Cover
+        authorized exact-commit fetch and integration, publication and exact
+        remote-ref read-back, idempotent retry and existing-ref safety, and
+        rejection when required scoped authority is absent. Use existing test
+        seams and fixtures where possible; do not change implementation
+        behavior. Run focused tests, capture results, and return the exact test
+        commit. Refine cases against the documentation produced by
+        deployment-simulation-git-workflow-docs.
+      estimate:
+        expectedSeconds: 660
+        maximumSeconds: 1080
+        rationale: Active time for checking the completed contract and relevant test
+          seams, writing focused cases and fixtures for authorized
+          fetch/integration, exact publication read-back, retry/ref safety and
+          missing authority, reviewing the test diff, running focused
+          verification, capturing evidence and closing out. Maximum allows for
+          adapting fixtures or resolving a test-seam issue. Excludes other
+          contributors’ work, operator maintenance and CI wait.
+      reviewEstimate:
+        expectedSeconds: 210
+        maximumSeconds: 360
+        rationale: "Separate active review of the exact test candidate against its
+          documented predecessor and acceptance criteria: check that authority,
+          exact refs, read-back and retry safety are meaningfully asserted,
+          verify the reported focused evidence, record concrete findings and
+          close out. Maximum allows for tracing an assertion to its fixture or
+          setup. Excludes remediation and CI wait."
       maximumReviewCycles: 2
       dependsOn:
         - deployment-simulation-git-workflow-docs
@@ -127,6 +245,8 @@ executionPlan:
           - source.read
           - source.write
           - verification
+      requiredCapabilities:
+        - treeseed.engineering.code-change
       contextRefs:
         - store: git
           model: repository
@@ -134,14 +254,18 @@ executionPlan:
           repository: treeseed-ai/deployment
           commit: cc3886921a06abb3c64f7bd957f27d9ba9f88ed0
       acceptanceCriteria:
-        - Tests exercise the documented authorized fetch, integration, push, and
-          exact remote-ref read-back path.
-        - Tests cover idempotent initialization/retry and ensure a ref
-          identifying another commit is not silently replaced.
-        - Tests verify failure when the required scoped API authority is
-          unavailable.
-        - The tests are suitable to validate the dependent
-          origin-materialization implementation.
+        - Tests exercise the documented authorized fetch, integration,
+          publication and exact remote-ref read-back behavior.
+        - Tests cover idempotent retry and ensure a ref identifying a different
+          commit is not silently replaced.
+        - Tests verify rejection when required scoped authority is absent.
+        - Focused test evidence and the exact test commit are recorded;
+          implementation behavior is not changed.
+      estimateRef:
+        store: postgresql
+        model: assignment-attempt
+        id: assignment_a7eP7tBw7sxKsRiMu8c2S4YcKFmCAuwk
+        revision: 1
     - id: deployment.simulation-origin-materialization
       activity: acting
       workspace: git
@@ -149,14 +273,32 @@ executionPlan:
       objective: Implement Deployment-owned per-assignment materialization of the
         isolated simulation repository as a writable origin through the existing
         assignment workspace and Git transport. Keep mutable target
-        configuration assignment-scoped and shared cache images immutable.
-        Coordinate with API553 for the scoped-grant issuance and local routing
-        prerequisite; reuse existing SDK provider-operation contracts, since
-        current evidence does not establish a need for a new SDK target model.
-        Preserve generic merge topology as established by the supplied Agent496
-        source finding.
+        configuration assignment-scoped and shared cache images immutable. Reuse
+        existing authorization and SDK contracts, fail closed when required
+        authority is absent, and preserve retained products and unrelated refs
+        during initialization and retry.
+      estimate:
+        expectedSeconds: 10800
+        maximumSeconds: 18000
+        rationale: Expected three active hours for owning source-path tracing, scoped
+          origin materialization, integration with the existing runtime handoff,
+          local verification and evidence, and closeout. Maximum five active
+          hours allows for discovering a necessary private transport handoff or
+          resolving repository/ref safety edge cases. Excludes predecessor
+          documentation/tests, Releaser integration, API implementation, CI
+          wait, and operator maintenance.
+      reviewEstimate:
+        expectedSeconds: 2400
+        maximumSeconds: 5400
+        rationale: Expected forty active minutes to inspect the exact candidate diff and
+          evidence against the accepted contract, check authority boundaries,
+          retry/ref preservation and immutable-image behavior, and record
+          findings. Maximum ninety minutes allows for tracing a non-obvious
+          runtime handoff or security edge case. Excludes remediation and CI
+          wait.
       maximumReviewCycles: 2
       dependsOn:
+        - deployment-simulation-git-workflow-docs
         - deployment-tester/simulation-upstream-acceptance
       requestedPermissions:
         content:
@@ -168,6 +310,8 @@ executionPlan:
           - source.read
           - source.write
           - verification
+      requiredCapabilities:
+        - treeseed.engineering.code-change
       contextRefs:
         - store: git
           model: repository
@@ -180,52 +324,15 @@ executionPlan:
           transport path.
         - Materialization and retries preserve retained products and unrelated
           refs and do not overwrite a ref that identifies another commit.
-        - Operations require the applicable API553 scoped authority and fail
-          closed when that authority is unavailable.
+        - Operations require applicable scoped authority and fail closed when it
+          is unavailable.
         - The implementation passes the dependent documented acceptance tests
           without adding a new SDK target model absent evidence of a contract
           gap.
         - The runner remains generic and shared cache images remain immutable.
-    - id: deployment-releaser-simulated-origin-integration
-      activity: acting
-      workspace: git
-      review: required
-      objective: Integrate the accepted feature commits through the actual authorized
-        local simulation target in the Releaser assignment workspace, resolve
-        integration conflicts or metadata as needed, publish the resulting
-        integration branch, and read back the exact authorized ref and commit.
-        Coordinate Releaser consumption through Agent496. This item depends on
-        Deployment origin materialization and API553 scoped-grant/local-routing
-        authority; it cannot complete before both are available. The Git slice
-        does not complete broader hosted-operation parity.
-      maximumReviewCycles: 2
-      dependsOn:
-        - deployment.simulation-origin-materialization
-      requestedPermissions:
-        content:
-          read:
-            - proposal
-            - decision
-          write: []
-        tools:
-          - source.read
-          - source.write
-          - verification
-          - release
-      contextRefs:
-        - store: git
-          model: repository
-          id: 707284d1-6ed7-4f3f-a686-6630bc63fef5
-          repository: treeseed-ai/deployment
-          commit: cc3886921a06abb3c64f7bd957f27d9ba9f88ed0
-      acceptanceCriteria:
-        - The Releaser fetches and integrates authorized accepted feature
-          commits from the materialized local origin.
-        - The resulting integration branch is published only with the required
-          scoped authority, and the exact authorized remote ref and commit are
-          read back.
-        - The Releaser handles integration conflicts or required metadata and
-          delivers the actual authorized local target.
-        - The work is not represented as completing remaining hosted-operation
-          parity.
+      estimateRef:
+        store: postgresql
+        model: assignment-attempt
+        id: assignment_gAGwI2FtJDCyiqg7OByYSh6q3XiEns9X
+        revision: 1
 ---
