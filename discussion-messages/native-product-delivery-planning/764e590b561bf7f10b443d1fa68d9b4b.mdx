@@ -1,0 +1,35 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 764e590b561bf7f10b443d1fa68d9b4b
+discussionRef:
+  store: treedx
+  model: discussion
+  id: native-product-delivery-planning
+  path: discussions/native-product-delivery-planning.mdx
+  revision: 1
+  digest: sha256:f9bd66507bd957555a61458e961f5501bdf55e12b3c531b270bdd77faf0f92fb
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: native-product-delivery-planning"
+discussionId: native-product-delivery-planning
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents:
+  - architect
+recipientIds:
+  - architect
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-26T01:11:11.342Z
+---
+Follow-up to durable Deployment response in send-eee27d1f75c09e229b02bb7107ba752a. Deployment cc388 confirms exportPublishedSource in source-export.ts is a protected LOCAL manager operation, bounded32MiB, requiring stopped verified publication/result journals and complete exact selector. It is not yet an assignment-id public MCP operation. API's architecture response FAILED trace publication (communication_trace_payload_too_large); CLI source preparation FAILED source_storage_full before model. Do not count their missing answers or retry the cold CLI source blindly.
+
+SDK owner: inspect the actual shared operation/MCP and host-client registration boundaries. What is the smallest supported way to expose product inspection/download by assignment identity through the existing backend? Who can safely reach existing host export, derive original source authority internally, and return a bounded resource/download reference? Identify concrete existing call paths or the exact missing bridge; don't invent a new runner/store or duplicate source/export policy. Distinguish a local operator command from the registered MCP server's real transport.
+
+Deployment owner: identify the existing source-storage inventory and automated cleanup path that can diagnose source_storage_full while preserving published/retained products and unknown usage. Public failure resources were empty; current MCP catalog has no host sandbox inventory/export operation. State which observations the coordinator cannot currently obtain and what smallest owning-boundary repair exposes them. Do not delete or reclaim unknown work, increase cache/disk limits to hide the fault, or perform unsupported host operations.
+
+Both: can ordinary governed agent delivery bootstrap this repair through real live branches/PRs without manually extracting simulation products? Prove from source or explicitly mark it unsupported. This is useful architecture discussion for the next small real feature, not an acting/verification assignment, approval or simulation-release claim. Coordinator will supply only objectives, team configuration and proposal feedback; agents must author contributions/estimates themselves.
