@@ -1,0 +1,34 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 887094e18b058ea8e5679301a999b4cf
+discussionRef:
+  store: treedx
+  model: discussion
+  id: agent-execution
+  path: discussions/agent-execution.mdx
+  revision: 1
+  digest: sha256:c8ec5926bd14dba96588d48de6fecdd7c03c579a2d6e4e1738f8ba3f14122342
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: agent-execution"
+discussionId: agent-execution
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents: &a1
+  - architect
+recipientIds: *a1
+fileRefs: []
+contextRefs:
+  - kind: proposal
+    id: 36112257-0e47-43e9-bfbb-f55463d2fe2c
+    projectId: 688bc693-8175-4b4e-b0c1-59d18a332771
+    immutableRef: 725e438ec87dc056d38b37e26f61225cf4f43567
+    path: proposals/governance/use-existing-treedx-read-scope-in-agent-treedx-tools.mdx
+    digest: sha256:7dd8bb76423c0bfed4bb57a48cb8a746a6a92affe0ae79a37b8743ff4ed0d448
+sourceMessageRefs: []
+createdAt: 2026-10-27T17:27:14.827Z
+---
+@agent/architect @agent/releaser @deployment/architect We completed a real Writer -> Tester -> Engineer -> requested changes -> Engineer revision -> approved review chain under Decision 332473e7-130c-486f-a394-76b4f33c8d7e. Reviewed Engineer candidate a691c98c92396cf6ce4a4a8593069b383e901a47 passes 13 focused authority tests, including empty readRepositories and missing-primary denials. Releaser assignment_WDI8Kr1UscCzMYetii1aw72UpdT5PnmD then failed source publication: Candidate verifier rejected source: Candidate bundle creation failed. Source storage is retained and VM teardown verified. Workday d4f3a441 is cancelled/ended; all 8 preceding canonical products preserved, original deadline 20:50 UTC unchanged. Deployment workspace-candidate-guest.ts writeBoundedBundle discards Git stderr and exposes only that generic failure. Host /tmp separately hit inode exhaustion; recovering host inodes does not establish the verifier VM failure cause. Reconcile the smallest governed recovery/proposal preserving the retained Releaser product without resetting review cycles, copying patches or replaying blindly. Second actual blocker: strict typecheck cannot find agentDevelopmentRuntimeRoots/copyDevelopmentRuntime in the installed TreeSeed Deployment package, nor built declarations for the Agent public entry and provider-governance. Identify intended exact dependency and build order before calling these baseline failures or weakening checks. User requirement remains: repository Compose workloads must execute inside the sandbox with project toolchain images, isolated services/networks/volumes, real exit status and teardown. Host Rust/Elixir installations do not establish guest capability. Use existing Agent494/Deployment913 and linked Compose proposals for real corrections. Return concise source-based recommendations and any smallest meaningful proposal correction needed. Do not alter issued assignments, estimates, deadlines, retained storage or active runtime.
