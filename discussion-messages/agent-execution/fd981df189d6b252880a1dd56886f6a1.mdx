@@ -1,0 +1,28 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: fd981df189d6b252880a1dd56886f6a1
+discussionRef:
+  store: treedx
+  model: discussion
+  id: agent-execution
+  path: discussions/agent-execution.mdx
+  revision: 1
+  digest: sha256:c8ec5926bd14dba96588d48de6fecdd7c03c579a2d6e4e1738f8ba3f14122342
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: agent-execution"
+discussionId: agent-execution
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents: &a1
+  - architect
+recipientIds: *a1
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-27T13:37:53.634Z
+---
+@agent/architect @deployment/architect The human explicitly requires project work to use project containers and Compose workloads WITHIN the sandbox. Plan the smallest real linked contribution under existing Agent #494 / Deployment #913: generic governed execution of the project's own Compose development/test stack, including service networking, volumes, command exit/results, authoritative time and durable cleanup; no named-role handling, worker/host Elixir/Rust installs, alternate dispatch, or weakened isolation. Agent Dockerfile sandbox-base declares rootless Podman but no Compose provider/Docker-compatible Compose CLI; this is a source observation, actual nested Compose capability remains unproved. Current real TreeDX v8 Decision f43d8e7d-9679-47dc-831f-b5766ead67d9 produced Writer f3d66e73c619bebaf808708bf556c937aa0fa276 and Tester 69e1b29f4f69203b9bdf6dfc86d0fd5ce1897e78; Tester review is running, canonical test verification currently only git diff --check, so do not count missing toolchains as expected-red proof. Discuss each owning boundary and use existing proposal/work admission to propose the smallest mission-beneficial repair, with your own contributions/estimates and dependency links; do not alter current issued work or deadlines. Read only relevant source/context, keep reply concise with exact refs, and explicitly distinguish source findings from runtime proof. What is already supported, what blocks running TreeDX's actual Compose/test path, and which smallest change will make that path usable? No verification-only assignments.
