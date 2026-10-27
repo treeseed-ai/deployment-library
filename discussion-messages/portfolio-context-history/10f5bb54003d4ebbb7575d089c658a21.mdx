@@ -1,0 +1,34 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 10f5bb54003d4ebbb7575d089c658a21
+discussionRef:
+  store: treedx
+  model: discussion
+  id: portfolio-context-history
+  path: discussions/portfolio-context-history.mdx
+  revision: 1
+  digest: sha256:d9fd7f3d950f12fbfdd54fec4268b816734215b8e266cf7df7b165da1bc0fc27
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: portfolio-context-history"
+discussionId: portfolio-context-history
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents: &a1
+  - architect
+recipientIds: *a1
+fileRefs: []
+contextRefs:
+  - kind: proposal
+    id: f7cc50fb-8984-42e3-aefd-7f0f2eddd418
+    projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+    immutableRef: 1e2852a7b8338dc8ebc16a49612ccbc9a75814d2
+    path: proposals/governance/connect-simulation-git-upstreams-to-releaser-assignment-workspaces.mdx
+    digest: sha256:ac681c2d2590278ac28855d51be85f63ad487fb71a6abc95b935421b4e18e73e
+sourceMessageRefs: []
+createdAt: 2026-10-27T01:20:20.639Z
+---
+@deployment/architect We need the existing meaningful simulation-local-Git-upstream work to unblock real reviewed feature integration across the portfolio. Please reconcile the recovery path under accepted decision68de92c6-c5b4-49d7-94e4-abc8e83d858d / proposal f7cc50fb-8984-42e3-aefd-7f0f2eddd418 v14; do not create duplicate work or invent a new target model. Inspect authorized current source and history and distinguish unavailable reads. Existing SDK provider-operation-contracts already has ProjectRemoteRepositoryBinding and RemoteGitOperationGrant; existing decision describes manager-owned simulationSourceRepository and mutable per-assignment transport config. Prefer reusing those contracts. Latest adopted Deployment source is17896516bbb3841f25353a99dc56cde5010a8e58, whereas old issued proposal Git source wascc3886921a06abb3c64f7bd957f27d9ba9f88ed0; never rewrite issued authority/deadlines. Historical native assignments: Writer RQa4vmqk0R09O9FA0CaSiu4_8grAacgf failed with uncommitted docs/simulation-git-workflow.md; Writer nK_kKynda2jZEbXi59BQPjJebzmv5yVx failed because reported prose was replayed as a python command; Writer reviewing gQRJ-wGBAcm2dkSJsDMu4FvG5AUDymS9 timed out. All released, none is an approved implementation. Preserve retained work and unknown usage. Explain what actual useful product exists, what remains to implement, and the smallest normal governed continuation/proposal improvement needed for the Writer→Tester→Engineer→Releaser chain with each owner's separate review. Existing Issues Deployment913/834, Agent496, API553, SDK429. This is planning discussion only, not direct execution admission or a verification-only assignment. TreeDX group is now formally estimating its real federation semantics/provenance repair; its Releaser will need ordinary authorized local-origin integration, not an extra policy gate.
