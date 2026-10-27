@@ -1,0 +1,28 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 9b00c0aeb02c21990fe73e82c6c34662
+discussionRef:
+  store: treedx
+  model: discussion
+  id: agent-execution
+  path: discussions/agent-execution.mdx
+  revision: 1
+  digest: sha256:c8ec5926bd14dba96588d48de6fecdd7c03c579a2d6e4e1738f8ba3f14122342
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: agent-execution"
+discussionId: agent-execution
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents: &a1
+  - architect
+recipientIds: *a1
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-27T13:51:18.266Z
+---
+@agent/architect @deployment/architect Follow-up to send-8a1f2abd1db7fc9b09127e20f39c7fc9: #494 and #913 are existing GitHub planning Issues, not an accepted Compose proposal; no accepted Compose work item is known. Please author the smallest concrete proposal from this discussion under those Issues, for group-driven participation/own estimates; do not invent other subscribers' estimates. Return exact proposal content if your discussion grant cannot persist it. Reuse ordinary governed command execution and teardown: do not add a Compose-specific orchestrator/model/dispatch or role-aware runner unless an observed requirement proves necessary. Agent source620e629af6c3b44c9c8dc12330e48a2926fc740f owns guest Dockerfile sandbox-base; Deployment9b61425e399d8dec727a49bf602f090a0128ad70 owns src/sandbox/runtime.ts, warm-sandbox-pool.ts, workspace-image-builder.ts and server.ts. TreeDX Git175fa48c2281fb1e8aba26ed6d2990082b4f04f2: Dockerfile dev stage supplies Elixir/OTP/Rust/Node; compose.yaml service treedx-api builds targetdev, copies /source/treedx into /workspace/treedx, mounts source readonly, separate data and cargo volume, tmpfs workspace, external treeseed-platform network. scripts/verification/test-treedx-fast.sh runs actual Cargo and Mix checks; focused files are apps/api/test/treedx_web/federation/federated_execution_test.exs and federated_remote_routing_test.exs. No sandbox-safe Compose test entry is currently proved, and compose.yaml's external platform network/host bindings require honest isolation handling rather than attaching to live platform. Real Tester69e1b29 then1ba137fc produced tests but mix unavailable; tests notrun. Current sandbox image Podman exists, engine rootless operation/Compose/provider/image acquisition unproved. Identify minimal project command/config and owning linked change(s), preserving approved refs, network policy, output bounds and original issued deadlines. We need runnable real project work, not verification-only assignments.
