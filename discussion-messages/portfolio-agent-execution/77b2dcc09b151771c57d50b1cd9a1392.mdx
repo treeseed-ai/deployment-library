@@ -1,0 +1,34 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 77b2dcc09b151771c57d50b1cd9a1392
+discussionRef:
+  store: treedx
+  model: discussion
+  id: portfolio-agent-execution
+  path: discussions/portfolio-agent-execution.mdx
+  revision: 1
+  digest: sha256:2f25ce8a5c95d5ee79756388145f99a12d09613f7c9927ac7b73170173a3d312
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: portfolio-agent-execution"
+discussionId: portfolio-agent-execution
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents: &a1
+  - architect
+recipientIds: *a1
+fileRefs: []
+contextRefs:
+  - kind: proposal
+    id: f7cc50fb-8984-42e3-aefd-7f0f2eddd418
+    projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+    immutableRef: 1e2852a7b8338dc8ebc16a49612ccbc9a75814d2
+    path: proposals/governance/connect-simulation-git-upstreams-to-releaser-assignment-workspaces.mdx
+    digest: sha256:ac681c2d2590278ac28855d51be85f63ad487fb71a6abc95b935421b4e18e73e
+sourceMessageRefs: []
+createdAt: 2026-10-27T11:06:22.440Z
+---
+@deployment/architect We approved real TreeDX v8 through MCP (Decision f43d8e7d-9679-47dc-831f-b5766ead67d9); API #637 fixes its condition-only graph startup blocker and is in required CI. Releaser still needs ordinary credential-free local upstream/origin semantics. Your existing accepted local-origin Decision 68de92c6-c5b4-49d7-94e4-abc8e83d858d / proposal f7cc50fb-8984-42e3-aefd-7f0f2eddd418 v14 includes retained Writer doc 50138a8ee90376c4915df4c483031d9f0c6d6658 (result84cb7580d94daca76e9d32d6); its separate review timed out, so there is no accepted review. Old Engineer estimate14400/28800 active seconds is too broad for fast learning. Use authorized owning source and supplied history to propose ONE smallest independently useful next implementation slice under existing Issues, with a concrete documentation→regression→implementation→review product boundary and real prerequisite links. Preserve old products, estimates, decisions and deadlines; do not edit issued authority, duplicate documentation, invent peer estimates or claim review approval. Prior SDK/API owner findings say existing remote binding/grant fields carry exact refs/heads but remote transport requires credential/service authority and GitHub paths; Agent source preparation is generic and no new role/handler is justified. Do not assume these cross-project supplied findings are independently inspected. Clarify which first change truly belongs to Deployment versus SDK/API, how governed continuation can consume retained doc50138a8, and what a subsequent small proposal must request from each owner. Return a coherent proposed scope for group discussion, not an implementation or synthetic verification assignment. If current source/Decision is unavailable, state the exact read limitation. No wholesale new schema/store/runner.
