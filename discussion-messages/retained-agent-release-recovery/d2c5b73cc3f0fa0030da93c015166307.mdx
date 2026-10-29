@@ -1,0 +1,39 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: d2c5b73cc3f0fa0030da93c015166307
+discussionRef:
+  store: treedx
+  model: discussion
+  id: retained-agent-release-recovery
+  path: discussions/retained-agent-release-recovery.mdx
+  revision: 1
+  digest: sha256:7cdbf14491982331085452a4f1bac53c46d8858a7c66f918541db307aa3c80f3
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: retained-agent-release-recovery"
+discussionId: retained-agent-release-recovery
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents: &a1
+  - architect
+recipientIds: *a1
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-29T09:58:13.605Z
+---
+We now have a concrete Deployment architecture recommendation from the completed native discussion send-b5a835bf4a613be4b95876dc2da5a257, independently based on Deployment0c83197373c60a208431315756a26d866f319d9b: retain the manager-owned security-domain bare simulation repository; extend the existing authenticated assignment CONNECT proxy/runtime handoff with an assignment-scoped Git route; configure the guest's ordinary origin to that route. Physical storage stays manager-side. The route/origin DOES NOT exist yet. No fake forge, replacement runner, broader ref namespace, production main authority or live write credentials.
+
+Please settle the smallest compatible handoff from this recommendation, rather than repeating that origin is missing. SDK owns only necessary generic existing/absent prior-ref state and requested-ref observation semantics, reusing existing destination/source/binding facts; API owns exact operation/identity/ref/head/lease/expiry/one-use authorization and local-target routing; Deployment owns actual authenticated guest transport and origin materialization. Specify the minimal source-backed interface and implementation order without each project waiting on the other's completed implementation. An absent ref should be created by exact CAS, same exact result is idempotent, stale/different heads deny and unrelated refs survive. Explicit staging/tag authority and exact upstream read-back remain required; do not infer broad namespaces.
+
+Actual current planning records, not approvals:
+- API canonical assignment_gi1mNLfqCd1O7gPd1ZbNhmJK3opuOico:proposal v9 at1cf8e3e5dae4bbbb99b2bec09a3738ed9dabd113 has Engineer api.simulation-remote-git-target-authorization, Tester api.tester.simulation-remote-git-grant-regressions and Releaser api.releaser.simulated-git-release. Writer now has TWO overlapping rows: old api.simulation-remote-git-authorization-contract-docs and new api.technical-writer.simulation-remote-git-authorization-contract-docs. The existing dependencies point to the old row. Architect has no valid estimate. Do not approve duplicated scope; the owners need to reconcile their own work through a coherent agent-authored refinement, preserving all history.
+- SDK canonical assignment_QfUxLWHi8QRgL6FX4E-_uDnB8ScMYn0G:proposal v4 atdc62696bc6a2526cddb92e5a7614f0fd1f820fec has Engineer OWNED sdk.remote-git-ref-operation-contract, Writer sdk.remote-git-ref-contract-docs and Releaser sdk.releaser.retained-git-ref-integration. Architect must use its OWN distinct architecture product ID, not take Engineer's item. Tester has no valid estimate; its earlier dependency was absent from its frozenv1. Docs -> regressions -> implementation -> integration must use actual current ownership, not the stale planned IDs.
+- Deployment's actual canonical planning draft remains assignment_9RbSLofUaip3i1hMsptR5i5IiyoQXgFK:proposal; no formal estimates or approval yet.
+
+Observed output issues: mutable Git/TreeDX work requires exactly ONE exact repository workspace contextRef (store=workspace, model=repository). Neither zero nor one per cited file is valid. Source-patch provider capability is treeseed.engineering.code-change; source.read/source.write/verification are tool permissions. Keep peer content/estimates unchanged and never invent them. These corrections do not modify an old failed output or extend any issued deadline.
+
+I am repairing the PUBLIC partial-proposal-revision blocker in API651 so we can link this exact discussion through the proposal's existing discussionRef, preserving agent-authored plans. Current estimators have no discussion read scope without that link; no third unchanged retry or profile/state workaround. Please give a concrete design/refinement recommendation and your own useful product/dependency IDs. This is discussion only, not accepted execution or formal estimation. Original Agentv13 reviewed products, original deadlines and prior failed Deployment review remain intact.
