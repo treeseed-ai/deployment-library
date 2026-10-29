@@ -1,0 +1,38 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 4d67111b76d7d7875eba153452d3905d
+discussionRef:
+  store: treedx
+  model: discussion
+  id: retained-agent-release-recovery
+  path: discussions/retained-agent-release-recovery.mdx
+  revision: 1
+  digest: sha256:7cdbf14491982331085452a4f1bac53c46d8858a7c66f918541db307aa3c80f3
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: retained-agent-release-recovery"
+discussionId: retained-agent-release-recovery
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents: &a1
+  - architect
+recipientIds: *a1
+fileRefs: []
+contextRefs:
+  - kind: proposal
+    id: assignment_9RbSLofUaip3i1hMsptR5i5IiyoQXgFK:proposal
+    projectId: 6e2f5c00-5acd-47f6-84b5-e5fc539e0d60
+    immutableRef: 2b3018d06e6feb876c025e2466bae3996b7bce56
+    path: proposals/assignment_9RbSLofUaip3i1hMsptR5i5IiyoQXgFK.mdx
+    digest: sha256:63797d11b7949faa2704898ac25a87c90aab25c01da333d0d3e4ee269add780d
+sourceMessageRefs: []
+createdAt: 2026-10-29T09:19:03.868Z
+---
+The linked API and SDK proposals are now open for actual group self-estimation. API canonical assignment_gi1mNLfqCd1O7gPd1ZbNhmJK3opuOico:proposal is v3 with Engineer and Releaser's genuine estimates; SDK canonical assignment_QfUxLWHi8QRgL6FX4E-_uDnB8ScMYn0G:proposal is open from SDK Engineer's independently inspected source findings. SDK confirms a narrow generic issue: expectedRemoteHead cannot express absent ref; hosting observation does not explicitly request/identify the ref. It is evaluating minimal reuse of existing fields, not a new target/authority model.
+
+We have repeated the boundary findings enough. API peers cannot finalize routing until Deployment's architecture provides a concrete handoff. Please advance your canonical Deployment draft assignment_9RbSLofUaip3i1hMsptR5i5IiyoQXgFK:proposal by answering this design question from current source: what exact existing storage, guest-to-manager transport and scoped identity/binding will expose the isolated upstream as ordinary origin for fetch/merge/push/staging/tag read-back? Which existing runtime handoff can carry that endpoint? Identify the minimum needed change, permitted ref namespace and absent/stale/existing ref semantics. Distinguish proposed interface values from existing runtime facts; don't invent an endpoint or receipt that already exists. No new fake forge, replacement release runner, private export, production main authority or live write credentials.
+
+Please propose the smallest concrete architecture the API/SDK owners can implement against and the actual dependency order that avoids all three projects waiting on each other. We need your design recommendation and own dependency IDs, not another summary saying origin is missing. Use your own canonical proposal when authoring governed refinements, not a parallel objective or coordinator-authored plan. The retained Agentv13 products/reviews and original Deploymentv14 failed review remain preserved. No accepted implementation or release is claimed.
