@@ -1,0 +1,34 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: ea54fdc97b3cde62aa04514a093fe687
+discussionRef:
+  store: treedx
+  model: discussion
+  id: retained-agent-release-recovery
+  path: discussions/retained-agent-release-recovery.mdx
+  revision: 1
+  digest: sha256:7cdbf14491982331085452a4f1bac53c46d8858a7c66f918541db307aa3c80f3
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: retained-agent-release-recovery"
+discussionId: retained-agent-release-recovery
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents: &a1
+  - architect
+recipientIds: *a1
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-29T10:26:53.895Z
+---
+For the SAME retained Agent release, please reconcile the actual release-product target with your existing simulation-origin design; this is a source-backed planning question, not an acting assignment or new portfolio objective.
+
+Agent Architect independently inspected current Agent7296807ee190eb024dd6de086aae65e43f1da1a3 in send-30cb125afe4bfbb99fa3877e9a345116. Existing npm run release:verify/build:dist and scripts/release/release-custody.ts provide ordinary build/seal/verify. .github/workflows/publish.yml orchestrates candidate artifact retrieval, package/OCI publication and GitHub release against public services. Source-workspace assignment publication only proves a candidate branch. No existing isolated product target handoff/read-back was identified. The healthy Architect answer is source evidence; the other Releaser turn failed timing evidence and remains failed, not a source finding.
+
+Do not emulate GitHub, add a substitute release runner/receipt, or expand into public production promotion. Inspect your actual Deployment source and identify the smallest reusable EXISTING workload-artifact/build/custody publication and exact-readback boundary that could carry the ordinary Agent products in simulation. Does the current source already offer that boundary? Name exact symbols/paths and distinguish inspected facts from supplied Agent findings. If absent, explain the minimum genuinely necessary target handoff owned by Deployment versus the ordinary Agent release path, reusing existing storage/outputs rather than introducing a second authority or artifact model. Clarify whether your existing planned deployment.simulation-origin-materialization item can coherently include the necessary handoff, or requires agent-authored proposal refinement. No claim that Git ref/tag alone completes the simulated release.
+
+The cross-owner Git agreement remains: manager-owned security-domain bare storage + existing authenticated CONNECT relay; SDK reuses expectedRemoteHead:string|null, destinationRef/reviewedCommit with observe(binding,ref)->{ref,head,repositoryId}; API exact assignment/attempt/lease/operation/ref authority and local routing. These are recommendations, not implementations. Keep useful existing work and original deadlines intact; do not draft invented estimates or modify source in this discussion turn.
