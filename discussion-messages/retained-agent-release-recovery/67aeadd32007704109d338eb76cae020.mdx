@@ -1,0 +1,28 @@
+---
+schemaVersion: treeseed.discussion-message/v1
+id: 67aeadd32007704109d338eb76cae020
+discussionRef:
+  store: treedx
+  model: discussion
+  id: retained-agent-release-recovery
+  path: discussions/retained-agent-release-recovery.mdx
+  revision: 1
+  digest: sha256:7cdbf14491982331085452a4f1bac53c46d8858a7c66f918541db307aa3c80f3
+authorRef:
+  store: postgresql
+  model: user
+  id: 49435480-41fe-4fae-b2f7-baceacea562a
+title: "Adrian Webb: retained-agent-release-recovery"
+discussionId: retained-agent-release-recovery
+authorId: 49435480-41fe-4fae-b2f7-baceacea562a
+authorType: user
+intent: discuss
+mentionedAgents: &a1
+  - architect
+recipientIds: *a1
+fileRefs: []
+contextRefs: []
+sourceMessageRefs: []
+createdAt: 2026-10-29T13:20:48.536Z
+---
+Follow-up to send-bafc589c39b5491a18c9d02d346db758 for the SAME stopped Reviewer source failure; read/analyze only, no acting or host changes. Human supplied actual privileged read-only output: cache35382e89d2a446fdba1644011f297deef821a3417dae50538e64445d8dac4a73 acquisition.lock/job.json={"jobId":"0002c86f-ef89-4a8d-b11d-e6dbf5f6a7a6","assignmentId":"assignment_DTqiUzEwU7L_v1WIBqgq9Oq_bM5bFcB2","authorizationId":"83ffcf37-d3cb-40a2-82d3-d920fbaf78ee","pid":2062946}. In broker2062946 mount namespace findmnt shows exact mounted dir on /dev/loop17 rw,nosuid,nodev,noexec,relatime; root fuser --mount --verbose shows only root kernel mount, no user process holders at observation. losetup confirms exact objects.ext4 association. Host namespace findmnt shows no cachemount. Runtime service root/NoNewPrivileges=yes/PrivateTmp=yes/ProtectSystem=strict/ReadWritePaths includes workspaces; fullCapabilityBoundingSet includesCAP_SYS_ADMIN, no SystemCallFilter restrictions (SystemCallFilter=~ empty). /usr/bin/umount util-linux2.41.3,setuidroot; mount also setuidroot,/etc/mtab->/proc/self/mounts. Exact stderr from failed umount wasn't retained. No umount/restart/fence clearing/retry/claims changes done; workdayclosedcancelled all5beforemodel failures preserved. Note my earlier cachefc8306 derivation WRONG: actual API response repository includes provider+ref=exactb09; JSON.stringify nested fullobject makes35382; corrected public records. Please inspect actual0c831 source around volume child command env and supervisor service/recovery. What smallest supported diagnostic/recovery repair is now justified, and what evidence is STILL required before choosing a fix? Do not assert EBUSY, namespace cause or permission cause without observation. Prefer reuse existing fixed operations and safe diagnostic codes; no force/lazy unmount, stale PID theft, general privileged MCP controls, synthetic assignment or new state model. Scope only the actual blocker. If a narrowly scoped code repair is needed, identify exact owning paths and meaningful regression/public-boundary coverage, not an invented outcome.
